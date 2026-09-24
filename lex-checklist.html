@@ -142,6 +142,9 @@
   .appconfirm button:hover{ border-color:var(--muted); }
   .appconfirm button.ac-ok{ background:rgba(var(--bad-rgb),.16); border-color:rgba(var(--bad-rgb),.55); color:var(--bad-soft); }
   .appconfirm button.ac-ok:hover{ background:rgba(var(--bad-rgb),.28); }
+  .appconfirm.ac-tone-warn .ac-text{ color:var(--warn); }
+  .appconfirm button.ac-ok.ac-warn{ background:rgba(var(--warn-rgb),.16); border-color:rgba(var(--warn-rgb),.55); color:var(--warn); }
+  .appconfirm button.ac-ok.ac-warn:hover{ background:rgba(var(--warn-rgb),.28); }
 
   /* кнопка «что сказать» -- быстрый доступ к готовой формулировке из памятки
      прямо в карточке, чтобы не открывать памятку по прибытию каждый раз */
@@ -9202,6 +9205,9 @@ document.getElementById('f_struct').addEventListener('change', renderQuickBasis)
     noteEl.textContent = opts.note || '';
     noteEl.style.display = opts.note ? '' : 'none';
     okBtn.textContent = opts.okText || 'Подтвердить';
+    cancelBtn.textContent = opts.cancelText || 'Отмена';
+    okBtn.classList.toggle('ac-warn', opts.tone === 'warn');
+    overlay.querySelector('.appconfirm').classList.toggle('ac-tone-warn', opts.tone === 'warn');
     pending = typeof opts.onOk === 'function' ? opts.onOk : null;
     overlay.classList.add('open');
     // фокус на «Отмена»: действие разрушительное, случайный Enter не должен его запускать
@@ -9931,13 +9937,33 @@ function updCmpDbVersion(a, b){
   return updCmpVersion(n(a), n(b));
 }
 
+// Пакет, принятый только на эту вкладку (не новее встроенной базы, в память
+// не кладётся). Нужен, чтобы строка версии и сравнение при следующей загрузке
+// видели реально действующую базу, а не встроенную.
+var UPD_SESSION = null;
+
+// Какая база действует сейчас: пакет этой вкладки → сохранённое обновление
+// (если оно новее встроенной, иначе оно не применялось) → встроенная.
+function updCurrentDb(){
+  if(UPD_SESSION && UPD_SESSION.version) return { version: UPD_SESSION.version, date: UPD_SESSION.date || '' };
+  const st = updSafeGet();
+  if(st && st.version && updCmpDbVersion(st.version, DB_VERSION) > 0) return { version: st.version, date: st.date || '' };
+  return { version: DB_VERSION, date: DB_DATE };
+}
+
 function updateVersionLine(){
   const el = document.getElementById('update_version');
   if(!el) return;
   const st = updSafeGet();
   const base = 'Карточка: <b>' + APP_VERSION + '</b> от ' + APP_DATE
     + ' · База: <b>' + DB_VERSION + '</b> от ' + DB_DATE + ' (' + LAW_DB.length + ' статей)';
-  if(st && st.version){
+  if(UPD_SESSION && UPD_SESSION.version){
+    el.className = 'flagline warn';
+    el.innerHTML = '⚠ Загружена база <b>' + lawEscapeHtml(UPD_SESSION.version) + '</b>'
+      + (UPD_SESSION.date ? ' от ' + lawEscapeHtml(UPD_SESSION.date) : '')
+      + ' — только до закрытия вкладки'
+      + '<br>' + base;
+  } else if(st && st.version){
     el.className = 'flagline ok';
     el.innerHTML = '✓ Применено обновление базы: <b>' + lawEscapeHtml(st.version) + '</b>'
       + (st.date ? ' от ' + lawEscapeHtml(st.date) : '')
@@ -10005,6 +10031,9 @@ function updApply(pack, opts){
     say('flagline bad', '⨯ Повреждена разметка атрибутов у ' + badAttrs.length + ' статей (' + badAttrs.slice(0, 5).map(r=> r.law + ' ' + r.article).join(', ') + '). Обновление не применено.');
     return false;
   }
+  // Только проверка: пакет цел, ничего не меняем (нужна до окна подтверждения
+  // версии -- битый файл отклоняется сразу, без лишнего вопроса).
+  if(opts && opts.dryRun) return true;
 
   // Редакции: у статьи, текст которой в пакете отличается от текущего, прежний
   // текст уходит в attrs.prev, а дата обновления -- в attrs.rev (если пакет не
@@ -10103,6 +10132,66 @@ function updBuildPack(){
   const hint = document.getElementById('update_hint');
   if(!btnLoad || !input) return;
 
+  // Загрузка пакета из файла. Если он не новее действующей базы (та же версия,
+  // старее либо версия не указана) -- сначала своё окно подтверждения:
+  // «Отменить» / «Всё равно загрузить».
+  function updLoadWithCheck(pack){
+    if(!updApply(pack, { dryRun: true })) return;
+    const cur = updCurrentDb();
+    const pv = pack.version || '';
+    const cmp = pv ? updCmpDbVersion(pv, cur.version) : -1;
+    if(cmp > 0){ updDoLoad(pack, cur); return; }
+    const title = !pv ? 'У пакета не указана версия'
+      : cmp === 0 ? 'Эта версия базы уже стоит'
+      : 'Загружаемая база старее текущей';
+    const text = 'В файле: ' + (pv || 'без версии') + (pack.date ? ' от ' + pack.date : '')
+      + '. Сейчас действует: ' + cur.version + (cur.date ? ' от ' + cur.date : '') + '.';
+    const note = updCmpDbVersion(pv || '0', DB_VERSION) > 0
+      ? 'Если загрузить — пакет заменит текущую базу и сохранится между открытиями.'
+      : 'Если загрузить — пакет действует только до закрытия вкладки и между открытиями не сохраняется.';
+    appConfirm({ title, text, note, okText: 'Всё равно загрузить', cancelText: 'Отменить', tone: 'warn',
+      onOk: ()=> updDoLoad(pack, cur) });
+  }
+
+  function updDoLoad(pack, cur){
+    const pv = pack.version || '';
+    const notNewer = !pv || updCmpDbVersion(pv, cur.version) <= 0;
+    const older = !pv || updCmpDbVersion(pv, DB_VERSION) <= 0;
+    if(!updApply(pack)) return;
+    if(older){
+      // Пакет не новее встроенной базы. Применяем (человек подтвердил), но в
+      // память НЕ кладём: при следующем открытии он всё равно был бы отброшен
+      // как устаревший, и «сохранённый откат», который сам собой исчезает,
+      // сбивает с толку сильнее, чем его отсутствие.
+      UPD_SESSION = { version: pv || 'без версии', date: pack.date || '' };
+      updateVersionLine();
+      hint.className = 'flagline warn';
+      const same = pv && updCmpDbVersion(pv, cur.version) === 0;
+      hint.textContent = '⚠ ' + (same
+          ? 'Загружена та же версия базы ' + pv + ', что уже стояла.'
+          : 'Загружена старая версия базы ' + (pv || 'без версии') + ', а была ' + cur.version + '. Это откат назад.')
+        + ' Действует только до закрытия вкладки, между открытиями не сохраняется.'
+        + (same ? '' : ' Если откат нужен постоянно — берите файл карточки той версии.');
+    } else {
+      // Строку версии перерисовываем ПОСЛЕ записи в память: она читает
+      // именно её, иначе свежепринятое обновление показывалось бы как
+      // «обновлений не загружалось».
+      UPD_SESSION = null;
+      const stored = updSafeSet(pack);
+      updateVersionLine();
+      if(notNewer){
+        hint.className = 'flagline warn';
+        hint.textContent = '⚠ ' + (updCmpDbVersion(pv, cur.version) === 0
+          ? 'Загружена та же версия базы ' + pv + ', что уже стояла.'
+          : 'Загружена старая версия базы ' + pv + ', а была ' + cur.version + '. Это откат назад.')
+          + (stored ? ' Сохранена между открытиями.' : '');
+      }
+      if(!stored){
+        hint.textContent += ' Сохранить между открытиями не удалось (браузер запретил память для локальных файлов) — обновление действует до закрытия вкладки.';
+      }
+    }
+  }
+
   btnLoad.addEventListener('click', ()=> input.click());
   input.addEventListener('change', ()=>{
     const f = input.files && input.files[0];
@@ -10121,31 +10210,8 @@ function updBuildPack(){
       } else {
         pack = updExtractFromHtml(text);
       }
-      const older = updCmpDbVersion(pack.version, DB_VERSION) <= 0;
-      if(updApply(pack)){
-        if(older){
-          // Пакет не новее встроенной базы. Применяем (человек мог откатывать
-          // осознанно), но в память НЕ кладём: при следующем открытии он всё
-          // равно был бы отброшен как устаревший, и «сохранённый откат»,
-          // который сам собой исчезает, сбивает с толку сильнее, чем его
-          // отсутствие.
-          updateVersionLine();
-          hint.className = 'flagline warn';
-          hint.textContent = '⚠ Загружен пакет версии ' + (pack.version || 'без версии')
-            + ', а встроенная база файла — ' + DB_VERSION + '. Это откат назад: действует только до закрытия вкладки, '
-            + 'между открытиями не сохраняется. Если откат нужен постоянно — берите файл карточки той версии.';
-        } else {
-          // Строку версии перерисовываем ПОСЛЕ записи в память: она читает
-          // именно её, иначе свежепринятое обновление показывалось бы как
-          // «обновлений не загружалось».
-          const stored = updSafeSet(pack);
-          updateVersionLine();
-          if(!stored){
-            hint.textContent += ' Сохранить между открытиями не удалось (браузер запретил память для локальных файлов) — обновление действует до закрытия вкладки.';
-          }
-        }
-      }
       input.value = '';
+      updLoadWithCheck(pack);
     };
     rd.readAsText(f, 'utf-8');
   });
@@ -10163,6 +10229,7 @@ function updBuildPack(){
 
   if(btnReset) btnReset.addEventListener('click', ()=>{
     updSafeClear();
+    UPD_SESSION = null;
     hint.className = 'flagline warn';
     hint.textContent = '⚠ Загруженное обновление удалено. Встроенная база вернётся после перезагрузки страницы (F5).';
     updateVersionLine();
