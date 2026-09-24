@@ -143,6 +143,9 @@
   .appconfirm button.ac-ok{ background:rgba(var(--bad-rgb),.16); border-color:rgba(var(--bad-rgb),.55); color:var(--bad-soft); }
   .appconfirm button.ac-ok:hover{ background:rgba(var(--bad-rgb),.28); }
   .appconfirm.ac-tone-warn .ac-text{ color:var(--warn); }
+  .appconfirm.ac-tone-go .ac-text{ color:var(--text, inherit); }
+  .appconfirm button.ac-ok.ac-go{ background:rgba(var(--ok-rgb),.16); border-color:rgba(var(--ok-rgb),.55); color:var(--ok-soft); }
+  .appconfirm button.ac-ok.ac-go:hover{ background:rgba(var(--ok-rgb),.28); }
   .appconfirm button.ac-ok.ac-warn{ background:rgba(var(--warn-rgb),.16); border-color:rgba(var(--warn-rgb),.55); color:var(--warn); }
   .appconfirm button.ac-ok.ac-warn:hover{ background:rgba(var(--warn-rgb),.28); }
 
@@ -6037,7 +6040,7 @@ function downloadSummary(){
 function resetForm(){
   appConfirm({
     title: 'Сбросить всю карточку дела?',
-    text: 'Дело будет стёрто безвозвратно, в том числе из памяти браузера.',
+    text: 'Дело будет стёрто безвозвратно, в том числе из памяти браузера. База законов и её обновления не затрагиваются.',
     note: 'Если дело ещё нужно, сначала нажмите «Сформировать сводку» и «Скачать .txt».',
     okText: 'Сбросить всё',
     onOk: doResetForm
@@ -9207,7 +9210,9 @@ document.getElementById('f_struct').addEventListener('change', renderQuickBasis)
     okBtn.textContent = opts.okText || 'Подтвердить';
     cancelBtn.textContent = opts.cancelText || 'Отмена';
     okBtn.classList.toggle('ac-warn', opts.tone === 'warn');
+    okBtn.classList.toggle('ac-go', opts.tone === 'go');
     overlay.querySelector('.appconfirm').classList.toggle('ac-tone-warn', opts.tone === 'warn');
+    overlay.querySelector('.appconfirm').classList.toggle('ac-tone-go', opts.tone === 'go');
     pending = typeof opts.onOk === 'function' ? opts.onOk : null;
     overlay.classList.add('open');
     // фокус на «Отмена»: действие разрушительное, случайный Enter не должен его запускать
@@ -9959,15 +9964,15 @@ function updateVersionLine(){
     + '<br>База: <b>' + DB_VERSION + '</b> от ' + DB_DATE + ' (' + LAW_DB.length + ' статей)';
   if(UPD_SESSION && UPD_SESSION.version){
     el.className = 'flagline warn';
-    el.innerHTML = '⚠ Загружена база <b>' + lawEscapeHtml(UPD_SESSION.version) + '</b>'
+    el.innerHTML = '<span>⚠ Загружена база <b>' + lawEscapeHtml(UPD_SESSION.version) + '</b>'
       + (UPD_SESSION.date ? ' от ' + lawEscapeHtml(UPD_SESSION.date) : '')
       + ' — только до закрытия вкладки'
-      + '<br>' + base;
+      + '<br>' + base + '</span>';
   } else if(st && st.version){
     el.className = 'flagline ok';
-    el.innerHTML = '✓ Применено обновление базы: <b>' + lawEscapeHtml(st.version) + '</b>'
+    el.innerHTML = '<span>✓ Применено обновление базы: <b>' + lawEscapeHtml(st.version) + '</b>'
       + (st.date ? ' от ' + lawEscapeHtml(st.date) : '')
-      + '<br>' + base;
+      + '<br>' + base + '</span>';
   } else {
     el.className = 'empty-hint';
     el.innerHTML = base + '<br>Обновлений базы не загружалось.';
@@ -10091,7 +10096,19 @@ function updApply(pack, opts){
   }
   applyLawOverrides();
   if(typeof rebuildLawIndexes === 'function') rebuildLawIndexes();
-  if(typeof chipReset === 'function') chipReset('f_charge_articles');
+  // Статьи обвинения не сбрасываем: дело живое. Номер записи ищем заново по
+  // закону и статье; статьи, которой в новой базе нет, из обвинения уходят.
+  if(typeof CHIP_FIELDS !== 'undefined' && CHIP_FIELDS.f_charge_articles){
+    const chips = CHIP_FIELDS.f_charge_articles.chips;
+    const keep = chips.filter(c=>{
+      if(LAW_RENAMES[c.law]) c.law = LAW_RENAMES[c.law];
+      const i = LAW_DB.findIndex(r=> r.law === c.law && r.article === c.article);
+      if(i < 0) return false;
+      c.idx = i; return true;
+    });
+    chips.length = 0; keep.forEach(c=> chips.push(c));
+    if(typeof chipRender === 'function') chipRender('f_charge_articles');
+  }
   if(typeof refreshFlags === 'function') refreshFlags();
   updateVersionLine();
   // Списки статей в настройках, которых нет в новой базе, -- признак того, что
@@ -10141,64 +10158,71 @@ function updBuildPack(){
   const hint = document.getElementById('update_hint');
   if(!btnLoad || !input) return;
 
-  // Загрузка пакета из файла. Если он не новее действующей базы (та же версия,
-  // старее либо версия не указана) -- сначала своё окно подтверждения:
-  // «Отменить» / «Всё равно загрузить».
+  // После смены базы страница перезагружается: база подхватывается при открытии,
+  // дело восстанавливает автосохранение. Итог показываем уже после перезагрузки.
+  const AFTER_KEY = 'lex_after_reload';
+  function reloadWith(cls, text){
+    try { sessionStorage.setItem(AFTER_KEY, JSON.stringify({ cls, text })); } catch(e){}
+    if(window.CaseStore) CaseStore.save();
+    location.reload();
+  }
+
+  // Загрузка пакета из файла -- всегда через своё окно: что будет загружено,
+  // что сейчас стоит, перезагрузится ли страница. Дело в карточке остаётся.
   function updLoadWithCheck(pack){
     if(!updApply(pack, { dryRun: true })) return;
     const cur = updCurrentDb();
     const pv = pack.version || '';
     const cmp = pv ? updCmpDbVersion(pv, cur.version) : -1;
-    if(cmp > 0){ updDoLoad(pack, cur); return; }
+    const keeps = !!pv && updCmpDbVersion(pv, DB_VERSION) > 0;
+    const text = 'В файле: ' + (pv || 'без версии') + (pack.date ? ' от ' + pack.date : '')
+      + '. Сейчас действует: ' + cur.version + (cur.date ? ' от ' + cur.date : '') + '.';
+    const note = keeps
+      ? 'Страница перезагрузится с новой базой. Дело в карточке останется.'
+      : 'Пакет действует только до закрытия вкладки и между открытиями не сохраняется. Страница не перезагружается, дело в карточке останется.';
+    if(cmp > 0){
+      appConfirm({ title: 'Загрузить базу ' + pv + '?', text, note, okText: 'Загрузить и обновить', cancelText: 'Отмена', tone: 'go',
+        onOk: ()=> updDoLoad(pack, cur) });
+      return;
+    }
     const title = !pv ? 'У пакета не указана версия'
       : cmp === 0 ? 'Эта версия базы уже стоит'
       : 'Загружаемая база старее текущей';
-    const text = 'В файле: ' + (pv || 'без версии') + (pack.date ? ' от ' + pack.date : '')
-      + '. Сейчас действует: ' + cur.version + (cur.date ? ' от ' + cur.date : '') + '.';
-    const note = updCmpDbVersion(pv || '0', DB_VERSION) > 0
-      ? 'Если загрузить — пакет заменит текущую базу и сохранится между открытиями.'
-      : 'Если загрузить — пакет действует только до закрытия вкладки и между открытиями не сохраняется.';
     appConfirm({ title, text, note, okText: 'Всё равно загрузить', cancelText: 'Отменить', tone: 'warn',
       onOk: ()=> updDoLoad(pack, cur) });
   }
 
   function updDoLoad(pack, cur){
     const pv = pack.version || '';
-    const notNewer = !pv || updCmpDbVersion(pv, cur.version) <= 0;
     const older = !pv || updCmpDbVersion(pv, DB_VERSION) <= 0;
-    if(!updApply(pack)) return;
+    const same = !!pv && updCmpDbVersion(pv, cur.version) === 0;
+    const back = !pv || updCmpDbVersion(pv, cur.version) < 0;
     if(older){
-      // Пакет не новее встроенной базы. Применяем (человек подтвердил), но в
-      // память НЕ кладём: при следующем открытии он всё равно был бы отброшен
-      // как устаревший, и «сохранённый откат», который сам собой исчезает,
-      // сбивает с толку сильнее, чем его отсутствие.
+      // Пакет не новее встроенной базы. Применяем сразу, без перезагрузки: в
+      // память он НЕ кладётся (при следующем открытии всё равно был бы
+      // отброшен как устаревший), значит перезагрузка его бы и стёрла.
+      if(!updApply(pack)) return;
       UPD_SESSION = { version: pv || 'без версии', date: pack.date || '' };
       updateVersionLine();
       hint.className = 'flagline warn';
-      const same = pv && updCmpDbVersion(pv, cur.version) === 0;
       hint.textContent = '⚠ ' + (same
           ? 'Загружена та же версия базы ' + pv + ', что уже стояла.'
           : 'Загружена старая версия базы ' + (pv || 'без версии') + ', а была ' + cur.version + '. Это откат назад.')
         + ' Действует только до закрытия вкладки, между открытиями не сохраняется.'
         + (same ? '' : ' Если откат нужен постоянно — берите файл карточки той версии.');
-    } else {
-      // Строку версии перерисовываем ПОСЛЕ записи в память: она читает
-      // именно её, иначе свежепринятое обновление показывалось бы как
-      // «обновлений не загружалось».
-      UPD_SESSION = null;
-      const stored = updSafeSet(pack);
-      updateVersionLine();
-      if(notNewer){
-        hint.className = 'flagline warn';
-        hint.textContent = '⚠ ' + (updCmpDbVersion(pv, cur.version) === 0
-          ? 'Загружена та же версия базы ' + pv + ', что уже стояла.'
-          : 'Загружена старая версия базы ' + pv + ', а была ' + cur.version + '. Это откат назад.')
-          + (stored ? ' Сохранена между открытиями.' : '');
-      }
-      if(!stored){
-        hint.textContent += ' Сохранить между открытиями не удалось (браузер запретил память для локальных файлов) — обновление действует до закрытия вкладки.';
-      }
+      return;
     }
+    UPD_SESSION = null;
+    const msgCls = (same || back) ? 'flagline warn' : 'flagline ok';
+    const msg = same ? '⚠ Загружена та же версия базы ' + pv + ', что уже стояла.'
+      : back ? '⚠ Загружена старая версия базы ' + pv + ', а была ' + cur.version + '. Это откат назад, он сохранён между открытиями.'
+      : '✓ Загружена база ' + pv + (pack.date ? ' от ' + pack.date : '') + '.';
+    if(updSafeSet(pack)){ reloadWith(msgCls, msg); return; }
+    // Память браузера недоступна -- применяем без перезагрузки, до закрытия вкладки.
+    if(!updApply(pack)) return;
+    updateVersionLine();
+    hint.className = 'flagline warn';
+    hint.textContent = msg + ' Сохранить между открытиями не удалось (браузер запретил память для локальных файлов) — обновление действует до закрытия вкладки.';
   }
 
   btnLoad.addEventListener('click', ()=> input.click());
@@ -10237,11 +10261,25 @@ function updBuildPack(){
   });
 
   if(btnReset) btnReset.addEventListener('click', ()=>{
-    updSafeClear();
-    UPD_SESSION = null;
-    hint.className = 'flagline warn';
-    hint.textContent = '⚠ Загруженное обновление удалено. Встроенная база вернётся после перезагрузки страницы (F5).';
-    updateVersionLine();
+    const st = updSafeGet();
+    const what = UPD_SESSION ? UPD_SESSION.version
+      : (st && st.version && updCmpDbVersion(st.version, DB_VERSION) > 0 ? st.version : '');
+    if(!what){
+      hint.className = 'empty-hint';
+      hint.textContent = 'Загруженных обновлений нет — уже действует встроенная база ' + DB_VERSION + '.';
+      return;
+    }
+    appConfirm({
+      title: 'Сбросить базу к встроенной?',
+      text: 'Загруженная база ' + what + ' будет удалена, вернётся встроенная база этого файла — ' + DB_VERSION + ' от ' + DB_DATE + '.',
+      note: 'Страница перезагрузится. Дело в карточке останется.',
+      okText: 'Сбросить и обновить', cancelText: 'Отмена',
+      onOk: ()=>{
+        updSafeClear();
+        UPD_SESSION = null;
+        reloadWith('flagline ok', '✓ Загруженное обновление удалено. Действует встроенная база ' + DB_VERSION + '.');
+      }
+    });
   });
 
   // Принятое ранее обновление подхватывается при открытии -- но ТОЛЬКО если оно
@@ -10262,6 +10300,11 @@ function updBuildPack(){
       }
     }
   }
+  try {
+    const a = JSON.parse(sessionStorage.getItem(AFTER_KEY) || 'null');
+    sessionStorage.removeItem(AFTER_KEY);
+    if(a && hint){ hint.className = a.cls; hint.textContent = a.text; }
+  } catch(e){}
   // ---------- авто-обновление с GitHub ----------
   async function fetchRemote(url){
     const r = await fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now(), { cache: 'no-store' });
@@ -10299,7 +10342,7 @@ function updBuildPack(){
     const minOk  = updCmpVersion(ver.minAppVersion || '0', APP_VERSION) <= 0;
 
     if(!appNew && !dbNew){
-      if(!silent) say('flagline ok', '✓ Обновлений нет.<br>Карточка: ' + APP_VERSION + '<br>База: ' + lawEscapeHtml(dbHave));
+      if(!silent) say('flagline ok', '<span>✓ Обновлений нет.<br>Карточка: ' + APP_VERSION + '<br>База: ' + lawEscapeHtml(dbHave) + '</span>');
       return;
     }
 
@@ -10334,7 +10377,12 @@ function updBuildPack(){
     say('', html);
 
     const btnApply = document.getElementById('update_apply_remote');
-    if(btnApply) btnApply.addEventListener('click', async ()=>{
+    if(btnApply) btnApply.addEventListener('click', ()=> appConfirm({
+      title: 'Обновить базу до ' + ver.db.version + '?',
+      text: 'Сейчас действует: ' + dbHave + '.',
+      note: 'Страница перезагрузится с новой базой. Дело в карточке останется.',
+      okText: 'Обновить', cancelText: 'Отмена', tone: 'go',
+      onOk: async ()=>{
       btnApply.disabled = true; btnApply.textContent = 'Загружаю…';
       try {
         const r = await fetchRemote(ver.db.pack_url || CFG.updatePackUrl);
@@ -10342,21 +10390,21 @@ function updBuildPack(){
         pack.version = ver.db.version;
         pack.date = ver.db.date || pack.date;
         pack.server = ver.db.server || 'redwood';
+        if(!updApply(pack, { dryRun: true })) return;
+        if(updSafeSet(pack)){
+          reloadWith('flagline ok', '✓ База обновлена до ' + ver.db.version + '.');
+          return;
+        }
         if(updApply(pack)){
-          const stored = updSafeSet(pack);
           updateVersionLine();
-          if(!stored){
-            say('flagline warn', '⚠ Обновление применено, но не сохранилось между открытиями.');
-          } else {
-            say('flagline ok', '✓ База обновлена до ' + lawEscapeHtml(ver.db.version) + '.');
-          }
+          say('flagline warn', '⚠ Обновление применено, но не сохранилось между открытиями — действует до закрытия вкладки.');
         }
       } catch(e){
         say('flagline bad', '⨯ Ошибка загрузки пакета: ' + lawEscapeHtml(e.message));
       } finally {
         btnApply.disabled = false; btnApply.textContent = 'Обновить базу сейчас';
       }
-    });
+    }}));
 
     const btnHtml = document.getElementById('update_download_html');
     if(btnHtml) btnHtml.addEventListener('click', async ()=>{
