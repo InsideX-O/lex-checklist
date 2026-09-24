@@ -1,0 +1,14 @@
+{
+  "app": {
+    "version": "1.0",
+    "date": "2026-09-24",
+    "changelog": ["Первый выпуск Lex с проверкой обновлений"]
+  },
+  "db": {
+    "server": "redwood",
+    "version": "redwood-1.0",
+    "date": "2026-09-24",
+    "changelog": ["База законов Redwood на 24.09.2026"]
+  },
+  "minAppVersion": "1.0"
+}
