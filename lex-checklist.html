@@ -143,6 +143,26 @@
   .appconfirm button.ac-ok{ background:rgba(var(--bad-rgb),.16); border-color:rgba(var(--bad-rgb),.55); color:var(--bad-soft); }
   .appconfirm button.ac-ok:hover{ background:rgba(var(--bad-rgb),.28); }
   .appconfirm.ac-tone-warn .ac-text{ color:var(--warn); }
+  #whatsnew_overlay .appconfirm{ max-width:460px; }
+  #whatsnew_overlay .wn-body{ max-height:min(60vh, 520px); overflow:auto; margin:4px 0 14px; font-size:13.5px; line-height:1.5; }
+  #whatsnew_overlay .wn-sec{ margin:0 0 10px; }
+  #whatsnew_overlay .wn-sec b{ display:block; margin-bottom:4px; color:var(--warn); }
+  #whatsnew_overlay ul{ margin:0; padding-left:18px; }
+  #whatsnew_overlay li{ margin:2px 0; }
+  #lex_toasts{ position:fixed; top:14px; right:16px; z-index:10050; display:flex; flex-direction:column; gap:8px; align-items:flex-end; pointer-events:none; }
+  .lex-toast{ pointer-events:auto; max-width:320px; padding:10px 14px; border-radius:10px; font-size:13.5px; line-height:1.4;
+    background:var(--panel); color:var(--text); border:1px solid rgba(127,127,127,.35); box-shadow:0 6px 24px rgba(0,0,0,.35);
+    opacity:0; transform:translateY(-8px); transition:opacity .25s ease, transform .25s ease; }
+  .lex-toast.show{ opacity:1; transform:none; }
+  .lex-toast small{ opacity:.8; }
+  .lex-toast.clickable{ cursor:pointer; }
+  .lex-toast.t-ok{ border-color:rgba(var(--ok-rgb),.6); background:linear-gradient(rgba(var(--ok-rgb),.16), rgba(var(--ok-rgb),.16)), var(--panel); color:var(--ok-soft); }
+  .lex-toast.t-warn{ border-color:rgba(var(--warn-rgb),.6); background:linear-gradient(rgba(var(--warn-rgb),.16), rgba(var(--warn-rgb),.16)), var(--panel); color:var(--warn); }
+  .lex-toast.t-muted{ color:var(--muted); }
+  @media (max-width:700px){
+    #lex_toasts{ left:16px; right:16px; align-items:center; top:10px; }
+    .lex-toast{ max-width:100%; text-align:center; }
+  }
   .appconfirm.ac-tone-go .ac-text{ color:var(--text, inherit); }
   .appconfirm button.ac-ok.ac-go{ background:rgba(var(--ok-rgb),.16); border-color:rgba(var(--ok-rgb),.55); color:var(--ok-soft); }
   .appconfirm button.ac-ok.ac-go:hover{ background:rgba(var(--ok-rgb),.28); }
@@ -2161,6 +2181,14 @@
   </div>
 </div>
 
+<div class="appconfirm-overlay" id="whatsnew_overlay">
+  <div class="appconfirm" role="dialog" aria-modal="true" aria-labelledby="wn_title">
+    <h3 id="wn_title">Что нового</h3>
+    <div class="wn-body" id="wn_body"></div>
+    <div class="ac-btns"><button type="button" class="ac-ok ac-go" id="wn_ok">Понятно</button></div>
+  </div>
+</div>
+
 <div class="appconfirm-overlay" id="appconfirm_overlay">
   <div class="appconfirm" role="alertdialog" aria-modal="true" aria-labelledby="ac_title">
     <h3 id="ac_title"></h3>
@@ -2696,11 +2724,32 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '1.1';
+const APP_VERSION = '1.2';
 const APP_DATE = '2026-09-24';
 const DB_NAME = 'redwood';
 const DB_VERSION = 'redwood-1.1';
 const DB_DATE = '2026-09-24';
+// «Что нового» -- показывается один раз после перехода на новую карточку или
+// новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
+// пользователя (подробно -- в CHANGELOG.md).
+const APP_NEWS = {
+  '1.2': [
+    'При каждом запуске — уведомление о проверке обновлений (справа сверху, на телефоне — по центру)',
+    'После обновления — окно «Что нового» со списком изменений',
+    'Загрузка, обновление и сброс базы — через окно с предупреждением; страница перезагружается сама, дело в карточке остаётся',
+    'Смена базы больше не стирает статьи обвинения',
+    'Исправлена строка «Применено обновление базы» в блоке версии'
+  ],
+  '1.1': [
+    'Дело сохраняется в браузере до «Сбросить карточку» — переживает перезагрузку и закрытие вкладки',
+    'Проверка версии при загрузке базы из файла: та же или старая версия — сначала вопрос'
+  ]
+};
+const DB_NEWS = {
+  'redwood-1.1': [
+    '«Закон о ЧП и ВП» переименован в «Закон о чрезвычайном и военном положении», сокращение ЧВП'
+  ]
+};
 
 const CFG = {
 
@@ -9956,6 +10005,37 @@ function updCurrentDb(){
   return { version: DB_VERSION, date: DB_DATE };
 }
 
+// ---------- всплывающее уведомление ----------
+// Справа сверху на ПК, по центру сверху на телефоне. tone: ok | warn | muted | info.
+function lexToast(html, tone, ms, onClick){
+  let box = document.getElementById('lex_toasts');
+  if(!box){ box = document.createElement('div'); box.id = 'lex_toasts'; document.body.appendChild(box); }
+  const el = document.createElement('div');
+  el.className = 'lex-toast';
+  el.setAttribute('role', 'status');
+  box.appendChild(el);
+  let timer = null, click = null;
+  function hide(){
+    clearTimeout(timer);
+    el.classList.remove('show');
+    setTimeout(()=> el.remove(), 300);
+  }
+  el.addEventListener('click', ()=>{ if(click) click(); hide(); });
+  const api = {
+    update(h, t, dur, cb){
+      el.innerHTML = h;
+      el.className = 'lex-toast show t-' + (t || 'info') + (cb ? ' clickable' : '');
+      click = cb || null;
+      clearTimeout(timer);
+      if(dur) timer = setTimeout(hide, dur);
+      return api;
+    },
+    hide
+  };
+  requestAnimationFrame(()=> api.update(html, tone, ms, onClick));
+  return api;
+}
+
 function updateVersionLine(){
   const el = document.getElementById('update_version');
   if(!el) return;
@@ -10161,10 +10241,50 @@ function updBuildPack(){
   // После смены базы страница перезагружается: база подхватывается при открытии,
   // дело восстанавливает автосохранение. Итог показываем уже после перезагрузки.
   const AFTER_KEY = 'lex_after_reload';
-  function reloadWith(cls, text){
-    try { sessionStorage.setItem(AFTER_KEY, JSON.stringify({ cls, text })); } catch(e){}
+  function reloadWith(cls, text, news){
+    try { sessionStorage.setItem(AFTER_KEY, JSON.stringify({ cls, text, news: news || null })); } catch(e){}
     if(window.CaseStore) CaseStore.save();
     location.reload();
+  }
+
+  // Разница между действующей базой и новой: какие статьи изменены, добавлены, удалены.
+  function updDiffSections(newDb, lines){
+    const key = r=> r.law + '|' + r.article + '|' + (r.chapter || '');
+    const lab = r=> r.article + ' ' + lawShortCode(r.law);
+    const cur = new Map(LAW_DB.map(r=> [key(r), r]));
+    const chg = [], add = [], seen = new Set();
+    (newDb || []).forEach(r=>{
+      const k = key(r); seen.add(k);
+      const o = cur.get(k);
+      if(!o) add.push(lab(r)); else if(o.text !== r.text) chg.push(lab(r));
+    });
+    const del = LAW_DB.filter(r=> !seen.has(key(r))).map(lab);
+    const cut = (a)=> a.length > 40 ? a.slice(0, 40).concat(['…и ещё ' + (a.length - 40)]) : a;
+    const out = [];
+    if(lines && lines.length) out.push({ h: 'Изменения', items: lines });
+    if(chg.length) out.push({ h: 'Изменены статьи (' + chg.length + ')', items: cut(chg) });
+    if(add.length) out.push({ h: 'Новые статьи (' + add.length + ')', items: cut(add) });
+    if(del.length) out.push({ h: 'Удалены статьи (' + del.length + ')', items: cut(del) });
+    if(!out.length) out.push({ h: 'Изменения', items: ['Тексты статей не изменились'] });
+    return out;
+  }
+  const packLines = pk=> Array.isArray(pk.changelog) ? pk.changelog.map(String) : (pk.notes ? [String(pk.notes)] : []);
+
+  // Окно «Что нового»: секции со списками и одна кнопка «Понятно».
+  function showWhatsNew(title, sections){
+    return new Promise(res=>{
+      const ov = document.getElementById('whatsnew_overlay');
+      if(!ov || !sections || !sections.length){ res(); return; }
+      document.getElementById('wn_title').textContent = title;
+      document.getElementById('wn_body').innerHTML = sections.map(sec=>
+        '<div class="wn-sec"><b>' + lawEscapeHtml(sec.h) + '</b><ul>'
+        + sec.items.map(x=> '<li>' + lawEscapeHtml(x) + '</li>').join('') + '</ul></div>').join('');
+      ov.classList.add('open');
+      const ok = document.getElementById('wn_ok');
+      const done = ()=>{ ov.classList.remove('open'); ok.removeEventListener('click', done); res(); };
+      ok.addEventListener('click', done);
+      ok.focus();
+    });
   }
 
   // Загрузка пакета из файла -- всегда через своё окно: что будет загружено,
@@ -10217,7 +10337,8 @@ function updBuildPack(){
     const msg = same ? '⚠ Загружена та же версия базы ' + pv + ', что уже стояла.'
       : back ? '⚠ Загружена старая версия базы ' + pv + ', а была ' + cur.version + '. Это откат назад, он сохранён между открытиями.'
       : '✓ Загружена база ' + pv + (pack.date ? ' от ' + pack.date : '') + '.';
-    if(updSafeSet(pack)){ reloadWith(msgCls, msg); return; }
+    const news = { title: 'База ' + (pv || 'без версии') + ' загружена', sections: updDiffSections(pack.LAW_DB, packLines(pack)) };
+    if(updSafeSet(pack)){ reloadWith(msgCls, msg, news); return; }
     // Память браузера недоступна -- применяем без перезагрузки, до закрытия вкладки.
     if(!updApply(pack)) return;
     updateVersionLine();
@@ -10277,7 +10398,8 @@ function updBuildPack(){
       onOk: ()=>{
         updSafeClear();
         UPD_SESSION = null;
-        reloadWith('flagline ok', '✓ Загруженное обновление удалено. Действует встроенная база ' + DB_VERSION + '.');
+        reloadWith('flagline ok', '✓ Загруженное обновление удалено. Действует встроенная база ' + DB_VERSION + '.',
+          { title: 'База сброшена к встроенной', sections: [{ h: 'Что произошло', items: ['Загруженная база ' + what + ' удалена', 'Действует встроенная база этого файла — ' + DB_VERSION + ' от ' + DB_DATE, 'Дело в карточке не тронуто'] }] });
       }
     });
   });
@@ -10300,11 +10422,38 @@ function updBuildPack(){
       }
     }
   }
+  let AFTER_NEWS = null;
   try {
     const a = JSON.parse(sessionStorage.getItem(AFTER_KEY) || 'null');
     sessionStorage.removeItem(AFTER_KEY);
     if(a && hint){ hint.className = a.cls; hint.textContent = a.text; }
+    if(a && a.news) AFTER_NEWS = a.news;
   } catch(e){}
+
+  // Новая карточка или новая встроенная база с прошлого запуска -- тоже «Что нового».
+  // Запоминаем, какие версии человек уже видел. Самый первый запуск (карточкой
+  // ещё не пользовались) окна не даёт.
+  const SEEN_KEY = 'lex_seen';
+  function newsSince(map, seenVer, cmp, curVer){
+    return Object.keys(map).filter(v=> cmp(v, curVer) <= 0 && (!seenVer || cmp(v, seenVer) > 0))
+      .sort((a, b)=> cmp(b, a)).map(v=> ({ v, items: map[v] }));
+  }
+  function builtinNews(){
+    let seen = null, used = false;
+    try {
+      seen = JSON.parse(localStorage.getItem(SEEN_KEY) || 'null');
+      used = ['lex_case', UPDATE_STORE_KEY, 'case_checklist_support_last_period_v1'].some(k=> localStorage.getItem(k) !== null);
+    } catch(e){ return null; }
+    try { localStorage.setItem(SEEN_KEY, JSON.stringify({ app: APP_VERSION, db: DB_VERSION })); } catch(e){}
+    if(!seen && !used) return null;
+    const one = (map, v)=> map[v] ? [{ v, items: map[v] }] : [];
+    const appN = seen ? newsSince(APP_NEWS, seen.app, updCmpVersion, APP_VERSION) : one(APP_NEWS, APP_VERSION);
+    const dbN = seen ? newsSince(DB_NEWS, seen.db, updCmpDbVersion, DB_VERSION) : one(DB_NEWS, DB_VERSION);
+    const secs = appN.map(x=> ({ h: 'Карточка ' + x.v, items: x.items }))
+      .concat(dbN.map(x=> ({ h: 'База законов ' + x.v, items: x.items })));
+    return secs.length ? { title: 'Что нового в карточке ' + APP_VERSION, sections: secs } : null;
+  }
+  const BUILTIN_NEWS = builtinNews();
   // ---------- авто-обновление с GitHub ----------
   async function fetchRemote(url){
     const r = await fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now(), { cache: 'no-store' });
@@ -10319,7 +10468,7 @@ function updBuildPack(){
   async function checkRemote(silent){
     const hint = document.getElementById('update_hint');
     const say = (cls, html)=>{ if(hint){ hint.className = cls; hint.innerHTML = html; } };
-    if(!CFG.updateVersionUrl){ if(!silent) say('empty-hint', 'URL обновления не задан в CFG.'); return; }
+    if(!CFG.updateVersionUrl){ if(!silent) say('empty-hint', 'URL обновления не задан в CFG.'); return { s:'error' }; }
     if(!silent) say('empty-hint', 'Проверяю обновления…');
     let ver;
     try {
@@ -10327,11 +10476,11 @@ function updBuildPack(){
       ver = await r.json();
     } catch(e){
       if(!silent) say('flagline bad', '⨯ Не удалось проверить обновления: ' + lawEscapeHtml(e.message));
-      return;
+      return { s:'error' };
     }
     if(!ver || !ver.app || !ver.db){
       if(!silent) say('flagline bad', '⨯ Ответ сервера в старом формате — обновите version.json.');
-      return;
+      return { s:'error' };
     }
 
     // база сравнивается с применённой (если обновление уже загружено), иначе -- со встроенной
@@ -10343,7 +10492,7 @@ function updBuildPack(){
 
     if(!appNew && !dbNew){
       if(!silent) say('flagline ok', '<span>✓ Обновлений нет.<br>Карточка: ' + APP_VERSION + '<br>База: ' + lawEscapeHtml(dbHave) + '</span>');
-      return;
+      return { s:'none', db: dbHave };
     }
 
     // блок карточки (APP)
@@ -10391,8 +10540,9 @@ function updBuildPack(){
         pack.date = ver.db.date || pack.date;
         pack.server = ver.db.server || 'redwood';
         if(!updApply(pack, { dryRun: true })) return;
+        const news = { title: 'База обновлена до ' + ver.db.version, sections: updDiffSections(pack.LAW_DB, (ver.db.changelog || []).map(String)) };
         if(updSafeSet(pack)){
-          reloadWith('flagline ok', '✓ База обновлена до ' + ver.db.version + '.');
+          reloadWith('flagline ok', '✓ База обновлена до ' + ver.db.version + '.', news);
           return;
         }
         if(updApply(pack)){
@@ -10425,13 +10575,47 @@ function updBuildPack(){
         btnHtml.disabled = false; btnHtml.textContent = 'Скачать новую карточку';
       }
     });
+    return { s:'update', app: appNew ? ver.app.version : '', db: dbNew ? ver.db.version : '', blocked: dbNew && !minOk };
   }
 
   const btnCheck = document.getElementById('update_check_btn');
   if(btnCheck) btnCheck.addEventListener('click', ()=> checkRemote(false));
 
-  // тихая авто-проверка при открытии — с задержкой, чтобы не тормозить первый рендер
-  setTimeout(()=> checkRemote(true), 2000);
+  // Проверка при каждом открытии -- с уведомлением. Если открыто окно поддержки
+  // (оно выскакивает раз в день после 6 утра), ждём, пока его закроют, и
+  // проверяем сразу после. Итог -- всплывашка: «актуальная версия» гаснет
+  // через 3 секунды, «есть обновление» висит дольше и по нажатию ведёт к блоку
+  // обновлений, «нет связи» -- тоже 3 секунды.
+  const FLOW_OVERLAYS = ['support-intro-overlay', 'suggest-overlay', 'thanks-overlay'];
+  function flowOpen(){ return FLOW_OVERLAYS.some(id=>{ const e = document.getElementById(id); return e && e.classList.contains('open'); }); }
+  function waitFlowClosed(){
+    return new Promise(res=>{
+      const tick = ()=> flowOpen() ? setTimeout(tick, 300) : res();
+      setTimeout(tick, 600);
+    });
+  }
+  (async function startupCheck(){
+    await waitFlowClosed();
+    if(BUILTIN_NEWS) await showWhatsNew(BUILTIN_NEWS.title, BUILTIN_NEWS.sections);
+    if(AFTER_NEWS) await showWhatsNew(AFTER_NEWS.title, AFTER_NEWS.sections);
+    const t = lexToast('Проверка обновлений…', 'info', 0);
+    let r;
+    try { r = await checkRemote(true); } catch(e){ r = { s:'error' }; }
+    if(!r || r.s === 'error'){
+      t.update('Не удалось проверить обновления — нет связи', 'muted', 3000);
+    } else if(r.s === 'none'){
+      t.update('✓ Актуальная версия<br>Карточка ' + APP_VERSION + ' · база ' + lawEscapeHtml(r.db), 'ok', 3000);
+    } else {
+      const parts = [];
+      if(r.app) parts.push('карточка ' + lawEscapeHtml(r.app));
+      if(r.db && !r.blocked) parts.push('база ' + lawEscapeHtml(r.db));
+      if(r.db && r.blocked && !r.app) parts.push('база ' + lawEscapeHtml(r.db) + ' (нужна новая карточка)');
+      t.update('⬆ Доступно обновление: ' + parts.join(', ') + '<br><small>Нажмите, чтобы открыть</small>', 'warn', 10000, ()=>{
+        const blk = document.getElementById('update_hint');
+        if(blk) blk.scrollIntoView({ behavior:'smooth', block:'center' });
+      });
+    }
+  })();
 
   updateVersionLine();
 })();
