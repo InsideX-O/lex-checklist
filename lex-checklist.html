@@ -837,6 +837,15 @@
   button.primary:hover{ filter:brightness(1.08); }
   button.danger{ color:var(--bad); border-color:rgba(var(--bad-rgb),.4); }
   .btnrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  #flags_list .flagline.nav{ cursor:pointer; }
+  #flags_list .flagline.nav:hover{ filter:brightness(1.15); }
+  .flag-hl{ outline:2px solid #f2c94c; outline-offset:3px; border-radius:6px; animation:flagHl 1s ease-in-out infinite; }
+  @keyframes flagHl{ 50%{ outline-color:rgba(242,201,76,.15); } }
+  @media (prefers-reduced-motion: reduce){ .flag-hl{ animation:none; } }
+  .btnrow.act-aside{ justify-content:space-between; margin-top:14px; padding-top:10px; border-top:1px dashed var(--border); }
+  .act-kind{ font-size:11.5px; color:var(--muted); margin-top:8px; min-height:0; }
+  .act-kind:empty{ display:none; }
+  .act-kind b{ color:inherit; }
 
   .empty-hint{ color:var(--muted); font-size:12px; font-style:italic; padding:6px 0; }
 
@@ -1321,6 +1330,7 @@
   }
   .support-contact-btn:hover{ border-color:var(--accent2); }
   .support-contact-btn.active{ background:var(--accent); color:var(--on-accent); border-color:var(--accent); }
+  .support-contact-btn.sm{ flex:0 0 auto; font-size:11px; padding:4px 10px; }
 
   @media print{
     .fab-group, .law-panel-overlay, .law-modal-overlay, .memo-panel-overlay, .bail-panel-overlay{ display:none !important; }
@@ -2099,18 +2109,25 @@
 
     <div class="card">
       <h2>Действия</h2>
-      <div class="btnrow">
+      <div class="card-group-label">Документ</div>
+      <div class="btnrow act-row">
         <button class="primary" id="summary_btn" onclick="actionSummary()">Сформировать сводку</button>
         <button type="button" class="primary" id="ogp_btn" onclick="actionOgp()">Отправить в ОГП</button>
         <button type="button" id="court_btn" disabled title="Пока не настроено">Отправить в суд</button>
-        <button type="button" id="tst_open_btn">🎲 Тест</button>
         <button type="button" id="ogp_bbcode_btn" style="display:none;" onclick="buildOgpBBCode()">Собрать обращение (BBCode)</button>
+      </div>
+      <div id="out_kind_note" class="act-kind"></div>
+      <textarea id="summary_out" style="margin-top:6px; min-height:220px;" placeholder="Нажмите «Сформировать сводку» — здесь появится текст, готовый для вставки в чат."></textarea>
+      <div class="btnrow act-row">
         <button onclick="copySummary()">Скопировать</button>
         <button onclick="downloadSummary()">Скачать .txt</button>
         <button onclick="window.print()">Печать / PDF</button>
+        <button type="button" id="copy_forum_btn" style="display:none;" onclick="copyAndOpenForum()" title="Собрать обращение в BBCode, скопировать и открыть новую тему в разделе обращений в ОГП">Скопировать и открыть форум ↗</button>
+      </div>
+      <div class="btnrow act-aside">
+        <button type="button" id="tst_open_btn">🎲 Тест</button>
         <button class="danger" onclick="resetForm()">Сбросить всё</button>
       </div>
-      <textarea id="summary_out" style="margin-top:10px; min-height:220px;" placeholder="Нажмите «Сформировать сводку» — здесь появится текст, готовый для вставки в чат."></textarea>
 
       <div class="card-group-label" style="margin-top:14px;">Версия и обновление базы</div>
       <div id="update_version" class="empty-hint" style="margin-bottom:6px;"></div>
@@ -2646,7 +2663,7 @@
         </div>
         <div id="suggest-rest" style="display:none;">
           <div class="field chip-field-wide" id="suggest-article-field" style="display:none;">
-            <label for="suggest_law_articles_input">Каких статей это касается (можно несколько — при выборе в сообщение уйдёт и текущий текст статьи)</label>
+            <label for="suggest_law_articles_input">Каких статей касается (текст статьи приложится сам)</label>
             <div class="chip-input-wrap" id="suggest_law_articles">
               <div class="chip-input-row"><input type="text" class="law-search-input chip-text-input" id="suggest_law_articles_input" placeholder="напр. 12.8 или ключевое слово..."><div class="chip-dropdown" id="suggest_law_articles_dd"></div></div>
             <div class="chip-list" id="suggest_law_articles_list"></div>
@@ -2654,29 +2671,29 @@
           </div>
           <div class="form-field">
             <label for="suggest-text" id="suggest-text-label">Что предложить исправить или улучшить</label>
-            <textarea id="suggest-text" rows="2" placeholder="Опишите неточность, ошибку в статье/чек-листе или идею улучшения..."></textarea>
+            <textarea id="suggest-text" rows="7" style="min-height:150px; resize:vertical;" placeholder="Опишите неточность, ошибку в статье/чек-листе или идею улучшения..."></textarea>
           </div>
           <div class="form-field" id="suggest-shot-field" style="display:none;">
-            <label>Скриншот (необязательно) — выберите файл или вставьте из буфера (Ctrl+V)</label>
+            <label>Скриншот (необязательно)</label>
             <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <button type="button" class="support-contact-btn" id="suggest-shot-pick">📎 Выбрать файл</button>
-              <span class="empty-hint" id="suggest-shot-name" style="font-style:normal;">или Ctrl+V прямо в этом окне</span>
+              <button type="button" class="support-contact-btn sm" id="suggest-shot-pick">📎 Файл</button>
+              <span class="empty-hint" id="suggest-shot-name" style="font-style:normal;">или Ctrl+V</span>
               <input type="file" id="suggest-shot-input" accept="image/*" hidden>
             </div>
             <div id="suggest-shot-preview" style="display:none; margin-top:6px;">
               <img id="suggest-shot-img" alt="Скриншот" style="max-width:100%; max-height:180px; border-radius:8px; border:1px solid var(--border); display:block;">
-              <button type="button" id="suggest-shot-remove" class="support-contact-btn" style="margin-top:6px;">✕ убрать скриншот</button>
+              <button type="button" id="suggest-shot-remove" class="support-contact-btn sm" style="margin-top:6px;">✕ убрать</button>
             </div>
           </div>
           <div class="form-field">
-            <label>Как с вами связаться? (необязательно)</label>
-            <div class="support-contact-toggle" id="suggest-contact-type">
-              <button type="button" class="support-contact-btn" data-type="discord">Discord</button>
-              <button type="button" class="support-contact-btn" data-type="email">Почта</button>
+            <label>Контакт для ответа (необязательно)</label>
+            <div class="support-contact-toggle sm" id="suggest-contact-type">
+              <button type="button" class="support-contact-btn sm" data-type="discord">Discord</button>
+              <button type="button" class="support-contact-btn sm" data-type="email">Почта</button>
             </div>
             <input type="text" id="suggest-contact" placeholder="Сначала выберите Discord или почту слева" hidden>
           </div>
-          <div class="empty-hint" style="margin:0 0 6px;">К сообщению автоматически прикладывается снимок карточки на момент отправки (все поля, флаги, сводка, заключительное слово) — чтобы было видно, при каких условиях возникла ошибка.</div>
+          <div class="empty-hint" style="margin:0 0 6px;">Снимок карточки приложится автоматически.</div>
           <button type="submit" class="support-form-submit">Отправить</button>
           <div class="support-form-status" id="suggest-status"></div>
         </div>
@@ -2724,8 +2741,8 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '1.2';
-const APP_DATE = '2026-09-24';
+const APP_VERSION = '1.3';
+const APP_DATE = '2026-09-25';
 const DB_NAME = 'redwood';
 const DB_VERSION = 'redwood-1.1';
 const DB_DATE = '2026-09-24';
@@ -2733,6 +2750,15 @@ const DB_DATE = '2026-09-24';
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '1.3': [
+    'Нажатие на флаг ведёт к месту в карточке и обводит его мигающей жёлтой рамкой до первого действия там',
+    'Блок «Действия» разбит на группы; новая кнопка «Скопировать и открыть форум ↗» для обращения в ОГП',
+    '«Скопировать» и «Скачать» больше не затирают собранный BBCode сводкой',
+    'Если по делу 2+ статьи, часть без состава, и ни одна не отмечена ⚑ — заключительное слово и «Решение» ждут ⚑',
+    '«Сбросить карточку» ставит время начала с точностью до секунды — таймер 59:59',
+    'Обновления проверяются раз в день (с 6:00), при открытии новой вкладки и кнопкой; сервер молчит 10 с — «нет связи»',
+    'Окно «Предложить изменение» стало компактнее'
+  ],
   '1.2': [
     'При каждом запуске — уведомление о проверке обновлений (справа сверху, на телефоне — по центру)',
     'После обновления — окно «Что нового» со списком изменений',
@@ -2832,6 +2858,33 @@ function pad(n){ return String(n).padStart(2,'0'); }
 function nowLocalISO(){
   const now = new Date();
   return now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'T'+pad(now.getHours())+':'+pad(now.getMinutes());
+}
+// Начало задержания с точностью до секунды. В #f_start лежит время до минуты
+// (так его ждут сводка, окно выбора и тесты), поэтому точный момент хранится
+// отдельно: START_MS действует, пока #f_start совпадает с ним по минутам.
+// После «Сбросить карточку» таймер стартует ровно с 59:59, а после
+// перезагрузки страницы (F5) время не сбрасывается -- оно лежит в lex_start.
+const START_KEY = 'lex_start';
+let START_MS = null;
+function isoOfMs(ms){
+  const d = new Date(ms);
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+function saveStart(){
+  const el = document.getElementById('f_start');
+  if(!el) return;
+  const ms = (START_MS && isoOfMs(START_MS) === el.value) ? START_MS : null;
+  try { localStorage.setItem(START_KEY, JSON.stringify({ iso: el.value, ms: ms, at: Date.now() })); } catch(e){}
+}
+function setStartNow(){
+  START_MS = Date.now();
+  const el = document.getElementById('f_start');
+  if(el) el.value = isoOfMs(START_MS);
+  saveStart();
+}
+function startDate(startVal){
+  if(START_MS && isoOfMs(START_MS) === startVal) return new Date(START_MS);
+  return new Date(startVal);
 }
 
 // ---------- структура / отделы ----------
@@ -3424,15 +3477,18 @@ function renderTimer(){
     cap.textContent = 'задержание не начато';
     return;
   }
-  const start = new Date(startVal);
+  const start = startDate(startVal);
   const now = new Date();
   const elapsedMin = (now - start)/60000;
   const freezes = sumFreezes();
   const usedMin = Math.max(0, elapsedMin - freezes);
   const remainingMin = 60 - usedMin;
 
-  const absMin = Math.floor(Math.abs(remainingMin));
-  const absSec = Math.floor((Math.abs(remainingMin) - absMin) * 60);
+  // тик таймера может прийти за миллисекунды до границы секунды -- тогда цифра
+  // отставала бы на целую секунду; допуск 0.1 с это выравнивает
+  const totSec = Math.max(0, Math.floor(Math.abs(remainingMin) * 60 + (remainingMin >= 0 ? -0.1 : 0.1)));
+  const absMin = Math.floor(totSec / 60);
+  const absSec = totSec % 60;
   const sign = remainingMin < 0 ? '-' : '';
   big.textContent = sign + pad(absMin) + ':' + pad(absSec);
 
@@ -3714,6 +3770,27 @@ function articleSanctionKind(rec){
 // первом (applyStatusVisibility при инициализации) -- на этот момент биндинга
 // просто нет, поэтому обращаться к нему напрямую нельзя. Первый проход по
 // пустой карточке и так ничего не должен находить.
+// Статей со своим наказанием две и больше, а флажком ⚑ не отмечена ни одна:
+// карточка не знает, с какой из них началось требование/задержание, и не
+// может решить, есть ли основание по ст. 1.8 ПК (без ⚑ она молча считала
+// основанием «ту, у которой состав собран»). Пока ⚑ не поставлен --
+// заключительное слово не собирается и «Решение» само не выбирается.
+// Одна статья с наказанием считается основанием сама (как в chipStartsDetention).
+const BASIS_MISSING_MSG = 'Отметьте флажком ⚑, какая статья была основанием первого законного требования / задержания — без этого вывод по ст. 1.8 ПК не строится';
+function basisMissing(){
+  const all = chargeChipsSafe();
+  if(all.some(c=> c.basis)) return false;
+  // ⚑ решает исход только когда статей с санкцией 2+ и часть из них красная
+  // (состав не собран), а часть нет: красная ⚑ -- п.1 ст.1.8 ПК, красная без ⚑ --
+  // просто снимается. Все красные -- nocomp_all и без ⚑; все целые -- ⚑ на вывод
+  // не влияет; незаконное первое требование -- производными становятся все.
+  const fr = document.getElementById('f_first_req_illegal');
+  if(fr && fr.checked) return false;
+  const sanc = all.filter(c=> chipHasSanction(c) && !artIsRepealed(LAW_DB[c.idx]));
+  if(sanc.length < 2) return false;
+  const red = sanc.filter(c=> typeof chipCompState === 'function' && chipCompState(c) === 'bad').length;
+  return red > 0 && red < sanc.length;
+}
 function chargeChipsSafe(){
   if(typeof CHIP_FIELDS === 'undefined') return [];
   return CHIP_FIELDS.f_charge_articles.chips || [];
@@ -4161,7 +4238,7 @@ function refreshFlags(){
   if(chargeChipsNow.length === 0){
     flags.push({kind:'warn', todo:true, msg:'Не указаны статьи обвинения / законного требования либо задержания — заполните поле «Статьи обвинения»', anchor: document.getElementById('f_charge_articles')});
   } else if(!chargeChipsNow.some(c=> c.basis)){
-    flags.push({kind:'warn', todo:true, msg:'Статьи обвинения указаны, но ни одна не отмечена флагом ⚑ как основание законного требования/задержания', anchor: document.getElementById('f_charge_articles')});
+    flags.push({kind:'warn', todo:true, top: basisMissing(), msg: basisMissing() ? BASIS_MISSING_MSG + '. Заключительное слово и «Решение» ждут ⚑.' : 'Статьи обвинения указаны, но ни одна не отмечена флагом ⚑ как основание законного требования/задержания', anchor: document.getElementById('f_charge_articles')});
   }
 
   // «Только штраф» — задержания по такой статье быть не могло вообще (ст. 3.1 ПК).
@@ -4286,7 +4363,7 @@ function refreshFlags(){
         msg:'Ст. ' + c.article + ' ' + lawShortCode(c.law) + ' (основание ⚑) — состав не собран, отсутствует(ют): ' + missing + '. Первое требование/задержание изначально не имело состава — п.1 ст.1.8 ПК'});
     } else {
       flags.push({kind:'bad', anchor: document.getElementById('f_charge_articles'),
-        msg:'Ст. ' + c.article + ' ' + lawShortCode(c.law) + ' — состав не собран, отсутствует(ют): ' + missing + '. Статья не инкриминируется (ст. 1.7/19.6 УАК)'});
+        msg:'Ст. ' + c.article + ' ' + lawShortCode(c.law) + ' — состав не собран, отсутствует(ют): ' + missing + '. Статья не инкриминируется (ст. 1.7/19.6 УАК)' + (basisMissing() ? '. Если с неё началось требование/задержание — отметьте её ⚑: тогда п.1 ст.1.8 ПК' : '')});
     }
   });
   // Жёлтые (ещё не проверено) -- не подтверждённое нарушение, а напоминание:
@@ -4655,6 +4732,8 @@ function refreshFlags(){
   // сортировка (совр. движки) сохраняет исходный порядок при равных anchor.
   flags.forEach((f, i)=> f._i = i);
   flags.sort((a, b)=>{
+    if(a.top && !b.top) return -1;
+    if(b.top && !a.top) return 1;
     if(a.kind === 'ok' && b.kind !== 'ok') return 1;
     if(b.kind === 'ok' && a.kind !== 'ok') return -1;
     const ax = a.anchor, bx = b.anchor;
@@ -4666,7 +4745,13 @@ function refreshFlags(){
     return a._i - b._i;
   });
 
-  container.innerHTML = '';
+  // Собираем во временный узел и подменяем список, только если он изменился:
+  // refreshFlags зовётся часто (таймер), и постоянная перерисовка съедала клики по флагам.
+  const realBox = container;
+  const anchorsNew = [];
+  {
+  const container = document.createElement('div');
+  container._anchors = anchorsNew;
   if(flags.length === 0){
     container.innerHTML = '<div class="empty-hint">Отмечайте пункты слева — нарушения появятся здесь</div>';
   } else {
@@ -4674,11 +4759,23 @@ function refreshFlags(){
       const div = document.createElement('div');
       div.className = 'flagline ' + f.kind;
       if(f.todo) div.setAttribute('data-todo', '1');
+      if(f.anchor){
+        div.classList.add('nav');
+        div.setAttribute('data-nav', String(container._anchors.length));
+        div.title = 'Нажмите — перейти к месту в карточке';
+        container._anchors.push(f.anchor);
+      }
       const tag = f.kind === 'bad' ? '⨯' : (f.kind === 'ok' ? '✓' : '!');
       div.innerHTML = '<span class="tag">' + tag + '</span><span>' + f.msg + '</span>';
       container.appendChild(div);
     });
   }
+  if(realBox.innerHTML !== container.innerHTML){
+    realBox.innerHTML = '';
+    while(container.firstChild) realBox.appendChild(container.firstChild);
+  }
+  }
+  realBox._anchors = anchorsNew;
 
   updateFlagsCollapsedNote();
 
@@ -4699,6 +4796,72 @@ function refreshFlags(){
   });
 }
 
+// Клик по флагу -- переход к месту карточки, к которому он относится, и
+// мигающая жёлтая рамка вокруг него. Рамка живёт до первого действия внутри
+// подсвеченного места (отметка, ввод, клик) либо до клика по другому флагу.
+let FLAG_HL = null;
+function flagHlClear(){
+  if(!FLAG_HL) return;
+  FLAG_HL.el.classList.remove('flag-hl');
+  FLAG_HL.evs.forEach(ev=> FLAG_HL.el.removeEventListener(ev, FLAG_HL.fn, true));
+  FLAG_HL = null;
+}
+function flagNavTarget(anchor){
+  if(!anchor || !anchor.isConnected) return null;
+  if(anchor.id === 'hour_limit_anchor') return document.querySelector('.timer-box') || null;
+  // свёрнутые разделы по пути -- раскрыть
+  for(let p = anchor; p; p = p.parentElement){
+    if(p.tagName === 'DETAILS' && !p.open) p.open = true;
+  }
+  let el = anchor;
+  if(el.tagName === 'INPUT' && (el.type === 'checkbox' || el.type === 'radio')) el = el.closest('label') || el;
+  // скрытый элемент -- ближайший видимый сосед выше либо родитель
+  let guard = 0;
+  while(el && el !== document.body && el.getClientRects().length === 0 && guard++ < 40){
+    el = el.previousElementSibling || el.parentElement;
+  }
+  return (el && el !== document.body) ? el : null;
+}
+function flagNavGo(anchor){
+  const el = flagNavTarget(anchor);
+  flagHlClear();
+  if(!el) return;
+  // на телефоне сверху липнет группа «лимит+флаги» -- отступаем на её высоту
+  let off = 16;
+  const sb = document.querySelector('.sidebar'), sg = document.querySelector('.sticky-group');
+  if(sb && sg && getComputedStyle(sb).display === 'contents' && getComputedStyle(sg).position === 'sticky') off += sg.getBoundingClientRect().height;
+  const r = el.getBoundingClientRect();
+  const inSidebar = sb && getComputedStyle(sb).display !== 'contents' && sb.contains(el);
+  if(inSidebar) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  else {
+    const free = window.innerHeight - off;
+    const top = r.top + window.scrollY - off - Math.max(0, Math.min(free / 3, (free - r.height) / 2));
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+  el.classList.add('flag-hl');
+  const fn = ()=> flagHlClear();
+  const evs = ['change', 'input', 'click'];
+  // слушатели вешаем после текущего клика, иначе он же рамку и снимет
+  setTimeout(()=>{ if(FLAG_HL && FLAG_HL.el === el) evs.forEach(ev=> el.addEventListener(ev, fn, true)); }, 0);
+  FLAG_HL = { el, fn, evs };
+}
+(function(){
+  const bind = ()=>{
+    const box = document.getElementById('flags_list');
+    if(!box || box._navBound) return;
+    box._navBound = true;
+    box.addEventListener('click', e=>{
+      if(e.target.closest('a, button, input, select, textarea')) return;
+      const line = e.target.closest('.flagline.nav');
+      if(!line || !box.contains(line)) return;
+      const i = parseInt(line.getAttribute('data-nav'), 10);
+      const a = (box._anchors || [])[i];
+      if(a) flagNavGo(a);
+    });
+  };
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', bind); else bind();
+})();
+
 // Предупреждение рядом с кнопкой «Собрать заключительное слово» -- сборка
 // технически всегда доступна (в отличие от смягчающих/отягчающих, где
 // "не отмечено" само по себе законный ответ -- их и не должно быть, если
@@ -4713,7 +4876,10 @@ function updateCompIncompleteWarn(sanctionChips, redChips, pendingChips){
   redChips = redChips || [];
   pendingChips = pendingChips || [];
   const fmt = c=> 'ст. ' + c.article + ' ' + lawShortCode(c.law) + (c.basis ? ' (⚑)' : '');
-  if(redChips.length){
+  if(basisMissing()){
+    el.className = 'flagline warn';
+    el.textContent = '! ' + BASIS_MISSING_MSG + '.';
+  } else if(redChips.length){
     el.className = 'flagline bad';
     el.textContent = '⨯ Состав не собран: ' + redChips.map(fmt).join(', ') + ' — статья(и) не инкриминируется(ются) уже сейчас (ст. 1.7/19.6 УАК), проверьте до сборки.';
   } else if(pendingChips.length){
@@ -4949,6 +5115,7 @@ function outcomeChipMode(rec){
   return 'none';
 }
 function computeOutcome(){
+  if(basisMissing()) return '';
   const points = window.RELEASE_POINTS || [];
   if(points.length) return String(Math.min.apply(null, points.map(x=> x.p)));
   // прокурор сам выбрал наказание по каждой статье -- решение по его выбору
@@ -5583,6 +5750,8 @@ function updateOgpModeHint(){
   if(ogpBtn){ ogpBtn.style.display = prok ? 'none' : ''; ogpBtn.classList.toggle('primary', !!mm); }
   if(fields) fields.style.display = (!prok && (ogpModeOn() || mm)) ? '' : 'none';
   if(bb) bb.style.display = ogpModeOn() ? '' : 'none';
+  const cf = document.getElementById('copy_forum_btn');
+  if(cf) cf.style.display = (!prok && ogpModeOn()) ? '' : 'none';
   if(demandsWrap) demandsWrap.style.display = ((ogpModeOn() || mm) && victim && victim.checked) ? '' : 'none';
   if(!el) return;
   if(prok){ el.style.display = 'none'; return; }
@@ -5598,12 +5767,14 @@ function updateOgpModeHint(){
 function actionSummary(){
   const cb = document.getElementById('f_ogp_mode'); if(cb) cb.checked = false;
   updateOgpModeHint();
-  return generateSummary();
+  const t = generateSummary(); setOutKind('summary');
+  return t;
 }
 function actionOgp(){
   const cb = document.getElementById('f_ogp_mode'); if(cb) cb.checked = true;
   updateOgpModeHint();
-  return generateSummary();
+  const t = generateSummary(); setOutKind('ogp');
+  return t;
 }
 
 // Готовый бланк обращения в BBCode по официальной ФОРМЕ (раздел 11.8 памятки).
@@ -5708,6 +5879,7 @@ function buildOgpBBCode(){
 
   const text = head.join('\n') + L.join('\n');
   document.getElementById('summary_out').value = text;
+  setOutKind('bbcode');
   return text;
 }
 
@@ -6058,7 +6230,7 @@ function buildOgpSummary(){
 }
 
 function copySummary(){
-  const text = generateSummary();
+  const text = outText();
   const ta = document.getElementById('summary_out');
   ta.select();
   try{
@@ -6068,15 +6240,64 @@ function copySummary(){
   }
 }
 
+// Какой документ сейчас в поле под кнопками. «Скопировать / Скачать» пересобирают
+// именно его: раньше они всегда звали generateSummary() и затирали BBCode сводкой.
+var OUT_KIND = '';
+const OUT_KIND_TXT = {
+  summary: 'В поле: сводка (карточка дела) — для чата коллегии.',
+  ogp: 'В поле: материал для ОГП — фабула и нарушения. Для подачи на форум нужен BBCode: «Собрать обращение (BBCode)» или «Скопировать и открыть форум ↗».',
+  bbcode: 'В поле: обращение в ОГП в BBCode. Название темы — «ОБРАЩЕНИЕ В ОФИС ГЕНЕРАЛЬНОГО ПРОКУРОРА №…», пошлина $20.000 на счёт №788 до подачи.'
+};
+function setOutKind(k){
+  OUT_KIND = k || '';
+  const el = document.getElementById('out_kind_note');
+  if(el) el.textContent = OUT_KIND_TXT[OUT_KIND] || '';
+}
+function outText(){
+  if(OUT_KIND === 'bbcode' && ogpModeOn()) return buildOgpBBCode();
+  const t = generateSummary();
+  setOutKind(ogpModeOn() ? 'ogp' : 'summary');
+  return t;
+}
+
+// Копирование синхронно (execCommand через временное поле) -- до window.open,
+// пока вкладка ещё в фокусе; clipboard API -- запасной путь.
+function copyPlain(text){
+  let ok = false;
+  try {
+    const t = document.createElement('textarea');
+    t.value = text; t.setAttribute('readonly', '');
+    t.style.position = 'fixed'; t.style.top = '-1000px'; t.style.opacity = '0';
+    document.body.appendChild(t); t.select();
+    ok = document.execCommand('copy');
+    document.body.removeChild(t);
+  } catch(e){ ok = false; }
+  if(!ok){ try { navigator.clipboard.writeText(text).catch(()=>{}); ok = true; } catch(e){} }
+  return ok;
+}
+const OGP_FORUM_URL = 'https://forum.gta5rp.com/forums/obrashcheniye-v-ofis-general-nogo-prokurora.1485/post-thread';
+const BB_BODY_MARK = '--- ниже вставлять на форум как есть ---';
+function copyAndOpenForum(){
+  let text = '';
+  try { text = buildOgpBBCode(); } catch(e){ text = ''; }
+  const i = text.indexOf(BB_BODY_MARK);
+  const body = i >= 0 ? text.slice(i + BB_BODY_MARK.length).replace(/^\s*\n/, '') : text;
+  const ok = body ? copyPlain(body) : false;
+  try { window.open(OGP_FORUM_URL, '_blank', 'noopener'); } catch(e){}
+  const el = document.getElementById('out_kind_note');
+  if(el) el.textContent = (ok ? 'Бланк BBCode скопирован (без служебной шапки) — вставьте его в новую тему. ' : 'Скопировать не удалось — выделите текст в поле вручную. ')
+    + 'Название темы — «ОБРАЩЕНИЕ В ОФИС ГЕНЕРАЛЬНОГО ПРОКУРОРА №…», пошлина $20.000 на счёт №788 до подачи.';
+}
+
 function downloadSummary(){
-  const text = generateSummary();
+  const text = outText();
   const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   const rawLabel = chipGetLabelText('f_charge_articles') || selText('f_status') || 'дело';
   const label = rawLabel.replace(/[^\wа-яА-ЯёЁ0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,40) || 'дело';
   a.href = url;
-  a.download = 'дело_' + label + '.txt';
+  a.download = (OUT_KIND === 'bbcode' ? 'обращение_ОГП_' : OUT_KIND === 'ogp' ? 'ОГП_' : 'дело_') + label + '.txt';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -6105,7 +6326,8 @@ function doResetForm(){
   if(window.syncAllPrettySelects) window.syncAllPrettySelects();
   document.querySelectorAll('input[type=checkbox]').forEach(el=> el.checked = false);
   document.getElementById('summary_out').value = '';
-  document.getElementById('f_start').value = nowLocalISO();
+  setOutKind('');
+  setStartNow();
   if(window.renderStartBtn) renderStartBtn();
   chipReset('f_charge_articles');
   document.querySelectorAll('.basis-btn.active').forEach(b=> b.classList.remove('active'));
@@ -6131,9 +6353,24 @@ function doResetForm(){
 }
 
 // init
-if(!document.getElementById('f_start').value){
-  document.getElementById('f_start').value = nowLocalISO();
-}
+// Время начала переживает перезагрузку страницы: берём сохранённое. Новое
+// ставится только если сохранённого нет либо пустая карточка простояла
+// дольше 2 часов (таймер от вчерашнего открытия никому не нужен); если дело
+// в карточке есть, его время всё равно вернёт автосохранение ниже.
+(function(){
+  const el = document.getElementById('f_start');
+  let st = null;
+  try { st = JSON.parse(localStorage.getItem(START_KEY) || 'null'); } catch(e){ st = null; }
+  let hasCase = false;
+  try { hasCase = !!localStorage.getItem('lex_case'); } catch(e){}
+  const fresh = st && st.iso && (hasCase || (Date.now() - (st.at || 0)) < 2 * 3600 * 1000);
+  if(fresh){
+    el.value = st.iso;
+    START_MS = st.ms || null;
+  } else if(!el.value){
+    setStartNow();
+  }
+})();
 if(window.renderStartBtn) renderStartBtn();
 applyStatusVisibility();
 updateDeptOptions();
@@ -8443,7 +8680,7 @@ document.getElementById('f_struct').addEventListener('change', renderQuickBasis)
     if(img && img.src && img.src.indexOf('blob:') === 0){ URL.revokeObjectURL(img.src); }
     if(img) img.src = '';
     const nm = document.getElementById('suggest-shot-name');
-    if(nm) nm.textContent = 'или Ctrl+V прямо в этом окне';
+    if(nm) nm.textContent = 'или Ctrl+V';
   }
   function setSuggestShot(file){
     if(!file || !/^image\//.test(file.type)){ return; }
@@ -8543,7 +8780,8 @@ document.getElementById('f_struct').addEventListener('change', renderQuickBasis)
     document.querySelectorAll('#flags_list .flagline, #flags_list li').forEach(f=>{
       const t = f.textContent.replace(/\s+/g, ' ').trim(); if(t) L.push('• ' + t);
     });
-    L.push('', safe(()=> generateSummary()));
+    // снимок не должен затирать то, что пользователь собрал в поле «Действий»
+    L.push('', safe(()=> { const ta = document.getElementById('summary_out'); const keep = ta ? ta.value : ''; try { return generateSummary(); } finally { if(ta) ta.value = keep; } }));
     L.push('', safe(()=> { const fw = buildFinalWord(); return typeof fw === 'string' ? fw : JSON.stringify(fw); }));
     return L.join('\n');
   }
@@ -9083,6 +9321,7 @@ document.getElementById('f_struct').addEventListener('change', renderQuickBasis)
   }
   function commit(dt){
     hidden.value = toISO(dt);
+    START_MS = null; saveStart();
     renderStartBtn();
     hidden.dispatchEvent(new Event('input', {bubbles:true}));
     renderTimer(); // сам дёргает refreshFlags()
@@ -9644,6 +9883,12 @@ function buildProsecutorWord(){
   const pending = sanctionChips.filter(c=> chipCompState(c) === 'pending');
   if(!chips.length) L.push('⨯ НЕ ГОТОВО: статьи обвинения в карточке не указаны.');
   pending.forEach(c=> L.push('⨯ НЕ ГОТОВО: ст. ' + c.article + ' ' + lawShortCode(c.law) + ' — состав не проверен (0 из 4), в заключение не включена.'));
+  if(basisMissing()){
+    L.push('⨯ НЕ ГОТОВО: ' + BASIS_MISSING_MSG + '.');
+    const outNo = L.join('\n') + '\n';
+    document.getElementById('final_word_out').value = outNo;
+    return outNo;
+  }
   L.push('');
   P.push('Мною проверены законность задержания и доказанность вменённого.');
   const mit = Array.from(document.querySelectorAll('.mit-check:checked')).map(c=> c.getAttribute('data-label'));
@@ -9722,6 +9967,12 @@ function buildFinalWord(){
   pendingChips.forEach(c=>{
     L.push('⨯ НЕ ГОТОВО: ст. ' + c.article + ' ' + lawShortCode(c.law) + ' — состав не проверен (0 из 4), в речь не включена. Откройте ⌜☰⌟ на статье и отметьте элементы состава.');
   });
+  if(basisMissing()){
+    L.push('⨯ НЕ ГОТОВО: ' + BASIS_MISSING_MSG + '.');
+    const outNo = L.join('\n') + '\n';
+    document.getElementById('final_word_out').value = outNo;
+    return outNo;
+  }
   L.push('');
 
   // --- вывод об освобождении ---
@@ -10455,10 +10706,20 @@ function updBuildPack(){
   }
   const BUILTIN_NEWS = builtinNews();
   // ---------- авто-обновление с GitHub ----------
-  async function fetchRemote(url){
-    const r = await fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now(), { cache: 'no-store' });
-    if(!r.ok) throw new Error('HTTP ' + r.status);
-    return r;
+  // Ответ ждём не дольше 10 секунд (скачивание карточки -- 60): вкладка,
+  // вернувшаяся из фона, могла оставить запрос висеть без ответа, и
+  // «Проверка обновлений…» не гасла. По таймауту -- «нет связи».
+  async function fetchRemote(url, ms){
+    const ctl = (typeof AbortController === 'function') ? new AbortController() : null;
+    const to = ctl ? setTimeout(()=> ctl.abort(), ms || 10000) : null;
+    try {
+      const r = await fetch(url + (url.indexOf('?') >= 0 ? '&' : '?') + '_=' + Date.now(), { cache: 'no-store', signal: ctl ? ctl.signal : undefined });
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r;
+    } catch(e){
+      if(e && e.name === 'AbortError') throw new Error('нет ответа от сервера');
+      throw e;
+    } finally { if(to) clearTimeout(to); }
   }
 
   // Версия базы вида 'redwood-1.1': сравниваем числовую часть после префикса
@@ -10534,7 +10795,7 @@ function updBuildPack(){
       onOk: async ()=>{
       btnApply.disabled = true; btnApply.textContent = 'Загружаю…';
       try {
-        const r = await fetchRemote(ver.db.pack_url || CFG.updatePackUrl);
+        const r = await fetchRemote(ver.db.pack_url || CFG.updatePackUrl, 60000);
         const pack = await r.json();
         pack.version = ver.db.version;
         pack.date = ver.db.date || pack.date;
@@ -10561,7 +10822,7 @@ function updBuildPack(){
       btnHtml.disabled = true; btnHtml.textContent = 'Скачиваю…';
       try {
         const url = ver.app.html_url || CFG.updateHtmlUrl;
-        const r = await fetchRemote(url);
+        const r = await fetchRemote(url, 60000);
         const blob = await r.blob();
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -10594,10 +10855,33 @@ function updBuildPack(){
       setTimeout(tick, 600);
     });
   }
-  (async function startupCheck(){
-    await waitFlowClosed();
-    if(BUILTIN_NEWS) await showWhatsNew(BUILTIN_NEWS.title, BUILTIN_NEWS.sections);
-    if(AFTER_NEWS) await showWhatsNew(AFTER_NEWS.title, AFTER_NEWS.sections);
+  // Когда проверять само: при открытии карточки (новая вкладка / запуск файла)
+  // и раз в «день» -- день начинается в 6:00, как у окна поддержки: после 6
+  // утра проверка идёт сразу, как только окно поддержки закрыли. При F5,
+  // автоперезагрузке после смены базы, возврате на старую вкладку и
+  // «Сбросить карточку» -- не проверяем (метка в sessionStorage живёт, пока
+  // жива вкладка). По кнопке «Проверить обновления» -- всегда.
+  const CHECK_KEY = 'lex_upd_checked';
+  function dayKey(){
+    const d = new Date();
+    if(d.getHours() < 6) d.setDate(d.getDate() - 1);
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function checkedToday(){ try { return sessionStorage.getItem(CHECK_KEY) === dayKey(); } catch(e){ return false; } }
+  function markChecked(){ try { sessionStorage.setItem(CHECK_KEY, dayKey()); } catch(e){} }
+  let autoBusy = false;
+  async function autoCheck(){
+    if(autoBusy || checkedToday()) return;
+    autoBusy = true;
+    try {
+      await waitFlowClosed();
+      if(checkedToday()) return;
+      markChecked();
+      await runCheckToast();
+    } finally { autoBusy = false; }
+  }
+  setInterval(()=>{ if(document.visibilityState === 'visible') autoCheck(); }, 5 * 60 * 1000);
+  async function runCheckToast(){
     const t = lexToast('Проверка обновлений…', 'info', 0);
     let r;
     try { r = await checkRemote(true); } catch(e){ r = { s:'error' }; }
@@ -10615,6 +10899,12 @@ function updBuildPack(){
         if(blk) blk.scrollIntoView({ behavior:'smooth', block:'center' });
       });
     }
+  }
+  (async function startupCheck(){
+    await waitFlowClosed();
+    if(BUILTIN_NEWS) await showWhatsNew(BUILTIN_NEWS.title, BUILTIN_NEWS.sections);
+    if(AFTER_NEWS) await showWhatsNew(AFTER_NEWS.title, AFTER_NEWS.sections);
+    await autoCheck();
   })();
 
   updateVersionLine();
@@ -10896,6 +11186,8 @@ document.addEventListener('keydown', (e)=>{
       const ri = g.pick(reqPool);
       F.charges.unshift({ law: LAW_DB[ri].law, art: LAW_DB[ri].article, i: ri, basis: true, missing: '', proc: true });
     }
+    // без ⚑ при 2+ статьях речь не собирается -- ставим ⚑ на статью, с которой началось задержание
+    if(!F.charges.some(c=> c.basis) && F.charges.length >= 2){ const st = F.charges.find(c=> c.start); if(st) st.basis = true; }
     const hasArt = re=> F.charges.some(c=> c.law === 'УАК' && re.test(c.art));
     const anyCrime = F.charges.some(c=> !c.proc && isCrime(c.i));
     F.recid = g.wpick([['',40],['no',40],['yes',20]]);
@@ -10946,9 +11238,10 @@ document.addEventListener('keydown', (e)=>{
       S.push('Исключения из неприкосновенности: ' + F.immExc.map(k=> (ex[k] || '').toLowerCase()).join('; ') + '.');
     }
     const basis = F.charges.find(c=> c.basis);
-    if(basis) S.push('Первое требование сотрудник основал на ст. ' + basis.art + ' ' + lawShortCode(basis.law) + ' — «' + artGist(basis.i) + '».');
     const start = F.charges.find(c=> c.start);
-    if(start) S.push('Задержание начато по ст. ' + start.art + ' ' + lawShortCode(start.law) + ' — «' + artGist(start.i) + '».');
+    if(basis && basis === start) S.push('Требование и задержание сотрудник начал по ст. ' + basis.art + ' ' + lawShortCode(basis.law) + ' — «' + artGist(basis.i) + '».');
+    else if(basis) S.push('Первое требование сотрудник основал на ст. ' + basis.art + ' ' + lawShortCode(basis.law) + ' — «' + artGist(basis.i) + '».');
+    if(start && start !== basis) S.push('Задержание начато по ст. ' + start.art + ' ' + lawShortCode(start.law) + ' — «' + artGist(start.i) + '».');
     const rest = F.charges.filter(c=> !c.basis && !c.start);
     if(rest.length) S.push('В ходе задержания дополнительно вменили: ' + rest.map(c=> 'ст. ' + c.art + ' ' + lawShortCode(c.law) + ' — «' + artGist(c.i) + '»').join('; ') + '.');
     const WTXT = { '20.8': { yes:'Устное предупреждение снять и сдать бронежилет сотрудник объявил — задержанный его проигнорировал.', no:'Устное предупреждение снять и сдать бронежилет сотрудник не объявлял.' },
