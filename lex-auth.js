@@ -460,6 +460,38 @@
                         return;
                     }
 
+                                        /*
+                     * Чистим URL от OAuth-параметров.
+                     * Без этого старые ?code=, ?error=, #access_token=
+                     * остаются в адресной строке и ломают
+                     * последующие попытки входа.
+                     */
+                    try {
+                        if (
+                            typeof window !== 'undefined' &&
+                            window.history &&
+                            typeof window.history.replaceState === 'function' &&
+                            window.location
+                        ) {
+                            var hasOauthParams =
+                                window.location.search.indexOf('code=') !== -1 ||
+                                window.location.search.indexOf('error=') !== -1 ||
+                                window.location.hash.indexOf('access_token=') !== -1 ||
+                                window.location.hash.indexOf('error=') !== -1;
+
+                            if (hasOauthParams) {
+                                window.history.replaceState(
+                                    null,
+                                    '',
+                                    window.location.origin +
+                                    window.location.pathname
+                                );
+                            }
+                        }
+                    } catch (eClean) {
+                        /* ignore */
+                    }
+
                     try {
                         supabaseClient.auth.onAuthStateChange(
                             function (event, session) {
