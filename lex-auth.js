@@ -617,7 +617,8 @@
 
                 try {
                     var redirectTo =
-                        window.location.href;
+                        window.location.origin +
+                        window.location.pathname;
 
                     return supabaseClient.auth
                         .signInWithOAuth({
