@@ -1596,13 +1596,60 @@
     :root.typing #typing_exit{ display:block; }
   }
 </style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Cstyle%3E:root%7B--b:%23171B22;--a:%23D4A227%7D@media (prefers-color-scheme:light)%7B:root%7B--b:%23F5F2EB;--a:%23987517%7D%7D.b%7Bfill:var(--b)%7D.s%7Bstroke:var(--a)%7D%3C/style%3E%3Crect class='b' width='1024' height='1024'/%3E%3Crect class='s' x='40' y='40' width='944' height='944' rx='190' fill='none' stroke-width='7'/%3E%3Cpath class='s' d='M350 285L350 586L545 585L655 700L806 540' fill='none' stroke-width='96' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath class='s' d='M551.4 294.5L642.6 473.5M507.5 429.6L686.5 338.4' fill='none' stroke-width='60' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  /* ===== Lex 2.3: логотип, облако, помощницы, договор ===== */
+  header.top h1{ display:flex; align-items:center; gap:10px; }
+  .lex-logo{ width:30px; height:30px; flex:0 0 30px; border-radius:7px; }
+  .lex-logo .lg-bg{ fill:var(--panel2); }
+  .lex-logo .lg-s{ stroke:var(--accent); fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .lex-asst{ display:inline-block; margin-right:6px; padding:1px 8px; border-radius:999px; font-size:11px; font-weight:700; vertical-align:2px;
+    background:rgba(var(--accent-rgb),.14); color:var(--accent); border:1px solid rgba(var(--accent-rgb),.35); }
+  .cl-box{ border:1px solid var(--border); border-radius:10px; padding:10px; background:var(--panel2); }
+  .cl-box .btnrow{ margin-top:6px; }
+  .cl-discord{ width:100%; }
+  .cl-user{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .cl-uname{ font-weight:700; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; }
+  .cl-tier{ font-size:11px; font-weight:700; padding:1px 8px; border-radius:999px; border:1px solid var(--border); color:var(--muted); }
+  .cl-tier.t-participant{ color:var(--accent2); border-color:rgba(var(--accent2-rgb),.5); }
+  .cl-tier.t-premium{ color:var(--accent); border-color:rgba(var(--accent-rgb),.6); }
+  .cl-sub{ margin:12px 0 4px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .cl-list{ display:grid; gap:6px; }
+  .cl-row{ display:flex; align-items:center; gap:8px; padding:7px 8px; border:1px solid var(--border); border-radius:8px; background:var(--panel); }
+  .cl-row.active{ border-color:rgba(var(--ok-rgb),.6); }
+  .cl-info{ flex:1; min-width:0; display:grid; }
+  .cl-info b{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cl-meta{ font-size:11.5px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cl-acts{ display:flex; gap:4px; flex:0 0 auto; }
+  .cl-acts button{ padding:4px 8px; font-size:12px; }
+  .mila-log{ margin-top:12px; }
+  .mila-msg{ display:grid; gap:2px; padding:6px 8px; margin-bottom:6px; border-left:3px solid rgba(var(--ok-rgb),.6); background:var(--panel2); border-radius:6px; }
+  .mila-when{ font-size:11px; color:var(--muted); }
+  .mila-text{ white-space:pre-wrap; word-break:break-word; }
+  .aya-bar{ margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
+  .hl-actions #lex_discord_btn{ grid-column:span 2; }
+  .hl-actions [hidden]{ display:none !important; }
+  .hl-actions.no-discord #contract_open_btn{ grid-column:span 3; }
+  .hl-actions .lex-discord{ color:#fff; background:#5865F2; border-color:#5865F2; }
+  .hl-actions .lex-discord:hover{ background:#4752c4; }
+  .hl-actions .lex-discord.on{ color:var(--text); background:transparent; border-color:rgba(88,101,242,.7); overflow:hidden; text-overflow:ellipsis; }
+  .footer-legal{ display:block; margin-top:4px; }
+  .footer-legal a{ color:var(--muted); }
+  .lex-contract-overlay{ position:fixed; inset:0; z-index:360; display:none; align-items:center; justify-content:center; padding:2vh 2vw; background:rgba(var(--shadow-rgb),.72); }
+  .lex-contract-overlay.open{ display:flex; }
+  .lex-contract-shell{ width:min(1600px,98vw); height:min(1000px,96vh); overflow:hidden; border:1px solid var(--border); border-radius:14px; background:var(--bg); box-shadow:0 28px 90px rgba(0,0,0,.55); }
+  .lex-contract-frame{ display:block; width:100%; height:100%; border:0; background:var(--bg); }
+  @media (max-width:700px){ .lex-contract-overlay{ padding:0; } .lex-contract-shell{ width:100vw; height:var(--vvh,100dvh); border-radius:0; } }
+  @media print{ .lex-contract-overlay{ display:none !important; } }
+</style>
 </head>
 <body>
 
 <header class="top">
   <div class="top-inner">
     <div>
-      <h1>Lex — процессуальный чек-лист</h1>
+      <h1><svg class="lex-logo" viewBox="0 0 1024 1024" aria-hidden="true"><rect class="lg-bg" width="1024" height="1024" rx="190"/><rect class="lg-s" x="40" y="40" width="944" height="944" rx="190" stroke-width="14"/><path class="lg-s" d="M350 285L350 586L545 585L655 700L806 540" stroke-width="96"/><path class="lg-s" d="M551.4 294.5L642.6 473.5M507.5 429.6L686.5 338.4" stroke-width="60"/></svg>Lex — процессуальный чек-лист</h1>
       <div class="sub">Сервер Redwood · для госструктур: адвокат, прокурор</div>
     </div>
     <div class="sub">Данные хранятся только в этой вкладке — не забудьте скачать/скопировать сводку перед закрытием.</div>
@@ -2432,6 +2479,8 @@
           <button type="button" class="timer-reset" id="timer_reset" title="Стереть введённое по делу и начать отсчёт заново. Роль, тема и база остаются">Новое дело</button>
           <button type="button" class="hl-act" id="tst_open_btn" title="Случайное тестовое дело — проверить, как работает карточка">🎲 Тест</button>
           <button type="button" class="hl-act" id="profile_open_btn" title="Мои данные для обращений: имя, ID, почта, паспорт">👤 Профиль</button>
+          <button type="button" class="hl-act" id="contract_open_btn" title="Договор на оказание юридических услуг (частный адвокат)">§ Договор</button>
+          <button type="button" class="hl-act lex-discord" id="lex_discord_btn" hidden>Войти через Discord</button>
         </div>
       </div>
 
@@ -2476,6 +2525,7 @@
 
 <div class="footer-note">
   Карточка дела · Alex Backwoods. <span id="case_store_note">Дело держится до «Новое дело», перезагрузки страницы или закрытия вкладки. Сохранить — «Скачать .txt» или «Печать».</span>
+  <span class="footer-legal"><a href="https://lex-checklist.pages.dev/terms.html">Условия использования</a> · <a href="https://lex-checklist.pages.dev/privacy.html">Политика конфиденциальности</a></span>
 </div>
 
 <!-- ===== law search + памятка: button row, right after the footer note,
@@ -2888,14 +2938,14 @@
 <div class="law-modal-overlay" id="profile-overlay">
   <div class="law-modal" id="profile-modal" style="width:min(560px, 100%);">
     <div class="law-modal-head">
-      <div class="law-modal-titles"><h3 style="margin:0;">Мой профиль</h3><div class="law-modal-sub">хранится только в этом браузере · подставляется в обращения · «Новое дело» его не трогает</div></div>
+      <div class="law-modal-titles"><h3 style="margin:0;">Мой профиль</h3><div class="law-modal-sub">хранится в этом браузере, после входа через Discord — и в облаке · подставляется в обращения · «Новое дело» его не трогает</div></div>
       <button class="law-modal-close" id="profile-close" type="button" aria-label="Закрыть">✕</button>
     </div>
     <div class="law-modal-body" style="white-space:normal;">
       <div class="grid2">
         <label class="field">Имя и фамилия (персонаж)<input type="text" id="p_name" placeholder="Alex Backwoods" data-profile="name"></label>
         <label class="field">№ ID-карты<input type="text" id="p_id" placeholder="80429" data-profile="id"></label>
-        <label class="field">Электронная почта<input type="text" id="p_mail" placeholder="почта для связи" data-profile="mail"></label>
+        <label class="field">Почта (логин Discord, @sa.gov добавится сам)<input type="text" id="p_mail" placeholder="insidex_o" data-profile="mail"></label>
         <label class="field">Ссылка на копию паспорта<input type="text" id="p_passport" placeholder="ссылка" data-profile="passport"></label>
         <label class="field">Должность<select id="p_role" data-profile="role"><option value="">—</option><option value="гос. адвокат">Государственный адвокат</option><option value="частный адвокат">Частный адвокат</option><option value="прокурор">Прокурор</option><option value="другое">Другое</option></select></label>
         <label class="field">№ удостоверения / лицензии<input type="text" id="p_license" placeholder="если есть" data-profile="license"></label>
@@ -2903,7 +2953,27 @@
       <div class="empty-hint">Только RP-данные персонажа. Сброс — кнопка «Настройки по умолчанию».</div>
       <div class="card-group-label" style="margin-top:12px;">Статистика</div>
       <label class="chk"><input type="checkbox" id="p_stats_on"><span class="lbl">Отправлять анонимную статистику использования — для улучшения карточки. Личные данные не отправляются</span></label>
-      <div class="btnrow"><button type="button" id="stats_open_btn">📊 Моя статистика</button><button type="button" class="primary" id="profile-save">Сохранить</button></div>
+            <div class="card-group-label" style="margin-top:14px;">Облако · вход через Discord</div>
+      <div id="cl_box" class="cl-box">
+        <div id="cl_off"><div class="empty-hint" id="cl_off_text" style="margin:0;"></div></div>
+        <div id="cl_out" style="display:none;">
+          <button type="button" class="primary cl-discord" id="cl_signin">Войти через Discord</button>
+          <div class="empty-hint">Профили (до 10) и архив дел (до 50) — в облаке, на любом устройстве. Без входа всё работает как раньше, в этом браузере. <a href="https://lex-checklist.pages.dev/privacy.html">Что хранится</a></div>
+        </div>
+        <div id="cl_in" style="display:none;">
+          <div class="cl-user"><span class="cl-uname" id="cl_user_name"></span><span class="cl-tier t-free" id="cl_tier" title="Уровень доступа. Тарифы и оплата — скоро">Free</span><button type="button" id="cl_signout">Выйти</button></div>
+          <div class="cl-sub">Профили в облаке <span id="cl_prof_n"></span></div>
+          <div id="cl_prof_list" class="cl-list"></div>
+          <div class="btnrow"><button type="button" id="cl_prof_add" title="Сохранить поля выше как новый облачный профиль">☁ В облако как новый</button></div>
+          <div class="empty-hint" style="margin-top:2px;">«Сохранить» внизу пишет и в этот браузер, и в активный облачный профиль.</div>
+          <div class="cl-sub">Архив дел <span id="cl_case_n"></span></div>
+          <div class="btnrow"><button type="button" id="cl_case_save">☁ Сохранить текущее дело</button><button type="button" id="cl_case_refresh" title="Обновить список">↻</button></div>
+          <div id="cl_case_list" class="cl-list"></div>
+          <div class="btnrow" style="margin-top:8px;"><button type="button" class="danger" id="cl_wipe">Удалить мои данные из облака</button></div>
+        </div>
+        <div class="support-form-status" id="cl_status"></div>
+      </div>
+      <div class="btnrow" style="margin-top:12px;"><button type="button" id="stats_open_btn">📊 Моя статистика</button><button type="button" class="primary" id="profile-save">Сохранить</button></div>
     </div>
   </div>
 </div>
@@ -2927,7 +2997,7 @@
 <div class="law-modal-overlay" id="stats-overlay">
   <div class="law-modal" id="stats-modal" style="width:min(560px, 100%);">
     <div class="law-modal-head">
-      <div class="law-modal-titles"><h3 style="margin:0;">Моя статистика</h3><div class="law-modal-sub" id="stats_sub">хранится только в этом браузере</div></div>
+      <div class="law-modal-titles"><h3 style="margin:0;"><span class="lex-asst" title="Ая собирает статистику">Ая</span>Моя статистика</h3><div class="law-modal-sub" id="stats_sub">хранится только в этом браузере</div></div>
       <button class="law-modal-close" id="stats-close" type="button" aria-label="Закрыть">✕</button>
     </div>
     <div class="law-modal-body" style="white-space:normal;" id="stats-body">
@@ -3124,7 +3194,7 @@
     <div class="law-modal-head">
       <div class="law-modal-titles" style="display:flex; align-items:center; gap:8px;">
         <button class="alllaws-nav-btn" id="suggest-back" type="button" aria-label="Назад">←</button>
-        <h3 style="margin:0;">Предложить изменение / исправление</h3>
+        <h3 style="margin:0;"><span class="lex-asst" title="Лея принимает идеи и ошибки">Лея</span>Предложить изменение / исправление</h3>
       </div>
       <button class="law-modal-close" id="suggest-close" type="button" aria-label="Закрыть">✕</button>
     </div>
@@ -3182,7 +3252,7 @@
     <div class="law-modal-head">
       <div class="law-modal-titles" style="display:flex; align-items:center; gap:8px;">
         <button class="alllaws-nav-btn" id="thanks-back" type="button" aria-label="Назад">←</button>
-        <h3 style="margin:0;">Написать в поддержку</h3>
+        <h3 style="margin:0;"><span class="lex-asst" title="Мила отвечает на вопросы поддержки">Мила</span>Написать в поддержку</h3>
       </div>
       <button class="law-modal-close" id="thanks-close" type="button" aria-label="Закрыть">✕</button>
     </div>
@@ -3204,6 +3274,7 @@
         <button type="submit" class="support-form-submit">Отправить</button>
         <div class="support-form-status" id="thanks-status"></div>
       </form>
+      <div class="mila-log" id="mila_log" style="display:none;"></div>
     </div>
   </div>
 </div>
@@ -3216,11 +3287,11 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '2.2';
-const APP_DATE = '2026-10-06';
+const APP_VERSION = '2.3';
+const APP_DATE = '2026-10-07';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
-const APP_BUILD = '2026-10-06';
+const APP_BUILD = '2026-10-07';
 const DB_NAME = 'redwood';
 const DB_VERSION = 'redwood-1.5';
 const DB_DATE = '2026-10-06';
@@ -3233,6 +3304,19 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '2.3': {
+    title: 'Карточка 2.3 · облако и помощницы',
+    added: [
+      "Вход через Discord (на сайте lex-checklist.pages.dev): до 10 профилей в облаке и архив до 50 дел — окно «👤 Профиль», блок «Облако»",
+      "Предложения и поддержка уходят через защищённый сервер: Лея — идеи и ошибки, Мила — поддержка (история ваших сообщений — в окне поддержки)",
+      "Ая — анонимная статистика: с вашего согласия раз в сутки сводка за прошедший день, без текстов и личных данных; кнопка «Отправить» в «Моей статистике»",
+      "«§ Договор» рядом с «Профилем»: договор на оказание юридических услуг (частный адвокат) — физлицо или организация с сотрудниками, прайс-лист по услугам, печать в PDF",
+      "Логотип и иконка вкладки; в подвале — Условия использования и Политика конфиденциальности"
+    ],
+    fixed: [
+      "Скриншот HEIC/AVIF/BMP к предложению — теперь сразу понятное сообщение, а не ошибка при отправке; длинные тексты статей ужимаются, чтобы сообщение проходило"
+    ],
+  },
   '2.2': {
     title: 'Карточка 2.2 · база redwood-1.5',
     added: [
@@ -7762,7 +7846,7 @@ function buildOgpBBCode(){
   const aName = val('f_ogp_applicant') || (me ? prof.name : '') || '';
   L.push(G + '-[/COLOR] ИМЯ ФАМИЛИЯ: ' + (aName || '[вписать]'));
   L.push(G + '-[/COLOR] НОМЕР ID-КАРТЫ: ' + (val('f_ogp_applicant_id') || (me ? prof.id : '') || '[вписать]'));
-  L.push(G + '-[/COLOR] ЭЛЕКТРОННАЯ ПОЧТА: ' + (val('f_ogp_applicant_mail') || (me ? prof.mail : '') || '[вписать]'));
+  L.push(G + '-[/COLOR] ЭЛЕКТРОННАЯ ПОЧТА: ' + (val('f_ogp_applicant_mail') || (me ? lexMailFull(prof.mail) : '') || '[вписать]'));
   L.push(G + '-[/COLOR] ЯВЛЯЕТСЯ ЛИ ЗАЯВИТЕЛЬ ПОТЕРПЕВШИМ (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
   L.push(G + '-[/COLOR] ИМЕЮТСЯ ЛИ КАКИЕ-НИБУДЬ ТРЕБОВАНИЯ ПОТЕРПЕВШЕГО (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
   L.push('');
@@ -8191,6 +8275,8 @@ const OGP_FORUM_URL = 'https://forum.gta5rp.com/forums/obrashcheniye-v-ofis-gene
 // «Настройки по умолчанию» стирает (ключ lex_profile).
 const PROFILE_KEY = 'lex_profile';
 function lexProfile(){ try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null') || {}; } catch(e){ return {}; } }
+// почта в РП -- логин Discord; в обращениях всегда логин@sa.gov (если @ уже есть -- как ввели)
+function lexMailFull(m){ m = String(m || '').trim(); return m && m.indexOf('@') === -1 ? m + '@sa.gov' : m; }
 function lexProfileSave(p){ try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); return true; } catch(e){ return false; } }
 function openProfile(){
   const p = lexProfile();
@@ -8257,7 +8343,7 @@ function openOgpModal(){
     if(w){
       document.getElementById('f_ogp_who').value = w.dataset.who;
       // «Я сам» -- пустые поля заявителя из профиля
-      if(w.dataset.who === 'me'){ const p = lexProfile(); [['f_ogp_applicant','name'],['f_ogp_applicant_id','id'],['f_ogp_applicant_mail','mail'],['f_ogp_passport','passport']].forEach(([id, k])=>{ const el = document.getElementById(id); if(el && !el.value && p[k]) el.value = p[k]; }); }
+      if(w.dataset.who === 'me'){ const p = lexProfile(); [['f_ogp_applicant','name'],['f_ogp_applicant_id','id'],['f_ogp_applicant_mail','mail'],['f_ogp_passport','passport']].forEach(([id, k])=>{ const el = document.getElementById(id); if(el && !el.value && p[k]) el.value = k === 'mail' ? lexMailFull(p[k]) : p[k]; }); }
       OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); return;
     }
     const k = e.target.closest('[data-kind]');
@@ -11869,13 +11955,9 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
 // ---------- поддержать / предложить изменения ----------
 // Стартовый баннер раз в сутки (после 6:00 — не по календарной полуночи, чтобы
 // ночная смена не ловила второй баннер за одну "рабочую ночь") + две формы,
-// обе шлют embed'ом в один и тот же Discord-вебхук напрямую, без прокси-сервера.
-// Вебхук виден в коде страницы -- это нормально: через него можно только слать
-// сообщения в один канал, ничего прочитать или сломать нельзя. Если начнут
-// спамить -- пересоздать вебхук в настройках канала Discord (10 секунд) и
-// вставить новую ссылку сюда.
+// обе шлют через Worker lex-api (window.LexApi): предложения -- Лее, поддержка -- Миле.
+// Ссылок вебхуков Discord в карточке нет -- они только в настройках Worker.
 (function supportAndSuggest(){
-  const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1548589032601297046/PHGmZ7c7TZ_qMCxrBQcM6osWRsEMOO2NEwedl64vK9Tw-LMgGIi-UrpkqMlzBMPgQSf0";
   const LAST_SHOWN_KEY = "case_checklist_support_last_period_v1";
 
   function pad2(n){ return String(n).padStart(2, '0'); }
@@ -12154,14 +12236,19 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
   }
   function setSuggestShot(file){
     if(!file || !/^image\//.test(file.type)){ return; }
-    // Discord webhook принимает вложения до 8 МБ на файл.
-    if(file.size > 8 * 1024 * 1024){
+    if(!/^image\/(png|jpeg|webp|gif)$/.test(file.type)){
       const st = document.getElementById('suggest-status');
-      if(st){ st.className = 'support-form-status err'; st.textContent = 'Скриншот больше 8 МБ — сожмите его и прикрепите снова.'; }
+      if(st){ st.className = 'support-form-status err'; st.textContent = 'Нужен скриншот PNG, JPG, WEBP или GIF (HEIC/AVIF/BMP не принимаются).'; }
+      return;
+    }
+    // Worker принимает до 8 МБ на все вложения вместе (скриншот + снимок карточки).
+    if(file.size > 7 * 1024 * 1024){
+      const st = document.getElementById('suggest-status');
+      if(st){ st.className = 'support-form-status err'; st.textContent = 'Скриншот больше 7 МБ — сожмите его и прикрепите снова.'; }
       return;
     }
     const ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
-    suggestShot = { blob: file, name: (file.name && /\.[a-z0-9]+$/i.test(file.name)) ? file.name : ('screenshot.' + ext) };
+    suggestShot = { blob: file, name: 'screenshot.' + ext };
     const img = document.getElementById('suggest-shot-img');
     if(img && img.src && img.src.indexOf('blob:') === 0){ URL.revokeObjectURL(img.src); }
     img.src = URL.createObjectURL(file);
@@ -12258,49 +12345,90 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
     return L.join('\n');
   }
 
-  function sendToDiscord(embed, statusEl, submitBtn, formEl, contactToggleId, overlayId, onReset, attachment, extraFiles){
+  // Отправка идёт через Worker lex-api (window.LexApi, вшит в конец файла):
+  // ссылки вебхуков Discord живут только в настройках Worker, в карточке их нет.
+  // channel: 'suggest' -- Лея (идеи и ошибки), 'support' -- Мила (поддержка).
+  const LEX_SEND_ERR = {
+    unavailable: 'Отправка недоступна в этом режиме. Открой страницу по https.',
+    network: 'Нет связи. Проверь интернет.',
+    timeout: 'Сервер не ответил. Попробуй ещё раз.',
+    rate_limited: 'Слишком часто. Подожди немного.',
+    origin: 'Запрос отклонён (не с этого сайта).',
+    too_large: 'Файлы слишком большие.',
+    bad_schema: 'Некорректные данные формы.',
+    bad_request: 'Некорректные данные формы.',
+    file_type: 'Недопустимый тип вложения (нужен PNG, JPG, WEBP или GIF).',
+    disabled: 'Отправка временно отключена.',
+    webhook_invalid: 'Канал приёма недоступен. Обратись к администрации.',
+    upstream: 'Ошибка Discord. Попробуй позже.',
+    unknown: 'Неизвестная ошибка.'
+  };
+  function lexSendErrText(code){
+    return (LEX_SEND_ERR[code] || LEX_SEND_ERR.unknown) + ' Запасной путь: lnk.bio/InsideX';
+  }
+  window.lexSendErrText = lexSendErrText;
+
+  // Лимит Worker и Discord: 6000 символов на embed суммарно. Длинные тексты
+  // статей ужимаются первыми (полный текст всё равно лежит в снимке карточки).
+  function lexEmbedChars(e){
+    let n = (e.title || '').length + (e.description || '').length;
+    (e.fields || []).forEach(f=>{ n += String(f.name || '').length + String(f.value || '').length; });
+    if(e.footer && e.footer.text) n += e.footer.text.length;
+    if(e.author && e.author.name) n += e.author.name.length;
+    return n;
+  }
+  function lexFitEmbed(e, max){
+    max = max || 5800;
+    let guard = 60;
+    while(lexEmbedChars(e) > max && guard-- > 0){
+      const fs = (e.fields || []).slice().sort((a, b)=> String(b.value).length - String(a.value).length);
+      const f = fs.find(x=> /^Текущий текст/.test(x.name)) || fs[0];
+      if(!f) break;
+      const over = lexEmbedChars(e) - max;
+      const keep = Math.max(120, String(f.value).length - over - 20);
+      if(keep >= String(f.value).length){ e.fields.splice(e.fields.indexOf(f), 1); continue; }
+      const fence = /^```/.test(f.value);
+      f.value = fence ? '```\n' + f.value.slice(4, 4 + keep - 10) + '…\n```' : f.value.slice(0, keep) + '…';
+    }
+    return e;
+  }
+
+  function sendToDiscord(channel, embed, statusEl, submitBtn, formEl, contactToggleId, overlayId, onReset, attachment, extraFiles){
     submitBtn.disabled = true;
     statusEl.className = 'support-form-status';
     statusEl.textContent = 'Отправка...';
-    // С вложением (скриншотом) Discord требует multipart/form-data: payload_json
-    // + файл, а embed ссылается на него через attachment://<имя>. Без вложения —
-    // прежний простой JSON.
-    let fetchOpts;
     const files = [];
     if(attachment && attachment.blob){ embed.image = { url: 'attachment://' + attachment.name }; files.push(attachment); }
     (extraFiles || []).forEach(f=>{ if(f && f.blob) files.push(f); });
-    if(files.length){
-      const fd = new FormData();
-      fd.append('payload_json', JSON.stringify({ embeds: [embed] }));
-      files.forEach((f, i)=> fd.append('files[' + i + ']', f.blob, f.name));
-      fetchOpts = { method: 'POST', body: fd };
-    } else {
-      fetchOpts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embeds: [embed] }) };
-    }
+    // вошёл через Discord -- имя отправителя кликабельно (упоминание <@id> в embed не пингует)
     try {
-      fetch(DISCORD_WEBHOOK, fetchOpts).then(function(r){
-        if(!r.ok) throw new Error('HTTP ' + r.status);
-        statusEl.className = 'support-form-status ok';
-        statusEl.textContent = 'Отправлено, спасибо! Закрываю окно...';
-        setTimeout(function(){
-          closeFlow(overlayId);
-          formEl.reset();
-          formEl.querySelectorAll('textarea').forEach(function(t){ t.style.height = ''; });
-          if(contactToggleId) resetContactType(contactToggleId);
-          if(onReset) onReset();
-          statusEl.textContent = ''; statusEl.className = 'support-form-status';
-          submitBtn.disabled = false;
-        }, 1600);
-      }).catch(function(err){
-        statusEl.className = 'support-form-status err';
-        statusEl.textContent = 'Не получилось отправить (' + (err && err.message ? err.message : 'см. консоль F12') + '). Напишите напрямую: lnk.bio/InsideX';
-        submitBtn.disabled = false;
-      });
-    } catch(err){
+      const who = window.LexWho;
+      if(who && who.id && Array.isArray(embed.fields) && embed.fields.length < 25)
+        embed.fields.push({ name: 'Отправитель (вход через Discord)', value: (who.name ? who.name + ' · ' : '') + '<@' + who.id + '>' });
+    } catch(e){}
+    lexFitEmbed(embed);
+    const fail = code=>{
       statusEl.className = 'support-form-status err';
-      statusEl.textContent = 'Ошибка (' + err.message + '). Откройте консоль F12 для деталей.';
+      statusEl.textContent = lexSendErrText(code);
       submitBtn.disabled = false;
-    }
+    };
+    if(!window.LexApi || typeof window.LexApi.send !== 'function' || !window.LexApi.available()){ fail('unavailable'); return; }
+    let p;
+    try { p = window.LexApi.send(channel, embed, files); } catch(e){ fail('unknown'); return; }
+    Promise.resolve(p).then(function(res){
+      if(!res || !res.ok){ fail(res && res.error ? res.error : 'unknown'); return; }
+      statusEl.className = 'support-form-status ok';
+      statusEl.textContent = 'Отправлено, спасибо! Закрываю окно...';
+      setTimeout(function(){
+        closeFlow(overlayId);
+        formEl.reset();
+        formEl.querySelectorAll('textarea').forEach(function(t){ t.style.height = ''; });
+        if(contactToggleId) resetContactType(contactToggleId);
+        if(onReset) onReset();
+        statusEl.textContent = ''; statusEl.className = 'support-form-status';
+        submitBtn.disabled = false;
+      }, 1600);
+    }, function(){ fail('unknown'); });
   }
 
   // Два визуально разных embed'а в Discord по выбранному типу -- красный для
@@ -12360,10 +12488,10 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
     let snapFile = null;
     try {
       const snap = buildDiagSnapshot();
-      snapFile = { blob: new Blob([snap], { type: 'text/plain;charset=utf-8' }), name: 'kartochka-' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.txt' };
+      snapFile = { blob: new Blob([snap], { type: 'text/plain' }), name: 'kartochka-' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.txt' };
       fields.push({ name: '🗂 Снимок карточки', value: 'во вложении — ' + snapFile.name + ' (' + snap.split('\n').length + ' строк)' });
     } catch(e){ fields.push({ name: '🗂 Снимок карточки', value: 'не собран: ' + e.message }); }
-    sendToDiscord({
+    sendToDiscord('suggest', {
       title: style.title,
       color: style.color,
       fields: fields,
@@ -12386,7 +12514,7 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
       return;
     }
     const submitBtn = thanksForm.querySelector('.support-form-submit');
-    sendToDiscord({
+    sendToDiscord('support', {
       title: '🟢 Поддержка / благодарность — карточка дела',
       color: 0x3fb950,
       fields: [
@@ -12394,7 +12522,7 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
         { name: 'Контакт', value: formatContact('thanks-contact-type', clipText(contact, 200)) }
       ],
       timestamp: new Date().toISOString()
-    }, statusEl, submitBtn, thanksForm, 'thanks-contact-type', 'thanks-overlay');
+    }, statusEl, submitBtn, thanksForm, 'thanks-contact-type', 'thanks-overlay', function(){ if(window.LexMila) LexMila.log(message); });
   });
 })();
 
@@ -14798,7 +14926,7 @@ window.LexHints = (function(){
 // Личная -- всегда, только в этом браузере (без входа), по дням: дела, исходы,
 // статьи, структуры, время, обращения в ОГП. Анонимная -- только с согласия:
 // события (какие кнопки, какие поля заполнены) копятся в очереди в браузере;
-// отправки пока нет (🔴 до защищённого адреса приёма). Тексты не пишутся никогда.
+// раз в сутки сводка за прошедший день уходит Ае через Worker (lex-cloud-ui). Тексты не пишутся никогда.
 window.LexStats = (function(){
   const CK = 'lex_stats_consent', DK = 'lex_stats_days', QK = 'lex_stats_q', CUR = 'lex_stats_cur', IDK = 'lex_anon_id', DEV = 'lex_stats_device';
   const get = (k, d)=>{ try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? d : v; } catch(e){ return d; } };
@@ -16382,5 +16510,4200 @@ document.addEventListener('keydown', (e)=>{
 
 </script>
 
+<!-- ===== LexApi v1 (lex-api.js с GitHub, без правок) ===== -->
+<script>
+(function () {
+    'use strict';
+
+    /*
+     * LexApi
+     * Версия: 1
+     *
+     * Назначение:
+     * - тонкий клиент Cloudflare Worker lex-api;
+     * - /suggest, /support — замена прямой отправки на вебхук Discord;
+     * - /stats — отправка анонимной статистики;
+     * - единый формат результата { ok:true } / { ok:false, error }.
+     *
+     * Коды ошибок, которые возвращает этот модуль:
+     *   unavailable    — Worker URL не задан
+     *   network        — сеть недоступна, DNS, TLS, обрыв
+     *   timeout        — ответа не было 15 секунд
+     *   origin         — Worker отклонил Origin (403)
+     *   too_large      — тело больше лимита Worker
+     *   rate_limited   — слишком много запросов (429 или 503 с Retry-After)
+     *   bad_request    — плохой запрос (400)
+     *   bad_schema     — не прошла схема (400)
+     *   identity_forbidden — в статистике найдены запрещённые ключи
+     *   file_type      — недопустимый тип вложения
+     *   disabled       — на Worker включён KILL
+     *   webhook_invalid— Discord ответил 401/404 (вебхук удалён)
+     *   upstream       — ошибка Worker/Discord (5xx)
+     *   unknown        — что-то другое
+     *
+     * Правила:
+     * - наружу никогда не бросает;
+     * - повторов не делает;
+     * - не логирует тела запросов;
+     * - не хранит секреты.
+     */
+
+    var WORKER_URL = 'https://lex-api.insidex.workers.dev';
+
+    var TIMEOUT_MS = 15000;
+
+    var MAX_EMBEDS = 3;
+
+    var exported = {};
+
+    /* =========================================================
+       Базовые helpers
+       ========================================================= */
+
+    function isHttpsPage() {
+        try {
+            return (
+                typeof window !== 'undefined' &&
+                window.location &&
+                window.location.protocol === 'https:'
+            );
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function safeWorkerUrl() {
+        try {
+            if (typeof WORKER_URL !== 'string') {
+                return null;
+            }
+
+            var trimmed = WORKER_URL.replace(/\/+$/, '');
+
+            if (trimmed.indexOf('https://') !== 0) {
+                return null;
+            }
+
+            return trimmed;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function resultOk(extra) {
+        var result = { ok: true };
+
+        if (extra && typeof extra === 'object') {
+            for (var key in extra) {
+                if (
+                    Object.prototype.hasOwnProperty.call(extra, key) &&
+                    key !== 'ok'
+                ) {
+                    result[key] = extra[key];
+                }
+            }
+        }
+
+        return Promise.resolve(result);
+    }
+
+    function resultError(code, extra) {
+        var result = { ok: false, error: String(code || 'unknown') };
+
+        if (extra && typeof extra === 'object') {
+            for (var key in extra) {
+                if (
+                    Object.prototype.hasOwnProperty.call(extra, key) &&
+                    key !== 'ok' &&
+                    key !== 'error'
+                ) {
+                    result[key] = extra[key];
+                }
+            }
+        }
+
+        return Promise.resolve(result);
+    }
+
+    /* =========================================================
+       Проверка embed (клиентская, до отправки)
+
+       Основная защита всё равно на Worker, здесь только чтобы
+       не гонять заведомо плохое тело по сети.
+       ========================================================= */
+
+    function isPlainObject(value) {
+        return (
+            value !== null &&
+            typeof value === 'object' &&
+            !Array.isArray(value)
+        );
+    }
+
+    function validateEmbedBasic(embed) {
+        if (!isPlainObject(embed)) {
+            return false;
+        }
+
+        if (
+            typeof embed.title !== 'undefined' &&
+            (
+                typeof embed.title !== 'string' ||
+                embed.title.length > 256
+            )
+        ) {
+            return false;
+        }
+
+        if (
+            typeof embed.description !== 'undefined' &&
+            (
+                typeof embed.description !== 'string' ||
+                embed.description.length > 4096
+            )
+        ) {
+            return false;
+        }
+
+        if (
+            Array.isArray(embed.fields) &&
+            embed.fields.length > 25
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /* =========================================================
+       Нормализация вложений
+
+       Принимаем:
+       - File / Blob с полем name (для File);
+       - { name, blob } — удобный вариант для тестовой страницы,
+         потому что name задавать у Blob напрямую нельзя.
+       ========================================================= */
+
+    function normalizeAttachment(item, fallbackIndex) {
+        try {
+            if (typeof File !== 'undefined' && item instanceof File) {
+                return {
+                    name: item.name || ('file-' + fallbackIndex),
+                    blob: item
+                };
+            }
+
+            if (
+                item &&
+                typeof item === 'object' &&
+                item.blob &&
+                typeof item.name === 'string'
+            ) {
+                return {
+                    name: item.name,
+                    blob: item.blob
+                };
+            }
+
+            return null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /* =========================================================
+       Парсинг ответа Worker
+       ========================================================= */
+
+    function codeFromStatus(status) {
+        if (status === 400) return 'bad_request';
+        if (status === 403) return 'origin';
+        if (status === 413) return 'too_large';
+        if (status === 415) return 'file_type';
+        if (status === 429) return 'rate_limited';
+        if (status === 503) return 'upstream';
+        if (status >= 500) return 'upstream';
+        return 'unknown';
+    }
+
+    function readResponseBody(response) {
+        return response.text().then(
+            function (text) {
+                if (!text) {
+                    return null;
+                }
+
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    return null;
+                }
+            },
+            function () {
+                return null;
+            }
+        );
+    }
+
+    function interpretResponse(response) {
+        return readResponseBody(response).then(function (body) {
+            var ok = response.ok;
+
+            if (ok) {
+                if (
+                    body &&
+                    typeof body === 'object' &&
+                    body.ok === false
+                ) {
+                    return {
+                        ok: false,
+                        error: String(body.error || 'unknown')
+                    };
+                }
+
+                var extra = {};
+
+                if (
+                    body &&
+                    typeof body === 'object' &&
+                    body.dup === true
+                ) {
+                    extra.dup = true;
+                }
+
+                return {
+                    ok: true,
+                    extra: extra
+                };
+            }
+
+            var code =
+                body &&
+                typeof body === 'object' &&
+                typeof body.error === 'string'
+                    ? body.error
+                    : codeFromStatus(response.status);
+
+            return {
+                ok: false,
+                error: code
+            };
+        });
+    }
+
+    /* =========================================================
+       fetch с таймаутом и без бросания наружу
+       ========================================================= */
+
+    function fetchWithTimeout(url, options) {
+        return new Promise(function (resolve) {
+            var controller = null;
+            var timer = null;
+            var settled = false;
+
+            function finish(value) {
+                if (settled) {
+                    return;
+                }
+
+                settled = true;
+
+                if (timer !== null) {
+                    try {
+                        clearTimeout(timer);
+                    } catch (e) {
+                        /* ignore */
+                    }
+                }
+
+                resolve(value);
+            }
+
+            try {
+                if (
+                    typeof AbortController === 'function'
+                ) {
+                    controller = new AbortController();
+
+                    if (
+                        options &&
+                        typeof options === 'object'
+                    ) {
+                        options.signal = controller.signal;
+                    } else {
+                        options = { signal: controller.signal };
+                    }
+                }
+            } catch (e) {
+                controller = null;
+            }
+
+            timer = setTimeout(function () {
+                if (controller) {
+                    try {
+                        controller.abort();
+                    } catch (e) {
+                        /* ignore */
+                    }
+                }
+
+                finish({ ok: false, error: 'timeout' });
+            }, TIMEOUT_MS);
+
+            fetch(url, options)
+                .then(function (response) {
+                    finish({ ok: true, response: response });
+                })
+                .catch(function (error) {
+                    if (
+                        error &&
+                        (
+                            error.name === 'AbortError' ||
+                            error.message === 'Aborted' ||
+                            error.message === 'The user aborted a request.'
+                        )
+                    ) {
+                        finish({ ok: false, error: 'timeout' });
+                        return;
+                    }
+
+                    finish({ ok: false, error: 'network' });
+                });
+        });
+    }
+
+    /* =========================================================
+       Общая отправка
+       ========================================================= */
+
+    function sendJson(path, payload) {
+        var base = safeWorkerUrl();
+
+        if (!base) {
+            return resultError('unavailable');
+        }
+
+        var url = base + path;
+
+        return fetchWithTimeout(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        }).then(function (fetchResult) {
+            if (!fetchResult.ok) {
+                return resultError(fetchResult.error);
+            }
+
+            return interpretResponse(fetchResult.response).then(
+                function (interpreted) {
+                    if (interpreted.ok) {
+                        return resultOk(interpreted.extra);
+                    }
+                    return resultError(interpreted.error);
+                }
+            );
+        });
+    }
+
+    /* =========================================================
+       Публичное: available
+       ========================================================= */
+
+    function available() {
+        return !!safeWorkerUrl();
+    }
+
+    /* =========================================================
+       Публичное: send(channel, embed, files)
+
+       channel: 'suggest' | 'support'
+       embed:   один Discord-embed (объект)
+       files:   массив File | { name, blob } (необязательно)
+
+       Порядок действий:
+       - нет файлов → JSON { embeds: [embed] } на /<channel>;
+       - есть файлы → multipart/form-data с payload_json и files[N];
+         embed может ссылаться на вложение через attachment://<name>.
+       ========================================================= */
+
+    function send(channel, embed, files) {
+        try {
+            if (channel !== 'suggest' && channel !== 'support') {
+                return resultError('bad_request');
+            }
+
+            if (!validateEmbedBasic(embed)) {
+                return resultError('bad_schema');
+            }
+
+            var base = safeWorkerUrl();
+
+            if (!base) {
+                return resultError('unavailable');
+            }
+
+            var url = base + '/' + channel;
+
+            var attachments = [];
+
+            if (Array.isArray(files)) {
+                for (var i = 0; i < files.length; i += 1) {
+                    var normalized = normalizeAttachment(files[i], i);
+
+                    if (!normalized) {
+                        return resultError('file_type');
+                    }
+
+                    attachments.push(normalized);
+                }
+            }
+
+            var payload = {
+                embeds: [embed]
+            };
+
+            /*
+             * Без вложений — обычный JSON.
+             */
+            if (attachments.length === 0) {
+                return sendJson(
+                    '/' + channel,
+                    payload
+                );
+            }
+
+            /*
+             * С вложениями — multipart/form-data.
+             */
+            var form;
+
+            try {
+                form = new FormData();
+            } catch (e) {
+                return resultError('bad_request');
+            }
+
+            try {
+                form.append(
+                    'payload_json',
+                    JSON.stringify(payload)
+                );
+
+                for (
+                    var j = 0;
+                    j < attachments.length;
+                    j += 1
+                ) {
+                    form.append(
+                        'files[' + j + ']',
+                        attachments[j].blob,
+                        attachments[j].name
+                    );
+                }
+            } catch (e) {
+                return resultError('bad_request');
+            }
+
+            /*
+             * Content-Type НЕ ставим: браузер сам выставит
+             * multipart boundary.
+             */
+            return fetchWithTimeout(url, {
+                method: 'POST',
+                body: form
+            }).then(function (fetchResult) {
+                if (!fetchResult.ok) {
+                    return resultError(fetchResult.error);
+                }
+
+                return interpretResponse(fetchResult.response).then(
+                    function (interpreted) {
+                        if (interpreted.ok) {
+                            return resultOk(interpreted.extra);
+                        }
+                        return resultError(interpreted.error);
+                    }
+                );
+            });
+        } catch (e) {
+            return resultError('unknown');
+        }
+    }
+
+    /* =========================================================
+       Публичное: stats(payload)
+
+       payload формирует вызывающая сторона — это ровно тот
+       JSON, который ожидает Worker на /stats.
+       Клиентская валидация минимальна: Worker сделает основную.
+       ========================================================= */
+
+    function stats(payload) {
+        try {
+            if (!isPlainObject(payload)) {
+                return resultError('bad_schema');
+            }
+
+            return sendJson('/stats', payload);
+        } catch (e) {
+            return resultError('unknown');
+        }
+    }
+
+    /* =========================================================
+       Экспорт
+       ========================================================= */
+
+    exported.available = available;
+    exported.send = send;
+    exported.stats = stats;
+
+    /*
+     * Удобные обёртки, чтобы карточке не собирать embed вручную
+     * в двух местах.
+     */
+    exported.suggest = function (embed, files) {
+        return send('suggest', embed, files);
+    };
+
+    exported.support = function (embed, files) {
+        return send('support', embed, files);
+    };
+
+    try {
+        if (typeof window !== 'undefined') {
+            window.LexApi = exported;
+        }
+    } catch (e) {
+        /* ignore */
+    }
+})();
+</script>
+<!-- ===== LexAuth v1 (lex-auth.js с GitHub, без правок) ===== -->
+<script>
+(function () {
+    'use strict';
+
+    /*
+     * LexAuth
+     * Версия: 1
+     *
+     * Назначение:
+     * - Discord OAuth через Supabase Auth;
+     * - облачные профили;
+     * - архив дел;
+     * - офлайн-очередь дел;
+     * - кеш активного профиля;
+     * - безопасное восстановление после перезагрузки.
+     *
+     * Ошибки:
+     * network          — сеть недоступна / запрос не выполнен
+     * unavailable      — текущая страница не поддерживает Supabase
+     * not_authenticated — пользователь не вошёл
+     * auth_failed      — ошибка входа/выхода
+     * cancelled        — вход был отменён
+     * profile_not_found — профиль не найден
+     * profiles_quota  — превышен лимит профилей
+     * cases_quota     — превышен лимит дел
+     * invalid_data     — некорректные данные
+     * data_too_large  — data больше 400000 байт
+     * case_not_found  — дело не найдено
+     * cloud_error     — ошибка Supabase
+     * queue_full      — очередь переполнена
+     * local_storage   — localStorage недоступен
+     * unknown         — неизвестная ошибка
+     *
+     * Жёсткое правило:
+     * Все публичные методы Promise-based и не выбрасывают ожидаемые ошибки.
+     */
+
+    var CFG = {
+        url: 'https://acokvcbfxrzfrgppvvzq.supabase.co',
+        anon: 'sb_publishable_hlPdJC0PpBVte2Uas1zYQg_YVVeTx7B'
+    };
+
+    var SUPABASE_CDN =
+        'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+
+    var PROFILE_KEY = 'lex_profile';
+    var CLOUD_PROFILE_KEY = 'lex_profile_cloud';
+    var CASE_QUEUE_KEY = 'lex_cases_queue';
+
+    var MAX_PROFILE_COUNT = 10;
+    var MAX_CASE_DATA_BYTES = 400000;
+    var MAX_QUEUE = 20;
+
+    var supabaseClient = null;
+    var loadPromise = null;
+    var initPromise = null;
+    var currentUser = null;
+    var initialized = false;
+
+    var exported = {};
+
+    /* =========================================================
+       Базовые безопасные helpers
+       ========================================================= */
+
+    function safeErrorCode(error, fallback) {
+        try {
+            if (!error) {
+                return fallback || 'unknown';
+            }
+
+            var message = String(error.message || '').toLowerCase();
+            var code = String(error.code || '').toLowerCase();
+
+            if (
+                message.indexOf('network') !== -1 ||
+                message.indexOf('fetch') !== -1 ||
+                message.indexOf('failed to fetch') !== -1 ||
+                code === 'network_error'
+            ) {
+                return 'network';
+            }
+
+            if (
+                message.indexOf('cancel') !== -1 ||
+                message.indexOf('denied') !== -1
+            ) {
+                return 'cancelled';
+            }
+
+            if (
+                message.indexOf('quota') !== -1 &&
+                message.indexOf('profiles') !== -1
+            ) {
+                return 'profiles_quota';
+            }
+
+            if (
+                message.indexOf('quota') !== -1 &&
+                message.indexOf('cases') !== -1
+            ) {
+                return 'cases_quota';
+            }
+
+            if (
+                message.indexOf('not found') !== -1 &&
+                message.indexOf('profile') !== -1
+            ) {
+                return 'profile_not_found';
+            }
+
+            if (
+                message.indexOf('not found') !== -1 &&
+                message.indexOf('case') !== -1
+            ) {
+                return 'case_not_found';
+            }
+
+            if (
+                message.indexOf('invalid') !== -1 &&
+                message.indexOf('data') !== -1
+            ) {
+                return 'invalid_data';
+            }
+
+            if (
+                code === '23505' ||
+                message.indexOf('duplicate') !== -1
+            ) {
+                return 'cloud_error';
+            }
+
+            return fallback || 'unknown';
+        } catch (e) {
+            return fallback || 'unknown';
+        }
+    }
+
+    function resultOk(data) {
+        if (typeof data === 'undefined') {
+            return Promise.resolve({ ok: true });
+        }
+
+        return Promise.resolve({
+            ok: true,
+            data: data
+        });
+    }
+
+    function resultError(code, extra) {
+        var result = {
+            ok: false,
+            error: code
+        };
+
+        if (extra && typeof extra === 'object') {
+            for (var key in extra) {
+                if (
+                    Object.prototype.hasOwnProperty.call(extra, key) &&
+                    key !== 'error'
+                ) {
+                    result[key] = extra[key];
+                }
+            }
+        }
+
+        return Promise.resolve(result);
+    }
+
+    function dispatchChange(reason) {
+        try {
+            if (
+                typeof window !== 'undefined' &&
+                typeof window.dispatchEvent === 'function' &&
+                typeof window.CustomEvent === 'function'
+            ) {
+                window.dispatchEvent(
+                    new CustomEvent('lex-auth-change', {
+                        detail: {
+                            reason: String(reason || 'unknown')
+                        }
+                    })
+                );
+            }
+        } catch (e) {
+            /* Ошибка события не должна ломать Lex. */
+        }
+    }
+
+    /* =========================================================
+       localStorage
+       ========================================================= */
+
+    function storageGet(key) {
+        try {
+            if (
+                typeof window === 'undefined' ||
+                !window.localStorage
+            ) {
+                return {
+                    ok: false,
+                    error: 'local_storage'
+                };
+            }
+
+            return {
+                ok: true,
+                value: window.localStorage.getItem(key)
+            };
+        } catch (e) {
+            return {
+                ok: false,
+                error: 'local_storage'
+            };
+        }
+    }
+
+    function storageSet(key, value) {
+        try {
+            if (
+                typeof window === 'undefined' ||
+                !window.localStorage
+            ) {
+                return false;
+            }
+
+            window.localStorage.setItem(key, value);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function storageRemove(key) {
+        try {
+            if (
+                typeof window === 'undefined' ||
+                !window.localStorage
+            ) {
+                return;
+            }
+
+            window.localStorage.removeItem(key);
+        } catch (e) {
+            /* Молча отключаем локальную часть. */
+        }
+    }
+
+    function parseStored(key, fallback) {
+        var item = storageGet(key);
+
+        if (!item.ok || !item.value) {
+            return fallback;
+        }
+
+        try {
+            return JSON.parse(item.value);
+        } catch (e) {
+            storageRemove(key);
+            return fallback;
+        }
+    }
+
+    /* =========================================================
+       Страница / HTTPS
+       ========================================================= */
+
+    function isHttpsPage() {
+        try {
+            return (
+                typeof window !== 'undefined' &&
+                window.location &&
+                window.location.protocol === 'https:'
+            );
+        } catch (e) {
+            return false;
+        }
+    }
+
+    /* =========================================================
+       Размер JSON
+       ========================================================= */
+
+    function utf8ByteLength(value) {
+        try {
+            var text = typeof value === 'string'
+                ? value
+                : JSON.stringify(value);
+
+            if (typeof TextEncoder === 'function') {
+                return new TextEncoder().encode(text).length;
+            }
+
+            /*
+             * Fallback для старых браузеров.
+             */
+            return unescape(encodeURIComponent(text)).length;
+        } catch (e) {
+            return -1;
+        }
+    }
+
+    /* =========================================================
+       Supabase CDN
+       ========================================================= */
+
+    function loadSupabase() {
+        if (!isHttpsPage()) {
+            return Promise.resolve({
+                ok: false,
+                error: 'unavailable'
+            });
+        }
+
+        if (
+            supabaseClient &&
+            typeof supabaseClient.from === 'function'
+        ) {
+            return Promise.resolve({
+                ok: true
+            });
+        }
+
+        if (loadPromise) {
+            return loadPromise;
+        }
+
+        loadPromise = new Promise(function (resolve) {
+            try {
+                if (
+                    typeof window === 'undefined' ||
+                    !window.document
+                ) {
+                    resolve({
+                        ok: false,
+                        error: 'unavailable'
+                    });
+                    return;
+                }
+
+                /*
+                 * Если Supabase уже присутствует на странице,
+                 * повторно CDN не загружаем.
+                 */
+                if (
+                    window.supabase &&
+                    typeof window.supabase.createClient === 'function'
+                ) {
+                    try {
+                        supabaseClient = window.supabase.createClient(
+                            CFG.url,
+                            CFG.anon,
+                            {
+                                auth: {
+                                    persistSession: true,
+                                    autoRefreshToken: true,
+                                    detectSessionInUrl: true,
+                                    flowType: 'pkce'
+                                }
+                            }
+                        );
+
+                        resolve({
+                            ok: true
+                        });
+                        return;
+                    } catch (e1) {
+                        resolve({
+                            ok: false,
+                            error: 'unavailable'
+                        });
+                        return;
+                    }
+                }
+
+                var script = document.createElement('script');
+
+                script.async = true;
+                script.src = SUPABASE_CDN;
+
+                script.onload = function () {
+                    try {
+                        if (
+                            !window.supabase ||
+                            typeof window.supabase.createClient !==
+                                'function'
+                        ) {
+                            resolve({
+                                ok: false,
+                                error: 'unavailable'
+                            });
+                            return;
+                        }
+
+                        supabaseClient =
+                            window.supabase.createClient(
+                                CFG.url,
+                                CFG.anon,
+                                {
+                                    auth: {
+                                        persistSession: true,
+                                        autoRefreshToken: true,
+                                        detectSessionInUrl: true,
+                                        flowType: 'pkce'
+                                    }
+                                }
+                            );
+
+                        resolve({
+                            ok: true
+                        });
+                    } catch (e2) {
+                        resolve({
+                            ok: false,
+                            error: 'unavailable'
+                        });
+                    }
+                };
+
+                script.onerror = function () {
+                    resolve({
+                        ok: false,
+                        error: 'network'
+                    });
+                };
+
+                (
+                    document.head ||
+                    document.documentElement ||
+                    document.body
+                ).appendChild(script);
+            } catch (e) {
+                resolve({
+                    ok: false,
+                    error: 'unavailable'
+                });
+            }
+        });
+
+        return loadPromise;
+    }
+
+    /* =========================================================
+       Инициализация
+       ========================================================= */
+
+    function init() {
+        if (initPromise) {
+            return initPromise;
+        }
+
+        initPromise = new Promise(function (resolve) {
+            loadSupabase()
+                .then(function (loaded) {
+                    if (!loaded.ok) {
+                        initialized = true;
+                        resolve({
+                            ok: false,
+                            error: loaded.error
+                        });
+                        return;
+                    }
+
+                                        /*
+                     * Чистим URL от OAuth-параметров.
+                     * Без этого старые ?code=, ?error=, #access_token=
+                     * остаются в адресной строке и ломают
+                     * последующие попытки входа.
+                     */
+                    try {
+                        if (
+                            typeof window !== 'undefined' &&
+                            window.history &&
+                            typeof window.history.replaceState === 'function' &&
+                            window.location
+                        ) {
+                            var hasOauthParams =
+                                window.location.search.indexOf('code=') !== -1 ||
+                                window.location.search.indexOf('error=') !== -1 ||
+                                window.location.hash.indexOf('access_token=') !== -1 ||
+                                window.location.hash.indexOf('error=') !== -1;
+
+                            if (hasOauthParams) {
+                                window.history.replaceState(
+                                    null,
+                                    '',
+                                    window.location.origin +
+                                    window.location.pathname
+                                );
+                            }
+                        }
+                    } catch (eClean) {
+                        /* ignore */
+                    }
+
+                    try {
+                        supabaseClient.auth.onAuthStateChange(
+                            function (event, session) {
+                                try {
+                                    currentUser =
+                                        session &&
+                                        session.user
+                                            ? session.user
+                                            : null;
+
+                                    if (
+                                        event === 'SIGNED_IN' ||
+                                        event === 'TOKEN_REFRESHED' ||
+                                        event === 'USER_UPDATED'
+                                    ) {
+                                        if (currentUser) {
+                                            syncCachedActiveProfile();
+                                        }
+                                    }
+
+                                    if (event === 'SIGNED_IN') {
+                                        dispatchChange('sign_in');
+
+                                        /*
+                                         * Очередь отправляется после
+                                         * завершения auth callback.
+                                         */
+                                        setTimeout(function () {
+                                            flushCases();
+                                        }, 0);
+                                    }
+
+                                    if (event === 'SIGNED_OUT') {
+                                        currentUser = null;
+                                        storageRemove(
+                                            CLOUD_PROFILE_KEY
+                                        );
+                                        dispatchChange('sign_out');
+                                    }
+                                } catch (e) {
+                                    /* Auth callback никогда не ломает страницу. */
+                                }
+                            }
+                        );
+
+                        /*
+                         * Восстанавливаем текущую сессию.
+                         */
+                        supabaseClient.auth
+                            .getSession()
+                            .then(function (response) {
+                                try {
+                                    if (
+                                        response &&
+                                        response.data &&
+                                        response.data.session
+                                    ) {
+                                        currentUser =
+                                            response.data.session.user ||
+                                            null;
+
+                                        if (currentUser) {
+                                            syncCachedActiveProfile();
+                                        }
+                                    }
+
+                                    initialized = true;
+
+                                    resolve({
+                                        ok: true
+                                    });
+
+                                    /*
+                                     * Если пользователь уже вошёл,
+                                     * пробуем отправить офлайн-очередь.
+                                     */
+                                    if (currentUser) {
+                                        setTimeout(
+                                            function () {
+                                                flushCases();
+                                            },
+                                            0
+                                        );
+                                    }
+                                } catch (e2) {
+                                    initialized = true;
+
+                                    resolve({
+                                        ok: false,
+                                        error: 'auth_failed'
+                                    });
+                                }
+                            })
+                            .catch(function () {
+                                initialized = true;
+
+                                resolve({
+                                    ok: false,
+                                    error: 'network'
+                                });
+                            });
+                    } catch (e3) {
+                        initialized = true;
+
+                        resolve({
+                            ok: false,
+                            error: 'auth_failed'
+                        });
+                    }
+                })
+                .catch(function () {
+                    initialized = true;
+
+                    resolve({
+                        ok: false,
+                        error: 'unknown'
+                    });
+                });
+        });
+
+        return initPromise;
+    }
+
+    /*
+     * LexAuth.ready всегда разрешается.
+     */
+    var ready = init().catch(function () {
+        return {
+            ok: false,
+            error: 'unknown'
+        };
+    });
+
+    /* =========================================================
+       Auth
+       ========================================================= */
+
+    function available() {
+        return !!(
+            isHttpsPage() &&
+            supabaseClient &&
+            typeof supabaseClient.auth === 'object'
+        );
+    }
+
+    function signIn() {
+        return init()
+            .then(function (initResult) {
+                if (!initResult.ok || !available()) {
+                    return {
+                        ok: false,
+                        error: initResult.error || 'unavailable'
+                    };
+                }
+
+                try {
+                    var redirectTo =
+                        window.location.origin +
+                        window.location.pathname;
+
+                    return supabaseClient.auth
+                        .signInWithOAuth({
+                            provider: 'discord',
+                            options: {
+                                redirectTo: redirectTo,
+                                scopes: 'identify email',
+                                queryParams: {
+                                    scope: 'identify email'
+                                }
+                            }
+                        })
+                        .then(function (response) {
+                            if (
+                                response &&
+                                response.error
+                            ) {
+                                return {
+                                    ok: false,
+                                    error: 'auth_failed'
+                                };
+                            }
+
+                            return {
+                                ok: true
+                            };
+                        })
+                        .catch(function () {
+                            return {
+                                ok: false,
+                                error: 'auth_failed'
+                            };
+                        });
+                } catch (e) {
+                    return {
+                        ok: false,
+                        error: 'auth_failed'
+                    };
+                }
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'auth_failed'
+                };
+            });
+    }
+
+    function clearSupabaseStorage() {
+        try {
+            if (
+                typeof window === 'undefined' ||
+                !window.localStorage
+            ) {
+                return;
+            }
+
+            var keys = [];
+
+            for (
+                var i = 0;
+                i < window.localStorage.length;
+                i += 1
+            ) {
+                var key =
+                    window.localStorage.key(i);
+
+                if (
+                    key &&
+                    (
+                        key.indexOf('sb-') === 0 ||
+                        key.indexOf('supabase') !== -1
+                    )
+                ) {
+                    keys.push(key);
+                }
+            }
+
+            for (var j = 0; j < keys.length; j += 1) {
+                try {
+                    window.localStorage.removeItem(
+                        keys[j]
+                    );
+                } catch (e) {
+                    /* ignore */
+                }
+            }
+        } catch (e2) {
+            /* ignore */
+        }
+    }
+
+    function signOut() {
+        return init()
+            .then(function (initResult) {
+                if (
+                    !initResult.ok ||
+                    !supabaseClient
+                ) {
+                    currentUser = null;
+
+                    storageRemove(
+                        CLOUD_PROFILE_KEY
+                    );
+
+                    clearSupabaseStorage();
+
+                    dispatchChange('sign_out');
+
+                    return {
+                        ok: true
+                    };
+                }
+
+                return supabaseClient.auth
+                    .signOut()
+                    .then(function (response) {
+                        if (
+                            response &&
+                            response.error
+                        ) {
+                            return {
+                                ok: false,
+                                error: 'auth_failed'
+                            };
+                        }
+
+                        currentUser = null;
+
+                        storageRemove(
+                            CLOUD_PROFILE_KEY
+                        );
+
+                        clearSupabaseStorage();
+
+                        dispatchChange('sign_out');
+
+                        return {
+                            ok: true
+                        };
+                    })
+                    .catch(function () {
+                        /*
+                         * Даже если сеть пропала,
+                         * локальный auth cache очищаем.
+                         */
+                        currentUser = null;
+
+                        storageRemove(
+                            CLOUD_PROFILE_KEY
+                        );
+
+                        clearSupabaseStorage();
+
+                        dispatchChange('sign_out');
+
+                        return {
+                            ok: true
+                        };
+                    });
+            })
+            .catch(function () {
+                currentUser = null;
+
+                storageRemove(
+                    CLOUD_PROFILE_KEY
+                );
+
+                clearSupabaseStorage();
+
+                dispatchChange('sign_out');
+
+                return {
+                    ok: true
+                };
+            });
+    }
+
+    /* =========================================================
+       User / Discord metadata
+       ========================================================= */
+
+    function metadataString(metadata, keys) {
+        try {
+            if (!metadata) {
+                return null;
+            }
+
+            for (
+                var i = 0;
+                i < keys.length;
+                i += 1
+            ) {
+                var value = metadata[keys[i]];
+
+                if (
+                    typeof value === 'string' &&
+                    value.trim()
+                ) {
+                    return value.trim();
+                }
+            }
+        } catch (e) {
+            /* ignore */
+        }
+
+        return null;
+    }
+
+    function getDiscordUser() {
+        try {
+            if (!currentUser) {
+                return null;
+            }
+
+            var metadata =
+                currentUser.user_metadata || {};
+
+            /*
+             * Supabase OAuth user metadata зависит от
+             * данных, которые возвращает OAuth provider.
+             *
+             * Discord ID обычно доступен как provider_id
+             * на user-объекте либо sub в metadata.
+             */
+            var discordId =
+                currentUser.provider_id ||
+                metadata.provider_id ||
+                metadata.sub ||
+                metadata.provider_id_discord ||
+                null;
+
+            var discordName =
+                metadata.full_name ||
+                metadata.name ||
+                metadata.preferred_username ||
+                metadata.user_name ||
+                metadata.username ||
+                null;
+
+            if (
+                discordId !== null
+            ) {
+                discordId = String(discordId);
+            }
+
+            if (
+                discordName !== null
+            ) {
+                discordName = String(discordName);
+            }
+
+            if (!discordId && currentUser.id) {
+                /*
+                 * Это Supabase UUID, а не Discord ID.
+                 * Используем его только как последний fallback
+                 * для отображения идентификатора пользователя.
+                 */
+                discordId = String(currentUser.id);
+            }
+
+            return {
+                discordId: discordId,
+                discordName: discordName
+            };
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function user() {
+        return Promise.resolve(
+            getDiscordUser()
+        );
+    }
+
+    /* =========================================================
+       Профили — преобразование
+       ========================================================= */
+
+    function localProfileFromRow(row) {
+        if (!row) {
+            return null;
+        }
+
+        return {
+            cloudId: row.id || null,
+            name: row.name || '',
+            id: row.rp_id || '',
+            role: row.role || '',
+            mail: row.mail || '',
+            passport: row.passport || '',
+            license: row.license || '',
+            isActive: !!row.is_active
+        };
+    }
+
+    function profileToRow(profile) {
+        profile = profile || {};
+
+        return {
+            name: normalizeString(
+                profile.name,
+                80
+            ),
+            rp_id: normalizeString(
+                profile.id,
+                20
+            ),
+            role:
+                profile.role === 'adv' ||
+                profile.role === 'prok'
+                    ? profile.role
+                    : null,
+            mail: normalizeString(
+                profile.mail,
+                60
+            ),
+            passport: normalizePassport(
+                profile.passport
+            ),
+            license: normalizeString(
+                profile.license,
+                40
+            )
+        };
+    }
+
+    function normalizeString(value, maxLength) {
+        if (
+            value === null ||
+            typeof value === 'undefined'
+        ) {
+            return '';
+        }
+
+        value = String(value);
+
+        if (value.length > maxLength) {
+            return value.substring(
+                0,
+                maxLength
+            );
+        }
+
+        return value;
+    }
+
+    function normalizePassport(value) {
+        value = normalizeString(
+            value,
+            300
+        );
+
+        if (
+            value === '' ||
+            value.indexOf('https://') === 0
+        ) {
+            return value;
+        }
+
+        return '';
+    }
+
+    function validateProfile(profile) {
+        if (!profile || typeof profile !== 'object') {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.name &&
+            String(profile.name).length > 80
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.id &&
+            String(profile.id).length > 20
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.mail &&
+            String(profile.mail).length > 60
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.passport &&
+            String(profile.passport).length > 300
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.passport &&
+            String(profile.passport).indexOf(
+                'https://'
+            ) !== 0
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.license &&
+            String(profile.license).length > 40
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.role !== undefined &&
+            profile.role !== null &&
+            profile.role !== '' &&
+            profile.role !== 'adv' &&
+            profile.role !== 'prok'
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        return {
+            ok: true
+        };
+    }
+
+    /* =========================================================
+       Profiles API
+       ========================================================= */
+
+    function profilesList() {
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error: r.error || 'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error: 'not_authenticated'
+                    };
+                }
+
+                return supabaseClient
+                    .from('profiles')
+                    .select(
+                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                    )
+                    .eq(
+                        'user_id',
+                        currentUser.id
+                    )
+                    .order(
+                        'created_at',
+                        {
+                            ascending: true
+                        }
+                    )
+                    .then(function (response) {
+                        if (response.error) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        var rows =
+                            response.data || [];
+
+                        var profiles =
+                            rows.map(
+                                localProfileFromRow
+                            );
+
+                        /*
+                         * Обновляем кеш активного профиля.
+                         */
+                        var active = null;
+
+                        for (
+                            var i = 0;
+                            i < profiles.length;
+                            i += 1
+                        ) {
+                            if (
+                                profiles[i].isActive
+                            ) {
+                                active =
+                                    profiles[i];
+                                break;
+                            }
+                        }
+
+                        if (active) {
+                            saveCloudProfileCache(
+                                active
+                            );
+                        }
+
+                        return {
+                            ok: true,
+                            data: profiles
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function profilesCreate(profile) {
+        var validation =
+            validateProfile(profile);
+
+        if (!validation.ok) {
+            return Promise.resolve(
+                validation
+            );
+        }
+
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error: r.error || 'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error: 'not_authenticated'
+                    };
+                }
+
+                var row =
+                    profileToRow(profile);
+
+                /*
+                 * user_id намеренно задаётся клиентом как
+                 * текущий user.id. RLS проверяет совпадение.
+                 */
+                row.user_id =
+                    currentUser.id;
+
+                return supabaseClient
+                    .from('profiles')
+                    .insert(row)
+                    .select(
+                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                    )
+                    .single()
+                    .then(function (response) {
+                        if (response.error) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        var result =
+                            localProfileFromRow(
+                                response.data
+                            );
+
+                        if (
+                            result &&
+                            result.isActive
+                        ) {
+                            saveCloudProfileCache(
+                                result
+                            );
+                        }
+
+                        dispatchChange(
+                            'profile_create'
+                        );
+
+                        return {
+                            ok: true,
+                            data: result
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function profilesUpdate(
+        cloudId,
+        profile
+    ) {
+        var validation =
+            validateProfile(profile);
+
+        if (!validation.ok) {
+            return Promise.resolve(
+                validation
+            );
+        }
+
+        if (!cloudId) {
+            return Promise.resolve({
+                ok: false,
+                error: 'profile_not_found'
+            });
+        }
+
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error: r.error || 'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error: 'not_authenticated'
+                    };
+                }
+
+                var row =
+                    profileToRow(profile);
+
+                return supabaseClient
+                    .from('profiles')
+                    .update(row)
+                    .eq('id', cloudId)
+                    .eq(
+                        'user_id',
+                        currentUser.id
+                    )
+                    .select(
+                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                    )
+                    .maybeSingle()
+                    .then(function (response) {
+                        if (response.error) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        if (!response.data) {
+                            return {
+                                ok: false,
+                                error: 'profile_not_found'
+                            };
+                        }
+
+                        var result =
+                            localProfileFromRow(
+                                response.data
+                            );
+
+                        if (
+                            result &&
+                            result.isActive
+                        ) {
+                            saveCloudProfileCache(
+                                result
+                            );
+                        }
+
+                        dispatchChange(
+                            'profile_update'
+                        );
+
+                        return {
+                            ok: true,
+                            data: result
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function profilesRemove(cloudId) {
+        if (!cloudId) {
+            return Promise.resolve({
+                ok: false,
+                error: 'profile_not_found'
+            });
+        }
+
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error: r.error || 'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error: 'not_authenticated'
+                    };
+                }
+
+                return supabaseClient
+                    .from('profiles')
+                    .delete()
+                    .eq('id', cloudId)
+                    .eq(
+                        'user_id',
+                        currentUser.id
+                    )
+                    .select('id')
+                    .maybeSingle()
+                    .then(function (response) {
+                        if (response.error) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        if (!response.data) {
+                            return {
+                                ok: false,
+                                error: 'profile_not_found'
+                            };
+                        }
+
+                        var cached =
+                            getCloudProfileCache();
+
+                        if (
+                            cached &&
+                            cached.profile &&
+                            cached.profile.cloudId ===
+                                cloudId
+                        ) {
+                            storageRemove(
+                                CLOUD_PROFILE_KEY
+                            );
+                        }
+
+                        dispatchChange(
+                            'profile_remove'
+                        );
+
+                        return {
+                            ok: true
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function profilesSetActive(cloudId) {
+        if (!cloudId) {
+            return Promise.resolve({
+                ok: false,
+                error: 'profile_not_found'
+            });
+        }
+
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error: r.error || 'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error: 'not_authenticated'
+                    };
+                }
+
+                return supabaseClient
+                    .rpc(
+                        'set_active_profile',
+                        {
+                            p_id: cloudId
+                        }
+                    )
+                    .then(function (response) {
+                        if (response.error) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'profile_not_found'
+                                    )
+                            };
+                        }
+
+                        /*
+                         * Получаем обновлённый активный профиль.
+                         */
+                        return supabaseClient
+                            .from('profiles')
+                            .select(
+                                'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                            )
+                            .eq(
+                                'id',
+                                cloudId
+                            )
+                            .eq(
+                                'user_id',
+                                currentUser.id
+                            )
+                            .maybeSingle()
+                            .then(function (
+                                profileResponse
+                            ) {
+                                if (
+                                    profileResponse.error
+                                ) {
+                                    return {
+                                        ok: false,
+                                        error:
+                                            'cloud_error'
+                                    };
+                                }
+
+                                if (
+                                    !profileResponse.data
+                                ) {
+                                    return {
+                                        ok: false,
+                                        error:
+                                            'profile_not_found'
+                                    };
+                                }
+
+                                var result =
+                                    localProfileFromRow(
+                                        profileResponse.data
+                                    );
+
+                                saveCloudProfileCache(
+                                    result
+                                );
+
+                                dispatchChange(
+                                    'profile_active'
+                                );
+
+                                return {
+                                    ok: true,
+                                    data: result
+                                };
+                            })
+                            .catch(function () {
+                                return {
+                                    ok: false,
+                                    error: 'network'
+                                };
+                            });
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function profilesActive() {
+        /*
+         * Сначала пробуем кеш.
+         * Если облако доступно — затем обновляем его.
+         */
+        var cached =
+            getCloudProfileCache();
+
+        if (
+            cached &&
+            cached.profile
+        ) {
+            /*
+             * Возвращаем кеш сразу как Promise.
+             * Актуализация выполняется отдельно.
+             */
+            refreshActiveProfileInBackground();
+            return Promise.resolve({
+                ok: true,
+                data: cached.profile,
+                cached: true
+            });
+        }
+
+        return profilesList()
+            .then(function (response) {
+                if (!response.ok) {
+                    return response;
+                }
+
+                for (
+                    var i = 0;
+                    i < response.data.length;
+                    i += 1
+                ) {
+                    if (
+                        response.data[i].isActive
+                    ) {
+                        return {
+                            ok: true,
+                            data:
+                                response.data[i]
+                        };
+                    }
+                }
+
+                return {
+                    ok: true,
+                    data: null
+                };
+            });
+    }
+
+    function saveCloudProfileCache(
+        profile
+    ) {
+        try {
+            if (!currentUser || !profile) {
+                return;
+            }
+
+            storageSet(
+                CLOUD_PROFILE_KEY,
+                JSON.stringify({
+                    userId:
+                        currentUser.id,
+                    profile: profile,
+                    ts: Date.now()
+                })
+            );
+        } catch (e) {
+            /* ignore */
+        }
+    }
+
+    function getCloudProfileCache() {
+        var cached =
+            parseStored(
+                CLOUD_PROFILE_KEY,
+                null
+            );
+
+        if (
+            !cached ||
+            !cached.profile
+        ) {
+            return null;
+        }
+
+        /*
+         * Если currentUser уже известен, кеш другого
+         * пользователя никогда не отдаём.
+         */
+        if (
+            currentUser &&
+            cached.userId !== currentUser.id
+        ) {
+            storageRemove(
+                CLOUD_PROFILE_KEY
+            );
+            return null;
+        }
+
+        return cached;
+    }
+
+    function syncCachedActiveProfile() {
+        try {
+            var cached =
+                getCloudProfileCache();
+
+            if (
+                cached &&
+                currentUser &&
+                cached.userId === currentUser.id
+            ) {
+                return;
+            }
+
+            /*
+             * Не ждём сеть в auth callback.
+             */
+            profilesList().catch(function () {
+                /* ignore */
+            });
+        } catch (e) {
+            /* ignore */
+        }
+    }
+
+    function refreshActiveProfileInBackground() {
+        try {
+            profilesList().catch(function () {
+                /* ignore */
+            });
+        } catch (e) {
+            /* ignore */
+        }
+    }
+
+    /* =========================================================
+       Cases helpers
+       ========================================================= */
+
+    function normalizeCase(c) {
+        c = c || {};
+
+        return {
+            localId:
+                c.localId === null ||
+                typeof c.localId === 'undefined'
+                    ? ''
+                    : String(c.localId),
+
+            outcome:
+                c.outcome === null ||
+                typeof c.outcome === 'undefined'
+                    ? ''
+                    : String(c.outcome),
+
+            closedAt:
+                c.closedAt === null ||
+                typeof c.closedAt === 'undefined'
+                    ? null
+                    : String(c.closedAt),
+
+            withTexts:
+                !!c.withTexts,
+
+            data:
+                c.data &&
+                typeof c.data === 'object'
+                    ? c.data
+                    : {},
+
+            appVersion:
+                c.appVersion === null ||
+                typeof c.appVersion === 'undefined'
+                    ? ''
+                    : String(c.appVersion),
+
+            dbVersion:
+                c.dbVersion === null ||
+                typeof c.dbVersion === 'undefined'
+                    ? ''
+                    : String(c.dbVersion),
+
+            profileId:
+                c.profileId || null
+        };
+    }
+
+    function validateCase(c) {
+        if (!c || typeof c !== 'object') {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            !c.localId ||
+            String(c.localId).length === 0
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            String(c.localId).length > 300
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            c.outcome &&
+            String(c.outcome).length > 40
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        var bytes =
+            utf8ByteLength(
+                c.data || {}
+            );
+
+        if (
+            bytes < 0
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            bytes > MAX_CASE_DATA_BYTES
+        ) {
+            return {
+                ok: false,
+                error: 'data_too_large'
+            };
+        }
+
+        return {
+            ok: true,
+            bytes: bytes
+        };
+    }
+
+    function caseRowFromInput(c) {
+        var normalized =
+            normalizeCase(c);
+
+        var row = {
+            local_id:
+                normalized.localId,
+
+            outcome:
+                normalized.outcome,
+
+            closed_at:
+                normalized.closedAt,
+
+            with_texts:
+                normalized.withTexts,
+
+            data:
+                normalized.data,
+
+            app_version:
+                normalized.appVersion,
+
+            db_version:
+                normalized.dbVersion
+        };
+
+        if (
+            normalized.profileId
+        ) {
+            row.profile_id =
+                normalized.profileId;
+        }
+
+        return row;
+    }
+
+    function caseListItem(row) {
+        return {
+            id:
+                row.id || null,
+
+            localId:
+                row.local_id || '',
+
+            createdAt:
+                row.created_at || null,
+
+            closedAt:
+                row.closed_at || null,
+
+            outcome:
+                row.outcome || '',
+
+            withTexts:
+                !!row.with_texts
+        };
+    }
+
+    function caseFull(row) {
+        return {
+            id:
+                row.id || null,
+
+            localId:
+                row.local_id || '',
+
+            createdAt:
+                row.created_at || null,
+
+            closedAt:
+                row.closed_at || null,
+
+            outcome:
+                row.outcome || '',
+
+            withTexts:
+                !!row.with_texts,
+
+            data:
+                row.data || {},
+
+            appVersion:
+                row.app_version || '',
+
+            dbVersion:
+                row.db_version || '',
+
+            profileId:
+                row.profile_id || null
+        };
+    }
+
+    /* =========================================================
+       Cases — local queue
+       ========================================================= */
+
+    function getQueue() {
+        var queue =
+            parseStored(
+                CASE_QUEUE_KEY,
+                []
+            );
+
+        if (!Array.isArray(queue)) {
+            return [];
+        }
+
+        return queue;
+    }
+
+    function setQueue(queue) {
+        if (!Array.isArray(queue)) {
+            queue = [];
+        }
+
+        storageSet(
+            CASE_QUEUE_KEY,
+            JSON.stringify(queue)
+        );
+    }
+
+    function enqueueCase(c) {
+        var queue =
+            getQueue();
+
+        queue.push({
+            queuedAt: Date.now(),
+            caseData: c
+        });
+
+        while (
+            queue.length >
+            MAX_QUEUE
+        ) {
+            queue.shift();
+
+            try {
+                console.warn(
+                    '[LexAuth] queue_full'
+                );
+            } catch (e) {
+                /* ignore */
+            }
+        }
+
+        setQueue(queue);
+
+        return {
+            ok: false,
+            error: 'network',
+            queued: true,
+            queueSize: queue.length
+        };
+    }
+
+    /* =========================================================
+       Cases — cloud
+       ========================================================= */
+
+    function saveCase(c) {
+        var normalized =
+            normalizeCase(c);
+
+        var validation =
+            validateCase(normalized);
+
+        if (!validation.ok) {
+            return Promise.resolve(
+                validation
+            );
+        }
+
+        /*
+         * Если облако недоступно или пользователь не вошёл,
+         * сохраняем в локальную очередь.
+         */
+        return init()
+            .then(function (r) {
+                if (
+                    !r.ok ||
+                    !supabaseClient ||
+                    !currentUser
+                ) {
+                    return enqueueCase(
+                        normalized
+                    );
+                }
+
+                var row =
+                    caseRowFromInput(
+                        normalized
+                    );
+
+                row.user_id =
+                    currentUser.id;
+
+                return supabaseClient
+                    .from('cases')
+                    .upsert(
+                        row,
+                        {
+                            onConflict:
+                                'user_id,local_id'
+                        }
+                    )
+                    .select(
+                        'id,local_id,created_at,closed_at,outcome,with_texts,data,app_version,db_version,profile_id'
+                    )
+                    .single()
+                    .then(function (response) {
+                        if (
+                            response.error
+                        ) {
+                            var code =
+                                safeErrorCode(
+                                    response.error,
+                                    'cloud_error'
+                                );
+
+                            if (
+                                code ===
+                                'cases_quota'
+                            ) {
+                                return {
+                                    ok: false,
+                                    error:
+                                        'cases_quota'
+                                };
+                            }
+
+                            /*
+                             * Сетевая ошибка → очередь.
+                             */
+                            if (
+                                code === 'network'
+                            ) {
+                                return enqueueCase(
+                                    normalized
+                                );
+                            }
+
+                            return {
+                                ok: false,
+                                error: code
+                            };
+                        }
+
+                        return {
+                            ok: true,
+                            data:
+                                caseFull(
+                                    response.data
+                                )
+                        };
+                    })
+                    .catch(function () {
+                        return enqueueCase(
+                            normalized
+                        );
+                    });
+            })
+            .catch(function () {
+                return enqueueCase(
+                    normalized
+                );
+            });
+    }
+
+    function listCases(options) {
+        options =
+            options || {};
+
+        var limit =
+            parseInt(
+                options.limit,
+                10
+            );
+
+        if (
+            !isFinite(limit) ||
+            limit < 1
+        ) {
+            limit = 50;
+        }
+
+        if (limit > 100) {
+            limit = 100;
+        }
+
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error:
+                            r.error ||
+                            'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error:
+                            'not_authenticated'
+                    };
+                }
+
+                var query =
+                    supabaseClient
+                        .from('cases')
+                        .select(
+                            'id,local_id,created_at,closed_at,outcome,with_texts'
+                        )
+                        .eq(
+                            'user_id',
+                            currentUser.id
+                        )
+                        .order(
+                            'created_at',
+                            {
+                                ascending: false
+                            }
+                        )
+                        .limit(limit);
+
+                if (
+                    options.before
+                ) {
+                    query =
+                        query.lt(
+                            'created_at',
+                            String(
+                                options.before
+                            )
+                        );
+                }
+
+                return query
+                    .then(function (response) {
+                        if (
+                            response.error
+                        ) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        return {
+                            ok: true,
+                            data:
+                                (
+                                    response.data ||
+                                    []
+                                ).map(
+                                    caseListItem
+                                )
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function getCase(id) {
+        if (!id) {
+            return Promise.resolve({
+                ok: false,
+                error: 'case_not_found'
+            });
+        }
+
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error:
+                            r.error ||
+                            'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error:
+                            'not_authenticated'
+                    };
+                }
+
+                return supabaseClient
+                    .from('cases')
+                    .select(
+                        'id,local_id,created_at,closed_at,outcome,with_texts,data,app_version,db_version,profile_id'
+                    )
+                    .eq(
+                        'id',
+                        id
+                    )
+                    .eq(
+                        'user_id',
+                        currentUser.id
+                    )
+                    .maybeSingle()
+                    .then(function (response) {
+                        if (
+                            response.error
+                        ) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        if (
+                            !response.data
+                        ) {
+                            return {
+                                ok: false,
+                                error:
+                                    'case_not_found'
+                            };
+                        }
+
+                        return {
+                            ok: true,
+                            data:
+                                caseFull(
+                                    response.data
+                                )
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function removeCase(id) {
+        if (!id) {
+            return Promise.resolve({
+                ok: false,
+                error: 'case_not_found'
+            });
+        }
+
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error:
+                            r.error ||
+                            'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error:
+                            'not_authenticated'
+                    };
+                }
+
+                return supabaseClient
+                    .from('cases')
+                    .delete()
+                    .eq(
+                        'id',
+                        id
+                    )
+                    .eq(
+                        'user_id',
+                        currentUser.id
+                    )
+                    .select('id')
+                    .maybeSingle()
+                    .then(function (response) {
+                        if (
+                            response.error
+                        ) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        if (
+                            !response.data
+                        ) {
+                            return {
+                                ok: false,
+                                error:
+                                    'case_not_found'
+                            };
+                        }
+
+                        return {
+                            ok: true
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    function countCases() {
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error:
+                            r.error ||
+                            'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error:
+                            'not_authenticated'
+                    };
+                }
+
+                return supabaseClient
+                    .from('cases')
+                    .select(
+                        'id',
+                        {
+                            count: 'exact',
+                            head: true
+                        }
+                    )
+                    .eq(
+                        'user_id',
+                        currentUser.id
+                    )
+                    .then(function (response) {
+                        if (
+                            response.error
+                        ) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        response.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        return {
+                            ok: true,
+                            data:
+                                Number(
+                                    response.count ||
+                                    0
+                                )
+                        };
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    /* =========================================================
+       Flush очереди
+       ========================================================= */
+
+    var flushRunning = false;
+
+    function flushCases() {
+        if (flushRunning) {
+            return Promise.resolve({
+                ok: true,
+                sent: 0,
+                remaining:
+                    getQueue().length
+            });
+        }
+
+        var queue =
+            getQueue();
+
+        if (!queue.length) {
+            return Promise.resolve({
+                ok: true,
+                sent: 0,
+                remaining: 0
+            });
+        }
+
+        return init()
+            .then(function (r) {
+                if (
+                    !r.ok ||
+                    !supabaseClient ||
+                    !currentUser
+                ) {
+                    return {
+                        ok: false,
+                        error:
+                            r.error ||
+                            'not_authenticated',
+                        sent: 0,
+                        remaining:
+                            queue.length
+                    };
+                }
+
+                flushRunning = true;
+
+                var sent = 0;
+
+                function next(index) {
+                    if (
+                        index >= queue.length
+                    ) {
+                        flushRunning = false;
+
+                        var remaining =
+                            getQueue().length;
+
+                        if (
+                            sent > 0
+                        ) {
+                            dispatchChange(
+                                'cases_flush'
+                            );
+                        }
+
+                        return {
+                            ok: true,
+                            sent: sent,
+                            remaining:
+                                remaining
+                        };
+                    }
+
+                    var item =
+                        queue[index];
+
+                    if (
+                        !item ||
+                        !item.caseData
+                    ) {
+                        queue.splice(
+                            index,
+                            1
+                        );
+
+                        setQueue(queue);
+
+                        return next(index);
+                    }
+
+                    return saveCaseDirect(
+                        item.caseData
+                    ).then(function (
+                        response
+                    ) {
+                        if (
+                            response.ok
+                        ) {
+                            /*
+                             * Удаляем именно этот элемент.
+                             */
+                            queue.splice(
+                                index,
+                                1
+                            );
+
+                            setQueue(
+                                queue
+                            );
+
+                            sent += 1;
+
+                            return next(
+                                index
+                            );
+                        }
+
+                        /*
+                         * Если сервер отказал по данным,
+                         * оставлять такой элемент в очереди
+                         * бессмысленно.
+                         */
+                        if (
+                            response.error ===
+                                'invalid_data' ||
+                            response.error ===
+                                'data_too_large' ||
+                            response.error ===
+                                'cases_quota'
+                        ) {
+                            queue.splice(
+                                index,
+                                1
+                            );
+
+                            setQueue(
+                                queue
+                            );
+
+                            return next(
+                                index
+                            );
+                        }
+
+                        /*
+                         * Сеть/временная ошибка:
+                         * оставляем очередь и останавливаем flush.
+                         */
+                        flushRunning = false;
+
+                        return {
+                            ok: false,
+                            error:
+                                response.error ||
+                                'network',
+                            sent: sent,
+                            remaining:
+                                queue.length
+                        };
+                    });
+                }
+
+                return next(0);
+            })
+            .catch(function () {
+                flushRunning = false;
+
+                return {
+                    ok: false,
+                    error: 'network',
+                    sent: 0,
+                    remaining:
+                        getQueue().length
+                };
+            });
+    }
+
+    function saveCaseDirect(c) {
+        var normalized =
+            normalizeCase(c);
+
+        var validation =
+            validateCase(
+                normalized
+            );
+
+        if (!validation.ok) {
+            return Promise.resolve(
+                validation
+            );
+        }
+
+        if (
+            !supabaseClient ||
+            !currentUser
+        ) {
+            return Promise.resolve({
+                ok: false,
+                error:
+                    'not_authenticated'
+            });
+        }
+
+        var row =
+            caseRowFromInput(
+                normalized
+            );
+
+        row.user_id =
+            currentUser.id;
+
+        return supabaseClient
+            .from('cases')
+            .upsert(
+                row,
+                {
+                    onConflict:
+                        'user_id,local_id'
+                }
+            )
+            .select(
+                'id,local_id,created_at,closed_at,outcome,with_texts,data,app_version,db_version,profile_id'
+            )
+            .single()
+            .then(function (response) {
+                if (
+                    response.error
+                ) {
+                    return {
+                        ok: false,
+                        error:
+                            safeErrorCode(
+                                response.error,
+                                'cloud_error'
+                            )
+                    };
+                }
+
+                return {
+                    ok: true,
+                    data:
+                        caseFull(
+                            response.data
+                        )
+                };
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'network'
+                };
+            });
+    }
+
+    /* =========================================================
+       Wipe
+       ========================================================= */
+
+    function wipe() {
+        return init()
+            .then(function (r) {
+                if (!r.ok || !supabaseClient) {
+                    return {
+                        ok: false,
+                        error:
+                            r.error ||
+                            'unavailable'
+                    };
+                }
+
+                if (!currentUser) {
+                    return {
+                        ok: false,
+                        error:
+                            'not_authenticated'
+                    };
+                }
+
+                var userId =
+                    currentUser.id;
+
+                /*
+                 * Сначала дела.
+                 */
+                return supabaseClient
+                    .from('cases')
+                    .delete()
+                    .eq(
+                        'user_id',
+                        userId
+                    )
+                    .then(function (
+                        casesResponse
+                    ) {
+                        if (
+                            casesResponse.error
+                        ) {
+                            return {
+                                ok: false,
+                                error:
+                                    safeErrorCode(
+                                        casesResponse.error,
+                                        'cloud_error'
+                                    )
+                            };
+                        }
+
+                        return supabaseClient
+                            .from('profiles')
+                            .delete()
+                            .eq(
+                                'user_id',
+                                userId
+                            )
+                            .then(function (
+                                profilesResponse
+                            ) {
+                                if (
+                                    profilesResponse.error
+                                ) {
+                                    return {
+                                        ok: false,
+                                        error:
+                                            safeErrorCode(
+                                                profilesResponse.error,
+                                                'cloud_error'
+                                            )
+                                    };
+                                }
+
+                                storageRemove(
+                                    PROFILE_KEY
+                                );
+
+                                storageRemove(
+                                    CLOUD_PROFILE_KEY
+                                );
+
+                                storageRemove(
+                                    CASE_QUEUE_KEY
+                                );
+
+                                dispatchChange(
+                                    'wipe'
+                                );
+
+                                return {
+                                    ok: true
+                                };
+                            })
+                            .catch(function () {
+                                return {
+                                    ok: false,
+                                    error: 'network'
+                                };
+                            });
+                    })
+                    .catch(function () {
+                        return {
+                            ok: false,
+                            error: 'network'
+                        };
+                    });
+            })
+            .catch(function () {
+                return {
+                    ok: false,
+                    error: 'unknown'
+                };
+            });
+    }
+
+    /* =========================================================
+       online
+       ========================================================= */
+
+    try {
+        if (
+            typeof window !== 'undefined' &&
+            typeof window.addEventListener ===
+                'function'
+        ) {
+            window.addEventListener(
+                'online',
+                function () {
+                    try {
+                        flushCases();
+                    } catch (e) {
+                        /* ignore */
+                    }
+                }
+            );
+        }
+    } catch (e) {
+        /* ignore */
+    }
+
+    /* =========================================================
+       Публичный объект
+       ========================================================= */
+
+    exported.available = available;
+    exported.ready = ready;
+    exported.init = init;
+    exported.signIn = signIn;
+    exported.signOut = signOut;
+    exported.user = user;
+
+    exported.profiles = {
+        list: profilesList,
+        create: profilesCreate,
+        update: profilesUpdate,
+        remove: profilesRemove,
+        setActive: profilesSetActive,
+        active: profilesActive
+    };
+
+    exported.cases = {
+        save: saveCase,
+        list: listCases,
+        get: getCase,
+        remove: removeCase,
+        count: countCases,
+        flush: flushCases
+    };
+
+    exported.wipe = wipe;
+
+    /*
+     * Ссылка на локальный профиль оставлена для совместимости
+     * с существующей карточкой Lex.
+     *
+     * Эти функции не используют Supabase и поэтому работают
+     * также в file://.
+     */
+    exported.localProfile = function () {
+        try {
+            if (
+                typeof window !== 'undefined' &&
+                typeof window.lexProfile ===
+                    'function'
+            ) {
+                return window.lexProfile();
+            }
+        } catch (e) {
+            /* ignore */
+        }
+
+        return null;
+    };
+
+    exported.localProfileSave =
+        function (profile) {
+            try {
+                if (
+                    typeof window !==
+                        'undefined' &&
+                    typeof window.lexProfileSave ===
+                        'function'
+                ) {
+                    return window.lexProfileSave(
+                        profile
+                    );
+                }
+            } catch (e) {
+                /* ignore */
+            }
+
+            return false;
+        };
+
+    window.LexAuth = exported;
+})();
+
+</script>
+<!-- ===== модуль договора (lex-contract-module.html), открывается как srcdoc ===== -->
+<script type="text/plain" id="lex_contract_src"><!doctype html><html lang="ru" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lex · Договор юридических услуг</title><style>
+
+:root{color-scheme:dark;--bg:#11151b;--surface:#191f28;--surface2:#202833;--border:#303b49;--text:#edf1f5;--muted:#a9b3c0;--accent:#76a9e8;--accentText:#101927;--shadow:0 18px 50px #0007} :root[data-theme=light]{color-scheme:light;--bg:#efeae0;--surface:#fbf8f2;--surface2:#f2ede3;--border:#d6cfc0;--text:#1d2126;--muted:#5f6672;--accent:#8a6a12;--accentText:#fffaf0;--shadow:0 14px 40px #5a4e371b}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 system-ui,"Segoe UI",sans-serif}button,input{font:inherit}.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:11px 16px;background:var(--surface);border-bottom:1px solid var(--border)}.brand{display:flex;align-items:center;gap:10px}.seal-icon{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--surface2);color:var(--accent);font-size:22px}.brand b{display:block}.brand small,.hint,.state{color:var(--muted);font-size:11px}.actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;cursor:pointer}.btn.primary{background:var(--accent);color:var(--accentText);font-weight:700}.state.ok{color:#43a66a}.layout{max-width:1600px;margin:auto;padding:15px;display:grid;grid-template-columns:minmax(280px,350px) 1fr;gap:15px;align-items:start}.form{position:sticky;top:68px;max-height:calc(100vh - 82px);overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:var(--shadow)}.form h2{font-size:15px;margin:0}.intro{font-size:11px;color:var(--muted);margin:3px 0 12px}.group{border-top:1px solid var(--border);padding:11px 0}.group h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.field{display:grid;gap:3px;font-size:10px;color:var(--muted)}.field.full{grid-column:1/-1}.field input{width:100%;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 8px;outline:none}.field input:focus{border-color:var(--accent)}.profile-mark{color:#43a66a;font-size:10px}.checks{display:grid;gap:6px}.checks label{display:flex;align-items:flex-start;gap:7px;font-size:11px}.checks input{accent-color:var(--accent);margin:3px 0 0}.preview-head{max-width:210mm;margin:0 auto 9px;display:flex;justify-content:space-between;font-size:12px}.preview-head span{color:var(--muted)}.pages{display:grid;justify-items:center;gap:14px}.page{position:relative;width:min(210mm,100%);min-height:297mm;padding:18mm 18mm 17mm;background:#fffefa;color:#171717;box-shadow:var(--shadow);font:11pt/1.4 "Times New Roman",Georgia,serif;text-align:justify}.page-no{position:absolute;right:16mm;top:9mm;font:10pt Arial;color:#444}.head{display:grid;grid-template-columns:48px 1fr 48px;align-items:center;gap:8px;margin-bottom:8mm;text-align:center}.head svg{width:46px;height:46px}.head strong{font:700 9pt/1.35 Arial}.head small{display:block;font:9pt Arial;margin-top:4px}.doc-title{text-align:center;font-size:16pt;margin:7mm 0 6mm}.date{text-align:right;margin-bottom:4mm}.doc h2{text-align:center;font-size:12pt;text-transform:uppercase;margin:4mm 0 3mm}.doc p{margin:0 0 2.3mm;text-indent:8mm}.doc .noindent{text-indent:0}.doc ul{margin:1mm 0 3mm;padding-left:8mm}.doc li{padding-left:2mm;margin:0 0 1mm}.bottom{position:absolute;bottom:8mm;left:18mm;right:18mm;text-align:center;border-top:1px solid #ccc;padding-top:2mm;color:#666;font:8pt Arial}.parties{display:grid;grid-template-columns:1fr 1fr;gap:10mm;margin-top:5mm;text-align:left}.party h3{text-align:center;text-transform:uppercase;font-size:11pt;margin:0 0 2mm}.party p{margin:1.5mm 0;text-indent:0}.label{color:#555;font-size:9pt}.signatures{display:grid;grid-template-columns:1fr 42mm 1fr;gap:5mm;align-items:end;text-align:center;margin-top:13mm;font:9pt Arial}.signline{border-top:1px solid #444;padding-top:3px}.stamp{width:40mm;height:40mm;margin:auto}.empty{color:#777}.toast{position:fixed;right:16px;bottom:16px;background:var(--surface2);padding:10px 13px;border:1px solid var(--border);border-radius:9px;opacity:0;transition:.2s}.toast.show{opacity:1}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.form{position:relative;top:auto;max-height:none}.page{min-height:0;padding:48px 22px 48px}.page-no{top:15px;right:20px}.parties{gap:6mm}.signatures{grid-template-columns:1fr 34mm 1fr}.stamp{width:32mm;height:32mm}}
+@page{size:A4;margin:0}@media print{body{background:white!important}.top,.form,.preview-head,.toast{display:none!important}.layout{display:block;padding:0;margin:0}.pages{display:block}.page{width:210mm;height:297mm;min-height:297mm;margin:0;padding:18mm 18mm 17mm;box-shadow:none;overflow:hidden;break-after:page;page-break-after:always}.page:last-child{break-after:auto;page-break-after:auto}.page-no{top:9mm;right:16mm}.head{margin-bottom:8mm}.parties{grid-template-columns:1fr 1fr}.signatures{grid-template-columns:1fr 42mm 1fr}}
+
+.field select,.field textarea{width:100%;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 8px;outline:none;font:inherit}.field textarea{resize:vertical}.field.chk span{display:flex;gap:7px;align-items:flex-start;color:var(--text);font-size:11px}.field.chk input{width:auto;accent-color:var(--accent)}
+.seg{display:flex;gap:4px;margin-bottom:8px}.seg-btn{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--muted);padding:6px 8px;cursor:pointer;font:inherit;font-size:12px}.seg-btn.on{background:var(--accent);color:var(--accentText);border-color:var(--accent);font-weight:700}
+.prices{display:grid;gap:6px}.price-row{display:grid;grid-template-columns:auto 1fr 96px;gap:7px;align-items:start;font-size:11px}.price-row input[type=checkbox]{accent-color:var(--accent);margin:3px 0 0}.price-row input.pr{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:5px 7px;font:inherit;font-size:12px;text-align:right}.price-row.off span{opacity:.5}
+.link-btn{background:none;border:0;color:var(--accent);cursor:pointer;font-size:10px;padding:0 0 0 6px}
+.doc .price{white-space:nowrap;font-weight:700}
+[hidden]{display:none!important}
+</style></head></head><body><header class="top"><div class="brand"><span class="seal-icon">§</span><div><b>Договор юридических услуг</b><small>Подготовка договора · модуль Lex</small></div></div><div class="actions"><span class="state" id="status">Ожидаю Lex</span><button class="btn" id="refresh">↻ Профиль Lex</button><button class="btn" id="copy">Копировать</button><button class="btn primary" id="print">Печать / PDF</button><button class="btn" id="close">Закрыть</button></div></header>
+<main class="layout"><aside class="form"><h2>Данные договора</h2><p class="intro">Данные адвоката подставляются из профиля Lex. Проверьте их перед печатью.</p>
+<section class="group"><h3>Адвокат · <span id="profileMark" class="profile-mark">профиль Lex</span></h3><div class="grid">
+<label class="field full">Статус адвоката<select id="lawyerRole"><option value="Частный адвокат" selected>Частный адвокат</option></select></label>
+<label class="field full">Имя и фамилия<input id="lawyerName" placeholder="Из профиля"></label><label class="field">ID / паспорт<input id="lawyerId" placeholder="Из профиля"></label><label class="field">Лицензия<input id="lawyerLicense" placeholder="Из профиля"></label><label class="field">Телефон<input id="lawyerPhone" placeholder="Введите вручную"></label><label class="field">Электронная почта<input id="lawyerEmail" placeholder="Из профиля"></label></div><p class="hint">Договор оказания услуг заключает только частный адвокат. Телефон вводится вручную.</p></section>
+<section class="group"><h3>Заказчик</h3>
+<div class="seg" id="clientType"><button type="button" class="seg-btn on" data-ct="ind">Физическое лицо</button><button type="button" class="seg-btn" data-ct="org">Организация</button></div>
+<div class="grid" data-show="ind"><label class="field full">Имя и фамилия<input id="clientName" placeholder="Имя Фамилия заказчика"></label><label class="field">Номер паспорта<input id="clientPassport" placeholder="Паспорт"></label><label class="field">Телефон<input id="clientPhone" placeholder="Телефон"></label><label class="field full">Электронная почта<input id="clientEmail" placeholder="Почта заказчика"></label></div>
+<div class="grid" data-show="org" hidden><label class="field full">Название организации<input id="orgName" placeholder="Например, Weazel News"></label><label class="field full">Представитель — имя и фамилия<input id="repName" placeholder="Кто заключает договор от организации"></label><label class="field">Паспорт представителя<input id="repPassport" placeholder="Паспорт"></label><label class="field">Должность представителя<input id="repPosition" placeholder="Например, директор"></label><label class="field">Телефон<input id="repPhone" placeholder="Телефон"></label><label class="field">Электронная почта<input id="repEmail" placeholder="Почта"></label>
+<label class="field full chk"><span><input type="checkbox" id="orgStaff" checked> Услуги распространяются на сотрудников организации</span></label>
+<label class="field full" id="orgStaffListWrap">Сотрудники (необязательно, по одному в строке)<textarea id="orgStaffList" rows="3" placeholder="Имя Фамилия, паспорт"></textarea></label></div>
+</section>
+<section class="group"><h3>Прайс-лист · услуги в договоре</h3><div id="serviceInputs" class="prices"></div><p class="hint">Пустая цена — в договоре останется строка для заполнения от руки. Цены запоминаются в этом браузере.</p></section>
+<section class="group"><h3>Условия</h3><div class="grid"><label class="field">Дата<input id="date" type="date"></label><label class="field">Срок, дней<input id="days" type="number" min="1" value="30"></label><label class="field">Оплата, часов<input id="hours" type="number" min="1" value="3"></label><label class="field full">Итоговая стоимость <button type="button" class="link-btn" id="feeAuto" title="Посчитать по прайс-листу">↺ по прайсу</button><input id="fee" placeholder="Сумма"></label></div></section>
+<button class="btn" id="clearClient">Очистить заказчика</button><p class="hint">Данные заказчика не сохраняются и никуда не отправляются.</p></aside>
+<section><div class="preview-head"><b>Предварительный просмотр</b><span>4 страницы · A4</span></div><div class="pages" id="document">
+<article class="page"><span class="page-no">Page 1</span><div class="head"><svg viewBox="0 0 60 60"><rect width="60" height="60" fill="white" stroke="#aaa"/><g fill="#b22234"><path d="M0 0h60v5H0zm0 10h60v5H0zm0 20h60v5H0zm0 40h60v5H0zm0 50h60v5H0z" transform="scale(1 .5)"/></g><path fill="#3c3b6e" d="M0 0h28v31H0z"/></svg><div><strong>GOVERNMENT, COLLEGIUM OF ADVOCATES<br>CITY HALL SAN - ANDREAS</strong><small>КОЛЛЕГИЯ АДВОКАТОВ</small></div><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="29" fill="#f8f5ed" stroke="#263c65" stroke-width="2"/><circle cx="32" cy="32" r="23" fill="none" stroke="#b99a50"/><path d="M32 17v28M21 25h22M23 25l-8 13h16zm18 0-8 13h16zM24 48h16" fill="none" stroke="#263c65" stroke-width="2"/></svg></div><div class="date"><span data-v="date"></span></div><h1 class="doc-title">Договор на оказание юридических услуг</h1><p> <b data-v="lawyerRole"></b> <b data-v="lawyerName"></b>, п.п. <b data-v="lawyerId"></b>, именуемый в дальнейшем <b>Исполнитель</b>, с одной стороны, и <span data-show="ind">гражданин Соединённых Штатов Америки <b data-v="clientName"></b>, с номером паспорта № <b data-v="clientPassport"></b>, именуемый(ая)</span><span data-show="org" hidden>организация «<b data-v="orgName"></b>» в лице представителя <b data-v="repName"></b>, <b data-v="repPosition"></b>, с номером паспорта № <b data-v="repPassport"></b>, действующего(ей) от имени организации, именуемая</span> в дальнейшем <b>Заказчик</b>, с другой стороны, совместно именуемые <b>Стороны</b>, заключили настоящий <b>Договор</b> на следующих условиях:</p><section class="doc"><h2>1. Предмет договора</h2><p><b>1.1</b> Исполнитель по заданию Заказчика обязуется оказать юридические услуги в объёме и на условиях, предусмотренных Договором, а Заказчик обязуется принять услуги и оплатить обусловленную Договором денежную сумму.</p><p><b>1.2</b> Перечень оказываемых услуг и их стоимость:</p><ul id="docServices"></ul><p id="docStaffP" hidden><b>1.3</b> Юридические услуги по настоящему Договору оказываются также сотрудникам Заказчика в рамках их деятельности в организации<span id="docStaff"></span>. Право сотрудника на услуги подтверждает представитель Заказчика.</p><p><b id="docTotalNo">1.3</b> Итоговая стоимость услуг по Договору: <b data-v="fee"></b>.<span id="docBail"> Выпуск под залог оплачивается по тарифу Коллегии адвокатов, сумма залога определяется действующим законодательством штата Сан-Андреас.</span></p></section><div class="bottom">San Andreas Office of the Bar Association</div></article>
+<article class="page"><span class="page-no">Page 2</span><section class="doc"><h2>2. Права и обязанности сторон</h2><p class="noindent"><b>2.1 Заказчик имеет право:</b></p><p><b>2.1.1</b> Получать информацию о ходе оказания Исполнителем услуг любыми законными способами.</p><p><b>2.1.2</b> Принимать личное участие в процессе оказания услуг.</p><p><b>2.1.3</b> Изъявить в письменной форме желание прекратить действие Договора.</p><p class="noindent"><b>2.2 Заказчик обязан:</b></p><p><b>2.2.1</b> Предоставлять Исполнителю документацию и достоверную информацию, необходимую для оказания услуг в полном объёме.</p><p><b>2.2.2</b> Оплачивать услуги Исполнителя в размерах и сроки, предусмотренные договором/заданием Заказчика.</p><p class="noindent"><b>2.3 Исполнитель имеет право:</b></p><p><b>2.3.1</b> Получать документацию и достоверную информацию, необходимую для оказания услуг в полном объёме.</p><p><b>2.3.2</b> Получить оплату от Заказчика за предусмотренные услуги в размерах и сроки, предусмотренные Договором/заданием Заказчика.</p><p><b>2.3.3</b> Изъявить в письменной форме желание прекратить действие Договора.</p><p class="noindent"><b>2.4 Исполнитель обязан:</b></p><p><b>2.4.1</b> Добросовестно оказывать услуги Заказчику, предусмотренные данным Договором/заданием Заказчика.</p><p><b>2.4.2</b> По запросу предоставлять Заказчику информацию о ходе оказания запрошенных им услуг.</p></section><div class="bottom">San Andreas Office of the Bar Association</div></article>
+<article class="page"><span class="page-no">Page 3</span><section class="doc"><h2>3. Отдельные положения</h2><p><b>3.1</b> В случае неисполнения Заказчиком условий Договора Исполнитель имеет право обратиться в суд с целью получения материальной компенсации.</p><p><b>3.2</b> В случае неисполнения Исполнителем условий Договора Заказчик имеет право обратиться в соответствующую инстанцию с целью получения материальной компенсации.</p><p><b>3.3</b> Сторона, подающая в письменной форме желание о прекращении действия данного Договора, признаёт, что не имеет претензий к другой Стороне относительно положений данного договора.</p><p><b>3.4</b> Исполнитель не несёт ответственность перед Заказчиком за неисполнение или ненадлежащее исполнение обязательств, обусловленное чрезвычайными и непредотвратимыми при данных условиях обстоятельствами (форс-мажор, ситуация непреодолимой силы), если эти обстоятельства существенно повлияли на исполнение Исполнителем своих обязательств по настоящему Договору.</p></section><section class="doc"><h2>4. Разрешение споров</h2><p><b>4.1</b> Каждый спор между сторонами Договора разрешается путём переговоров. Любые претензии излагаются любым доступным способом.</p></section><section class="doc"><h2>5. Заключительные положения</h2><p><b>5.1</b> Настоящий Договор вступает в силу с момента его подписания Сторонами и публикации на портал Штата. Датой подписания Договора признаётся дата, указанная в крайнем левом углу в начале Договора. Действие договора заканчивается спустя <b data-v="days"></b> дней с момента вступления его в силу.</p><p><b>5.2</b> При этом каждая из Сторон имеет право прекратить его действие. Действие договора может быть продлено, о чём составляется дополнительное соглашение.</p><p><b>5.3</b> Вся предыдущая переписка и переговоры между Сторонами относительно предмета Договора теряют свою юридическую силу с момента подписания Договора.</p><p><b>5.4</b> Любые изменения в Договор вносятся по взаимному согласию Сторон, о чём заключается дополнительное соглашение (договор).</p><p><b>5.5</b> Все приложения и дополнения являются неотъемлемой частью Договора, если они оформлены в соответствии с требованиями законодательства штата Сан-Андреас.</p><p><b>5.6</b> Настоящий Договор заключён в двух экземплярах, по одному для каждой из Сторон, которые имеют равную юридическую силу.</p><p><b>5.7</b> Стоимость оказания юридических услуг оговаривается до момента подписания данного Договора.</p><p><b>5.8</b> На оплату юридических услуг выделяется до <b data-v="hours"></b> часов с момента подписания.</p></section><div class="bottom">San Andreas Office of the Bar Association</div></article>
+<article class="page"><span class="page-no">Page 4</span><p>Я, <b data-v="signerName"></b>, <span data-show="org" hidden>действуя от имени организации «<b data-v="orgName"></b>», </span>именуемый(ая) Заказчик, ознакомившись с предметом Договора, правами и обязанностями Сторон, отдельными и заключительными положениями, даю согласие Исполнителю на выполнение оговорённых услуг и оплачиваю их в размере <b data-v="fee"></b>.</p><section class="doc"><h2>6. Реквизиты и подписи сторон</h2><div class="parties"><div class="party"><h3>Заказчик</h3><p data-show="org" hidden><b data-v="orgName"></b></p><p class="label" data-show="org" hidden>Организация ____________________________</p><p><b data-v="signerName"></b></p><p class="label">Имя и фамилия __________________________</p><p><b data-v="signerPassport"></b></p><p class="label">Номер паспорта _________________________</p><p><b data-v="signerPhone"></b></p><p class="label">Номер телефона ________________________</p><p><b data-v="signerEmail"></b></p><p class="label">Почта __________________________________</p></div><div class="party"><h3>Исполнитель</h3><p><b data-v="lawyerName"></b></p><p class="label">Имя и фамилия __________________________</p><p><b data-v="lawyerId"></b></p><p class="label">ID / номер паспорта _____________________</p><p><b data-v="lawyerPhone"></b></p><p class="label">Номер телефона ________________________</p><p><b data-v="lawyerEmail"></b></p><p class="label">Почта __________________________________</p><p><b data-v="lawyerLicense"></b></p><p class="label">Лицензия адвоката _______________________</p></div></div><div class="signatures"><div class="signline"><span data-v="signerName"></span><br>Подпись Заказчика</div><svg class="stamp" viewBox="0 0 120 120" aria-label="Печать коллегии адвокатов"><circle cx="60" cy="60" r="55" fill="#fff" stroke="#294c83" stroke-width="4"/><circle cx="60" cy="60" r="45" fill="none" stroke="#294c83"/><text x="60" y="20" text-anchor="middle" font-family="Arial" font-size="7" fill="#294c83">SAN ANDREAS OFFICE</text><text x="60" y="104" text-anchor="middle" font-family="Arial" font-size="7" fill="#294c83">BAR ASSOCIATION</text><path d="M60 34v46M42 49h36M45 49 35 67h20zm30 0L65 67h20zM46 78h28" fill="none" stroke="#294c83" stroke-width="3"/></svg><div class="signline"><span data-v="lawyerName"></span><br>Подпись Исполнителя</div></div></section><div class="bottom">San Andreas Office of the Bar Association</div></article>
+</div></section></main><div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const SERVICES=[
+ {id:'consult',t:'Письменное или устное консультирование по вопросам законодательной базы штата Сан-Андреас.'},
+ {id:'proc',t:'Юридическая защита интересов во время делопроизводства.'},
+ {id:'court',t:'Юридическая защита интересов клиента (организации) в суде.'},
+ {id:'repr',t:'Представление интересов Заказчика в органах исполнительной власти, органах местного самоуправления, общественных объединениях и иных организациях.'},
+ {id:'ogp',t:'Составление и подача обращения в Офис Генерального Прокурора.'},
+ {id:'detain',t:'Юридическая защита при задержании (выезд по вызову).'},
+ {id:'claims',t:'Написание заявлений, либо жалоб от лица Заказчика.'},
+ {id:'docs',t:'Заполнение документации от лица Заказчика.'},
+ {id:'bail',t:'Выпуск под залог из Камер Предварительного Заключения (выезд по вызову).',def:'по тарифу Коллегии адвокатов'}
+];
+const PK='lex_contract_prices';
+let saved={};try{saved=JSON.parse(localStorage.getItem(PK)||'{}')||{}}catch(e){saved={}}
+const si=$('serviceInputs'),ds=$('docServices');
+SERVICES.forEach(s=>{
+ const row=document.createElement('label');row.className='price-row';
+ const c=document.createElement('input');c.type='checkbox';c.dataset.svc=s.id;c.checked=saved[s.id+':on']!==0;
+ const t=document.createElement('span');t.textContent=s.t;
+ const pr=document.createElement('input');pr.className='pr';pr.dataset.price=s.id;pr.placeholder=s.def?'тариф':'$';pr.value=saved[s.id]!=null?saved[s.id]:(s.def||'');pr.title=s.def?'Сумма по тарифу Коллегии адвокатов (можно вписать число)':'Цена услуги, $';
+ row.append(c,t,pr);si.append(row);
+ const li=document.createElement('li');li.dataset.svc=s.id;ds.append(li);
+});
+function num(v){const d=String(v||'').replace(/[^\d]/g,'');return /^\s*[\d\s.,]+\s*\$?\s*$/.test(String(v||''))&&d?+d:null}
+function money(n){return String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' $'}
+function priceText(v){const n=num(v);return n!=null?money(n):(String(v||'').trim()||'________ $')}
+let CT='ind',feeManual=false;
+function val(id){const e=$(id);return e?String(e.value||'').trim():''}
+function dateFmt(x){if(!x)return'__________';const [y,m,d]=x.split('-');return`${d}.${m}.${y}`}
+function autoFee(){let sum=0,any=false,bail=false,blank=false;SERVICES.forEach(s=>{if(!si.querySelector(`[data-svc="${s.id}"]`).checked)return;const v=si.querySelector(`[data-price="${s.id}"]`).value;const n=num(v);if(n!=null){sum+=n;any=true}else if(s.id==='bail')bail=true;else blank=true});
+ if(!any&&!bail)return'';let t=any?money(sum):'';if(bail)t+=(t?' + ':'')+'выпуск под залог по тарифу Коллегии адвокатов';return t}
+function render(){
+ if(!feeManual)$('fee').value=autoFee();
+ const ind=CT==='ind';
+ const map={lawyerName:val('lawyerName'),lawyerRole:'Частный адвокат',lawyerId:val('lawyerId'),lawyerLicense:val('lawyerLicense'),lawyerPhone:val('lawyerPhone'),lawyerEmail:val('lawyerEmail'),
+  clientName:val('clientName'),clientPassport:val('clientPassport'),orgName:val('orgName'),repName:val('repName'),repPassport:val('repPassport'),repPosition:val('repPosition'),
+  signerName:ind?val('clientName'):val('repName'),signerPassport:ind?val('clientPassport'):val('repPassport'),signerPhone:ind?val('clientPhone'):val('repPhone'),signerEmail:ind?val('clientEmail'):val('repEmail'),
+  date:dateFmt(val('date')),fee:val('fee'),days:val('days'),hours:val('hours')};
+ document.querySelectorAll('[data-v]').forEach(x=>{const v=map[x.dataset.v]||'';x.textContent=v||'________________';x.classList.toggle('empty',!v)});
+ document.querySelectorAll('[data-show]').forEach(x=>{x.hidden=x.dataset.show!==CT});
+ let bailOn=false;
+ ds.querySelectorAll('li').forEach(li=>{const s=SERVICES.find(z=>z.id===li.dataset.svc);const on=si.querySelector(`[data-svc="${s.id}"]`).checked;li.hidden=!on;
+  si.querySelector(`[data-price="${s.id}"]`).closest('.price-row').classList.toggle('off',!on);
+  if(on&&s.id==='bail')bailOn=true;
+  li.textContent='';li.append(document.createTextNode(s.t.replace(/\.$/,'')+' — '));const b=document.createElement('span');b.className='price';b.textContent=priceText(si.querySelector(`[data-price="${s.id}"]`).value);li.append(b)});
+ const staff=!ind&&$('orgStaff').checked;$('docStaffP').hidden=!staff;$('orgStaffListWrap').hidden=!$('orgStaff').checked;
+ const names=val('orgStaffList').split('\n').map(x=>x.trim()).filter(Boolean);$('docStaff').textContent=staff&&names.length?', в том числе: '+names.join('; '):'';
+ $('docTotalNo').textContent=staff?'1.4':'1.3';$('docBail').hidden=!bailOn;
+}
+function savePrices(){const o={};SERVICES.forEach(s=>{o[s.id]=si.querySelector(`[data-price="${s.id}"]`).value;o[s.id+':on']=si.querySelector(`[data-svc="${s.id}"]`).checked?1:0});try{localStorage.setItem(PK,JSON.stringify(o))}catch(e){}}
+document.querySelector('.form').addEventListener('input',e=>{if(e.target.id==='fee')feeManual=!!e.target.value.trim();if(e.target.closest('#serviceInputs'))savePrices();render()});
+document.querySelector('.form').addEventListener('change',e=>{if(e.target.closest('#serviceInputs'))savePrices();render()});
+$('feeAuto').onclick=()=>{feeManual=false;render()};
+$('clientType').addEventListener('click',e=>{const b=e.target.closest('[data-ct]');if(!b)return;CT=b.dataset.ct;$('clientType').querySelectorAll('[data-ct]').forEach(x=>x.classList.toggle('on',x===b));render()});
+const now=new Date();$('date').value=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,10);
+function applyProfile(p,replace){if(!p||typeof p!=='object')return;for(const [key,id] of Object.entries({name:'lawyerName',id:'lawyerId',license:'lawyerLicense',mail:'lawyerEmail',phone:'lawyerPhone'})){const e=$(id);if(typeof p[key]==='string'&&p[key].trim()&&(replace||!e.value.trim()))e.value=p[key].trim()}render();$('profileMark').textContent='из профиля Lex';const st=$('status');st.textContent='Профиль Lex подключён';st.classList.add('ok')}
+function send(type,extra){if(parent!==window)parent.postMessage(Object.assign({channel:'lex-contract-module',type},extra||{}),'*')}
+window.addEventListener('message',e=>{if(e.source!==parent||!e.data||e.data.channel!=='lex-contract-host')return;if(e.data.type==='context'){document.documentElement.dataset.theme=e.data.theme==='light'?'light':'dark';applyProfile(e.data.profile||{},!!e.data.refresh)}});
+if(parent!==window){send('ready');setTimeout(()=>send('request-context'),300)}else{$('status').textContent='Откройте из Lex для автозаполнения';$('profileMark').textContent='нет связи'}
+$('refresh').onclick=()=>send('request-context',{refresh:true});$('close').onclick=()=>send('close');$('print').onclick=()=>window.print();
+$('clearClient').onclick=()=>{['clientName','clientPassport','clientPhone','clientEmail','orgName','repName','repPassport','repPosition','repPhone','repEmail','orgStaffList'].forEach(id=>$(id).value='');render()};
+let timer;function toast(s){const t=$('toast');t.textContent=s;t.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>t.classList.remove('show'),2300)}
+$('copy').onclick=async()=>{const txt=[...document.querySelectorAll('.page')].map(p=>p.innerText).join('\n\n');try{await navigator.clipboard.writeText(txt);toast('Текст договора скопирован')}catch(e){toast('Скопируйте текст из предпросмотра вручную')}};
+render();
+})();
+<\/script></body></html>
+</script>
+<script>
+/* ===== Lex · облако, помощницы, договор (правка 07.10.2026) =====
+   Надстройка над карточкой. Опирается только на публичные API:
+   window.LexAuth / window.LexApi (вшиты выше без правок), lexProfile()/
+   lexProfileSave(), CaseStore, LexStats, appConfirm.
+   Правила: без innerHTML с данными пользователя (только textContent),
+   без location.hash, в file:// ничего не ломается -- облако просто прячется. */
+(function(){
+  'use strict';
+  const $ = id=> document.getElementById(id);
+  const lsGet = (k, d)=>{ try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? d : v; } catch(e){ return d; } };
+  const lsPut = (k, v)=>{ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
+  const el = (tag, cls, text)=>{ const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = String(text); return e; };
+  const btn = (text, cls, fn, title)=>{ const b = el('button', cls || '', text); b.type = 'button'; if(title) b.title = title; b.addEventListener('click', fn); return b; };
+  const PAGES_URL = 'https://lex-checklist.pages.dev';
+  const fmtDate = iso=>{ try { const d = new Date(iso); const p = n=> String(n).padStart(2, '0'); return p(d.getDate()) + '.' + p(d.getMonth() + 1) + '.' + d.getFullYear() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); } catch(e){ return ''; } };
+  const confirmBox = (o)=>{ if(typeof window.appConfirm === 'function') window.appConfirm(o); else if(window.confirm((o.title || '') + '\n' + (o.text || ''))) o.onOk && o.onOk(); };
+
+  const AUTH_ERR = {
+    unavailable: 'Облако доступно только на сайте ' + PAGES_URL.replace('https://', '') + '.',
+    network: 'Нет связи с облаком — проверьте интернет.',
+    not_authenticated: 'Сначала войдите через Discord.',
+    auth_failed: 'Вход не удался — попробуйте ещё раз.',
+    cancelled: 'Вход отменён.',
+    profile_not_found: 'Профиль не найден — обновите список.',
+    profiles_quota: 'Достигнут лимит профилей (10) — удалите ненужный.',
+    invalid_data: 'Поля профиля не прошли проверку: имя до 80 символов, ID до 20, почта до 60, лицензия до 40, паспорт — ссылка https://…',
+    data_too_large: 'Дело слишком большое для облака (больше 400 КБ).',
+    case_not_found: 'Дело не найдено — обновите список.',
+    cloud_error: 'Облако ответило ошибкой — попробуйте позже.',
+    queue_full: 'Очередь офлайн-дел переполнена.',
+    local_storage: 'Браузер не даёт сохранять данные (приватный режим?).'
+  };
+  const authErr = code=> AUTH_ERR[code] || ('Ошибка облака (' + code + ').');
+
+  /* ---------- роль: в облаке только adv / prok ---------- */
+  const ADV_ROLES = ['гос. адвокат', 'частный адвокат'];
+  const roleToCloud = r=> ADV_ROLES.indexOf(r) !== -1 ? 'adv' : (r === 'прокурор' ? 'prok' : '');
+  function roleFromCloud(r, current){
+    if(r === 'prok') return 'прокурор';
+    if(r === 'adv') return ADV_ROLES.indexOf(current) !== -1 ? current : 'гос. адвокат';
+    return current || '';
+  }
+  const roleLabel = r=> r === 'adv' ? 'адвокат' : (r === 'prok' ? 'прокурор' : '');
+
+  /* =====================================================================
+     Мила -- история обращений в поддержку (ответы пока приходят в Discord;
+     чат с ответами из карточки -- после бота на чтение, см. Lex_Идеи)
+     ===================================================================== */
+  const MILA_KEY = 'lex_mila_log';
+  window.LexMila = {
+    log(text){
+      const L = lsGet(MILA_KEY, []);
+      L.unshift({ t: Date.now(), text: String(text || '').slice(0, 500) });
+      lsPut(MILA_KEY, L.slice(0, 20));
+      renderMila();
+    }
+  };
+  function renderMila(){
+    const box = $('mila_log'); if(!box) return;
+    const L = lsGet(MILA_KEY, []);
+    box.textContent = '';
+    if(!L.length){ box.style.display = 'none'; return; }
+    box.style.display = '';
+    box.appendChild(el('div', 'card-group-label', 'Ваши сообщения Миле'));
+    L.slice(0, 5).forEach(m=>{
+      const row = el('div', 'mila-msg');
+      row.appendChild(el('span', 'mila-when', fmtDate(m.t)));
+      row.appendChild(el('span', 'mila-text', m.text));
+      box.appendChild(row);
+    });
+    box.appendChild(el('div', 'empty-hint', 'Ответ придёт в Discord или на почту, если оставили контакт. Переписка прямо в карточке — в разработке.'));
+    const clr = btn('Очистить историю', 'support-contact-btn sm', ()=>{ lsPut(MILA_KEY, []); renderMila(); });
+    box.appendChild(clr);
+  }
+
+  /* =====================================================================
+     Уровень доступа (заглушка до маршрута /me на Worker)
+     ===================================================================== */
+  window.LexTier = {
+    current: ()=> 'free',
+    label: t=> ({ free:'Free', participant:'Участник', premium:'Premium' })[t] || 'Free',
+    // оплата и тарифы -- заглушка
+    upgrade(){ return Promise.resolve({ ok:false, error:'not_ready' }); },
+    // составление документов ИИ -- заглушка (Premium)
+    composeDocument(){ return Promise.resolve({ ok:false, error:'not_ready' }); }
+  };
+
+  /* =====================================================================
+     Облако: профили + архив дел (окно «Профиль»)
+     ===================================================================== */
+  const A = ()=> window.LexAuth;
+  let signedIn = false, activeCloudId = null, profilesCache = [];
+
+  function status(text, kind){
+    const s = $('cl_status'); if(!s) return;
+    s.className = 'support-form-status' + (kind ? ' ' + kind : '');
+    s.textContent = text || '';
+  }
+  function show(mode){
+    ['cl_off', 'cl_out', 'cl_in'].forEach(id=>{ const e = $(id); if(e) e.style.display = (id === mode) ? '' : 'none'; });
+  }
+  function formProfile(){
+    const p = {};
+    document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ const v = String(e.value || '').trim(); if(v) p[e.dataset.profile] = v; });
+    return p;
+  }
+  function cloudFromLocal(p){
+    const pass = p.passport || '';
+    return { name: p.name || '', id: p.id || '', role: roleToCloud(p.role || ''), mail: p.mail || '', passport: /^https:\/\//.test(pass) ? pass : '', license: p.license || '' };
+  }
+  function checkCloudFields(c, raw){
+    if(c.name.length > 80) return 'Имя длиннее 80 символов.';
+    if(c.id.length > 20) return 'ID длиннее 20 символов.';
+    if(c.mail.length > 60) return 'Почта длиннее 60 символов.';
+    if(c.license.length > 40) return 'Лицензия длиннее 40 символов.';
+    if(raw.passport && !/^https:\/\//.test(raw.passport)) return 'Паспорт в облаке — только ссылка https://… (сейчас поле не сохранится).';
+    if(c.passport.length > 300) return 'Ссылка на паспорт длиннее 300 символов.';
+    return '';
+  }
+  function applyToLocal(cp){
+    const cur = (typeof lexProfile === 'function') ? lexProfile() : {};
+    // облако главное; паспорт-не-https облако хранить не умеет -- такой локальный не стираем
+    const keepPass = !cp.passport && cur.passport && !/^https:\/\//.test(cur.passport) ? cur.passport : '';
+    const p = Object.assign({}, cur, { name: cp.name || '', id: cp.id || '', mail: cp.mail || '', passport: cp.passport || keepPass, license: cp.license || '', role: roleFromCloud(cp.role, cur.role) });
+    Object.keys(p).forEach(k=>{ if(p[k] === '') delete p[k]; });
+    if(typeof lexProfileSave === 'function') lexProfileSave(p);
+    document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = p[e.dataset.profile] || ''; });
+    if(window.syncAllPrettySelects) window.syncAllPrettySelects();
+  }
+
+  function renderProfiles(list){
+    profilesCache = list || [];
+    const box = $('cl_prof_list'); if(!box) return;
+    box.textContent = '';
+    $('cl_prof_n').textContent = profilesCache.length + ' / 10';
+    if(!profilesCache.length){ box.appendChild(el('div', 'empty-hint', 'Профилей в облаке нет. Заполните поля выше и нажмите «В облако как новый».')); return; }
+    profilesCache.forEach(cp=>{
+      const row = el('div', 'cl-row' + (cp.isActive ? ' active' : ''));
+      const info = el('div', 'cl-info');
+      info.appendChild(el('b', '', cp.name || '(без имени)'));
+      const meta = [cp.id ? 'ID ' + cp.id : '', roleLabel(cp.role), cp.isActive ? 'активный' : ''].filter(Boolean).join(' · ');
+      info.appendChild(el('span', 'cl-meta', meta));
+      row.appendChild(info);
+      const acts = el('div', 'cl-acts');
+      if(!cp.isActive) acts.appendChild(btn('Выбрать', '', ()=> setActive(cp), 'Сделать активным и подставить в карточку'));
+      else acts.appendChild(btn('Подставить', '', ()=>{ applyToLocal(cp); status('Профиль «' + (cp.name || '') + '» подставлен в карточку.', 'ok'); }, 'Подставить данные в поля выше'));
+      acts.appendChild(btn('⟳', '', ()=> updateFromForm(cp), 'Записать в этот облачный профиль текущие поля выше'));
+      acts.appendChild(btn('✕', 'danger', ()=> removeProfile(cp), 'Удалить профиль из облака'));
+      row.appendChild(acts);
+      box.appendChild(row);
+    });
+  }
+  function loadProfiles(){
+    return A().profiles.list().then(r=>{
+      if(!r.ok){ status(authErr(r.error), 'err'); return; }
+      const list = r.data || [];
+      const act = list.find(x=> x.isActive);
+      activeCloudId = act ? act.cloudId : null;
+      renderProfiles(list);
+      return list;
+    });
+  }
+  function setActive(cp){
+    status('Выбираю профиль…');
+    A().profiles.setActive(cp.cloudId).then(r=>{
+      if(!r.ok){ status(authErr(r.error), 'err'); return; }
+      applyToLocal(cp);
+      status('Активный профиль: ' + (cp.name || '') + '. Данные подставлены в карточку.', 'ok');
+      loadProfiles();
+    });
+  }
+  function createFromForm(){
+    const raw = formProfile(), c = cloudFromLocal(raw);
+    if(!c.name){ status('Заполните хотя бы имя персонажа.', 'err'); return; }
+    const bad = checkCloudFields(c, raw); if(bad && !/не сохранится/.test(bad)){ status(bad, 'err'); return; }
+    status('Сохраняю в облако…');
+    A().profiles.create(c).then(r=>{
+      if(!r.ok){ status(authErr(r.error), 'err'); return; }
+      status('Профиль сохранён в облаке.' + (bad ? ' ' + bad : ''), bad ? 'err' : 'ok');
+      loadProfiles();
+    });
+  }
+  function updateFromForm(cp){
+    const raw = formProfile(), c = cloudFromLocal(raw);
+    const bad = checkCloudFields(c, raw); if(bad && !/не сохранится/.test(bad)){ status(bad, 'err'); return; }
+    confirmBox({ title: 'Перезаписать облачный профиль?', text: '«' + (cp.name || '') + '» получит данные из полей выше.', okText: 'Перезаписать', tone: 'go', onOk(){
+      status('Обновляю…');
+      A().profiles.update(cp.cloudId, c).then(r=>{
+        if(!r.ok){ status(authErr(r.error), 'err'); return; }
+        status('Облачный профиль обновлён.' + (bad ? ' ' + bad : ''), bad ? 'err' : 'ok');
+        loadProfiles();
+      });
+    } });
+  }
+  function removeProfile(cp){
+    confirmBox({ title: 'Удалить профиль из облака?', text: '«' + (cp.name || '') + '». Профиль в этом браузере не тронется.', okText: 'Удалить', tone: 'warn', onOk(){
+      A().profiles.remove(cp.cloudId).then(r=>{
+        if(!r.ok){ status(authErr(r.error), 'err'); return; }
+        status('Профиль удалён из облака.', 'ok');
+        loadProfiles();
+      });
+    } });
+  }
+
+  /* ---------- вход: локальный профиль -> облако, дальше главный -- облачный ----------
+     нет совпадения (имя + ID) -- локальный добавляется в облако (в пустом облаке
+     становится активным сам, триггер БД); совпал -- пустые поля облака дополняются
+     из локального. Потом активный облачный профиль всегда подставляется в карточку. */
+  let syncedFor = null, syncing = null;
+  const norm = v=> String(v || '').trim().toLowerCase();
+  const loginOf = u=> (u && /^[A-Za-z0-9_.]{2,32}$/.test(u.discordName || '')) ? u.discordName : '';
+  function syncProfiles(u, force){
+    if(!u || !A()) return Promise.resolve();
+    const key = String(u.discordId || u.discordName || '1');
+    if(!force && syncedFor === key) return Promise.resolve();
+    if(syncing) return syncing;
+    const login = loginOf(u);
+    let msg = '', kind = 'ok';
+    syncing = A().profiles.list().then(r=>{
+      if(!r || !r.ok){ msg = authErr(r && r.error); kind = 'err'; return null; }
+      const list = r.data || [];
+      const local = (typeof lexProfile === 'function') ? lexProfile() : {};
+      if(!String(local.name || '').trim()) return list;
+      const c = cloudFromLocal(local);
+      if(!c.mail && login) c.mail = login;
+      const m = list.find(cp=> norm(cp.name) === norm(local.name) && norm(cp.id) === norm(local.id));
+      if(!m){
+        if(list.length >= 10){ msg = 'В облаке уже 10 профилей — профиль «' + local.name + '» из этого браузера не перенесён.'; kind = 'err'; return list; }
+        return A().profiles.create(c).then(x=>{
+          if(x && x.ok) msg = list.length ? 'Профиль «' + local.name + '» из этого браузера добавлен в облако.' : 'Профиль из этого браузера перенесён в облако.';
+          else { msg = authErr(x && x.error); kind = 'err'; }
+          return null;
+        });
+      }
+      const merged = { name: m.name, id: m.id || c.id, role: m.role || c.role, mail: m.mail || c.mail, passport: m.passport || c.passport, license: m.license || c.license };
+      const need = ['id', 'role', 'mail', 'passport', 'license'].some(k=> merged[k] !== (m[k] || ''));
+      msg = 'Профиль синхронизирован с облаком.';
+      return need ? A().profiles.update(m.cloudId, merged).then(()=> null) : list;
+    }).then(list=> list || A().profiles.list().then(r=> (r && r.ok) ? (r.data || []) : []))
+    .then(list=>{
+      let act = list.find(x=> x.isActive) || null;
+      let step = Promise.resolve();
+      if(!act && list.length){ act = list[0]; step = A().profiles.setActive(act.cloudId); }
+      if(act && !act.mail && login){ act = Object.assign({}, act, { mail: login }); const a = act; step = step.then(()=> A().profiles.update(a.cloudId, { name: a.name, id: a.id, role: a.role, mail: login, passport: a.passport, license: a.license })); }
+      return step.then(()=>{
+        if(act){ activeCloudId = act.cloudId; applyToLocal(act); if(!msg) msg = 'Активный профиль из облака: ' + (act.name || '') + '.'; }
+        syncedFor = key;
+        if($('cl_prof_list')) loadProfiles();
+        if(msg) status(msg, kind);
+        updateDiscordBtn(u);
+      });
+    }).catch(()=>{}).then(()=>{ syncing = null; });
+    return syncing;
+  }
+
+  /* ---------- кнопка «Войти через Discord» (плашка часового лимита) ---------- */
+  function updateDiscordBtn(u){
+    const b = $('lex_discord_btn'); if(!b) return;
+    const wrap = b.parentNode;
+    const https = location.protocol === 'https:' && A();
+    b.hidden = !https;
+    if(wrap && wrap.classList) wrap.classList.toggle('no-discord', !https);
+    if(!https) return;
+    if(u){ b.textContent = '✓ ' + (u.discordName || 'Discord'); b.title = 'Вы вошли через Discord — профили и архив в окне «Профиль»'; b.classList.add('on'); }
+    else { b.textContent = 'Войти через Discord'; b.title = 'Профили и архив дел в облаке; локальный профиль перенесётся туда'; b.classList.remove('on'); }
+  }
+  function discordBtnClick(){
+    const LA = A(); if(!LA) return;
+    Promise.resolve(LA.ready).then(()=> LA.available() ? LA.user() : undefined).then(u=>{
+      if(u === undefined){ const b = $('lex_discord_btn'); if(b) b.textContent = 'Облако недоступно'; return; }
+      if(u){ if(typeof openProfile === 'function') openProfile(); refresh(); return; }
+      const b = $('lex_discord_btn'); if(b) b.textContent = 'Перехожу в Discord…';
+      LA.signIn().then(r=>{ if(!r.ok){ updateDiscordBtn(null); if(typeof openProfile === 'function') openProfile(); refresh(); status(authErr(r.error), 'err'); } });
+    });
+  }
+
+  /* ---------- архив дел ---------- */
+  function outcomeText(v){
+    const s = $('f_outcome'); if(!s || !v) return v || 'без исхода';
+    const o = Array.from(s.options).find(x=> x.value === v);
+    return o ? o.textContent : v;
+  }
+  function caseLocalId(){
+    const start = ($('f_start') || {}).value || '';
+    const ms = (typeof START_MS !== 'undefined' && START_MS) ? START_MS : '';
+    if(!start && !ms) return '';
+    return ('c-' + start + '-' + ms).replace(/[^A-Za-z0-9_.:-]/g, '').slice(0, 64);
+  }
+  function saveCase(){
+    if(!window.CaseStore || typeof CaseStore.snapshot !== 'function'){ status('Архив недоступен в этой версии карточки.', 'err'); return; }
+    const localId = caseLocalId();
+    if(!localId){ status('Дело пустое: начните задержание (время начала), потом сохраняйте.', 'err'); return; }
+    const outcome = (($('f_outcome') || {}).value || '').slice(0, 40);
+    const data = CaseStore.snapshot();
+    status('Сохраняю дело…');
+    A().cases.save({
+      localId, outcome, closedAt: outcome ? new Date().toISOString() : null, withTexts: true, data,
+      appVersion: (typeof APP_VERSION !== 'undefined' ? APP_VERSION : ''), dbVersion: (typeof DB_VERSION !== 'undefined' ? DB_VERSION : ''),
+      profileId: activeCloudId || null
+    }).then(r=>{
+      if(r.ok){ status('Дело в архиве. Повторное сохранение того же дела его обновит.', 'ok'); loadCases(); return; }
+      if(r.queued){ status('Нет связи — дело в очереди, уйдёт само при появлении сети.', 'ok'); return; }
+      status(authErr(r.error), 'err');
+    });
+  }
+  function loadCases(){
+    const box = $('cl_case_list'); if(!box) return Promise.resolve();
+    return A().cases.list({ limit: 50 }).then(r=>{
+      box.textContent = '';
+      if(!r.ok){ status(authErr(r.error), 'err'); return; }
+      const L = r.data || [];
+      $('cl_case_n').textContent = L.length + ' / 50';
+      if(!L.length){ box.appendChild(el('div', 'empty-hint', 'Архив пуст. 51-е дело вытесняет самое старое.')); return; }
+      L.slice(0, 15).forEach(c=>{
+        const row = el('div', 'cl-row');
+        const info = el('div', 'cl-info');
+        info.appendChild(el('b', '', fmtDate(c.createdAt)));
+        info.appendChild(el('span', 'cl-meta', outcomeText(c.outcome)));
+        row.appendChild(info);
+        const acts = el('div', 'cl-acts');
+        acts.appendChild(btn('Открыть', '', ()=> openCase(c), 'Загрузить это дело в карточку вместо текущего'));
+        acts.appendChild(btn('✕', 'danger', ()=> removeCase(c), 'Удалить из архива'));
+        row.appendChild(acts);
+        box.appendChild(row);
+      });
+      if(L.length > 15) box.appendChild(el('div', 'empty-hint', 'Показаны 15 последних из ' + L.length + '.'));
+    });
+  }
+  function openCase(c){
+    confirmBox({ title: 'Открыть дело из архива?', text: 'Текущее дело в карточке будет заменено. Сохраните его в архив, если оно нужно.', okText: 'Открыть', tone: 'warn', onOk(){
+      status('Загружаю дело…');
+      A().cases.get(c.id).then(r=>{
+        if(!r.ok){ status(authErr(r.error), 'err'); return; }
+        try {
+          CaseStore.restoreSnap(r.data.data);
+          status('Дело загружено.', 'ok');
+          const ov = $('profile-overlay'); if(ov) ov.classList.remove('open');
+        } catch(e){ status('Не удалось восстановить дело: ' + e.message, 'err'); }
+      });
+    } });
+  }
+  function removeCase(c){
+    confirmBox({ title: 'Удалить дело из архива?', text: fmtDate(c.createdAt) + ' · ' + outcomeText(c.outcome), okText: 'Удалить', tone: 'warn', onOk(){
+      A().cases.remove(c.id).then(r=>{ if(!r.ok){ status(authErr(r.error), 'err'); return; } status('Дело удалено из архива.', 'ok'); loadCases(); });
+    } });
+  }
+
+  /* ---------- состояние входа ---------- */
+  function refresh(){
+    const box = $('cl_box'); if(!box) return;
+    const LA = A();
+    if(!LA){ show('cl_off'); $('cl_off_text').textContent = 'Облако не загрузилось.'; return; }
+    if(location.protocol !== 'https:'){
+      show('cl_off');
+      $('cl_off_text').textContent = 'Вход через Discord, облачные профили и архив дел работают на сайте. В скачанном файле карточка работает как раньше — всё хранится в этом браузере.';
+      return;
+    }
+    if(!LA.available()){ show('cl_off'); $('cl_off_text').textContent = 'Подключаюсь к облаку…'; }
+    Promise.resolve(LA.ready).then(()=>{
+      if(!LA.available()){ show('cl_off'); $('cl_off_text').textContent = 'Облако не загрузилось (нет сети или заблокирован cdn.jsdelivr.net). Карточка работает локально.'; return null; }
+      return LA.user();
+    }).then(u=>{
+      if(u === undefined) return;
+      if(!LA.available()) return;
+      signedIn = !!u;
+      window.LexWho = u && u.discordId ? { id: String(u.discordId), name: u.discordName || '' } : null;
+      if(!u){ show('cl_out'); updateDiscordBtn(null); return; }
+      show('cl_in');
+      updateDiscordBtn(u);
+      syncProfiles(u);
+      $('cl_user_name').textContent = u.discordName || ('Discord ' + (u.discordId || ''));
+      const t = window.LexTier.current(); const tb = $('cl_tier'); tb.textContent = window.LexTier.label(t); tb.className = 'cl-tier t-' + t;
+      loadProfiles(); loadCases();
+    });
+  }
+  function wire(){
+    if(!$('cl_box')) return;
+    $('cl_signin').addEventListener('click', ()=>{
+      status('Перехожу в Discord…');
+      A().signIn().then(r=>{ if(!r.ok) status(authErr(r.error), 'err'); });
+    });
+    $('cl_signout').addEventListener('click', ()=>{
+      A().signOut().then(()=>{ window.LexWho = null; syncedFor = null; activeCloudId = null; updateDiscordBtn(null); status('Вы вышли. Профиль в этом браузере остался.', 'ok'); refresh(); });
+    });
+    $('cl_prof_add').addEventListener('click', createFromForm);
+    $('cl_case_save').addEventListener('click', saveCase);
+    $('cl_case_refresh').addEventListener('click', ()=>{ status(''); loadCases(); });
+    $('cl_wipe').addEventListener('click', ()=> confirmBox({
+      title: 'Удалить мои данные из облака?', text: 'Все облачные профили и архив дел будут удалены безвозвратно. Профиль в этом браузере тоже очистится; текущее дело в карточке останется.',
+      note: 'Удалить сам аккаунт входа — напишите в поддержку (Мила).', okText: 'Удалить всё', tone: 'warn',
+      onOk(){ status('Удаляю…'); A().wipe().then(r=>{ if(!r.ok){ status(authErr(r.error), 'err'); return; } syncedFor = 'wiped'; activeCloudId = null; document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = ''; }); if(window.syncAllPrettySelects) window.syncAllPrettySelects(); status('Облачные данные и профиль в этом браузере удалены.', 'ok'); refresh(); }); }
+    }));
+    const pb = $('profile_open_btn'); if(pb) pb.addEventListener('click', ()=>{ status(''); refresh(); });
+    // «Сохранить» в окне профиля: локально (как раньше) + в активный облачный профиль
+    const ps = $('profile-save');
+    if(ps) ps.addEventListener('click', ()=>{
+      if(!signedIn || !activeCloudId || !A()) return;
+      const raw = formProfile(), c = cloudFromLocal(raw);
+      if(checkCloudFields(c, raw) && !/не сохранится/.test(checkCloudFields(c, raw))) return;
+      A().profiles.update(activeCloudId, c).then(()=>{});
+    }, true);
+    window.addEventListener('lex-auth-change', ev=>{
+      const why = ev && ev.detail && ev.detail.reason;
+      if(why === 'sign_in' && A()) A().user().then(u=>{ if(u){ signedIn = true; window.LexWho = u.discordId ? { id: String(u.discordId), name: u.discordName || '' } : null; updateDiscordBtn(u); syncProfiles(u); } });
+      if(why === 'sign_out'){ signedIn = false; window.LexWho = null; syncedFor = null; updateDiscordBtn(null); }
+      if(($('profile-overlay') || {}).classList && $('profile-overlay').classList.contains('open')) refresh();
+    });
+    const db = $('lex_discord_btn'); if(db) db.addEventListener('click', discordBtnClick);
+    updateDiscordBtn(null);
+    // при загрузке: вошёл -- локальный профиль в облако, активный облачный -- в карточку
+    if(A() && A().ready) Promise.resolve(A().ready).then(()=>{
+      if(!A().available()){ const b = $('lex_discord_btn'); if(b && location.protocol === 'https:') b.title = 'Облако не загрузилось — карточка работает локально'; return; }
+      A().user().then(u=>{
+        updateDiscordBtn(u);
+        if(!u) return;
+        signedIn = true;
+        window.LexWho = u.discordId ? { id: String(u.discordId), name: u.discordName || '' } : null;
+        syncProfiles(u);
+        A().cases.flush().then(()=>{});
+      });
+    });
+  }
+
+  /* =====================================================================
+     Ая -- анонимная статистика (только с согласия, см. LexStats)
+     ===================================================================== */
+  const SENT_KEY = 'lex_stats_sent';
+  const pad = n=> String(n).padStart(2, '0');
+  const dayKey = d=> d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  function anonId(){
+    let id = lsGet('lex_anon_id', '');
+    if(!/^[A-Za-z0-9_-]{8,64}$/.test(id)){ id = Math.random().toString(36).slice(2) + Date.now().toString(36); lsPut('lex_anon_id', id); }
+    return id;
+  }
+  function topList(o, n){ return Object.keys(o || {}).sort((a, b)=> o[b] - o[a]).slice(0, n || 15).map(k=> [String(k).slice(0, 60), Math.max(0, Math.round(o[k]))]); }
+  function statsPayload(day, kind){
+    const S = window.LexStats; if(!S) return null;
+    const D = (S.days() || {})[day] || { cases:0, ogp:0, out:{}, arts:{}, structs:{}, roles:{}, secs:0 };
+    const from = new Date(day + 'T00:00:00').getTime(), to = from + 864e5;
+    const clicks = {}, fields = {};
+    (S.queue() || []).forEach(ev=>{
+      if(!ev || ev.t < from || ev.t >= to) return;
+      if(ev.e === 'click') clicks[String(ev.v).slice(0, 50)] = (clicks[String(ev.v).slice(0, 50)] || 0) + 1;
+      if(ev.e === 'field' && ev.v && ev.v.id) fields[String(ev.v.id).slice(0, 50)] = (fields[String(ev.v.id).slice(0, 50)] || 0) + 1;
+    });
+    const counters = { cases: D.cases | 0, ogp: D.ogp | 0, secs: D.secs | 0, events: 0 };
+    Object.keys(clicks).forEach(k=> counters.events += clicks[k]);
+    if(!counters.cases && !counters.ogp && !counters.events) return null;
+    const dev = S.device ? S.device() : {};
+    return {
+      v: 1, kind, app: String((typeof APP_VERSION !== 'undefined' ? APP_VERSION : '') + ' ' + (typeof APP_BUILD !== 'undefined' ? APP_BUILD : '')).trim().slice(0, 20),
+      db: String(typeof DB_VERSION !== 'undefined' ? DB_VERSION : '').slice(0, 30), period: day, anonId: anonId(), counters,
+      top: { arts: topList(D.arts), outcomes: topList(D.out), structs: topList(D.structs), roles: topList(D.roles), buttons: topList(clicks, 30), fields: topList(fields, 30),
+        env: [[String(dev.device || '?'), 1], [String(dev.os || '?'), 1], [String(dev.browser || '?'), 1], [String(dev.screen || '?'), 1]] }
+    };
+  }
+  function sendDaily(){
+    const S = window.LexStats;
+    if(!S || !S.consent().on || !window.LexApi) return;
+    const sent = lsGet(SENT_KEY, {});
+    const today = dayKey(new Date());
+    const days = [1, 2, 3].map(n=> dayKey(new Date(Date.now() - n * 864e5))).filter(d=> d < today && !sent[d]);
+    (function next(){
+      const d = days.shift(); if(!d) return;
+      const p = statsPayload(d, 'daily');
+      if(!p){ sent[d] = 'empty'; lsPut(SENT_KEY, sent); next(); return; }
+      LexApi.stats(p).then(r=>{
+        if(r && r.ok){ sent[d] = Date.now(); const ks = Object.keys(sent).sort(); while(ks.length > 40) delete sent[ks.shift()]; lsPut(SENT_KEY, sent); next(); }
+      });
+    })();
+  }
+  function wireAya(){
+    const out = $('stats_out'); if(!out || $('aya_send')) return;
+    const bar = el('div', 'aya-bar');
+    const b = btn('📤 Отправить статистику за сегодня', '', ()=>{
+      const st = $('aya_status');
+      if(!window.LexStats.consent().on){ st.className = 'support-form-status err'; st.textContent = 'Сначала включите анонимную статистику в окне «Профиль».'; return; }
+      const p = statsPayload(dayKey(new Date()), 'manual');
+      if(!p){ st.className = 'support-form-status err'; st.textContent = 'За сегодня пока нечего отправлять.'; return; }
+      st.className = 'support-form-status'; st.textContent = 'Отправка…';
+      LexApi.stats(p).then(r=>{
+        if(r && r.ok){ st.className = 'support-form-status ok'; st.textContent = 'Отправлено Ае. Спасибо!'; }
+        else { st.className = 'support-form-status err'; st.textContent = (window.lexSendErrText ? lexSendErrText(r && r.error) : 'Не отправлено.'); }
+      });
+    }, 'Анонимно: счётчики и топ статей за сегодня, без текстов и личных данных');
+    b.id = 'aya_send';
+    bar.appendChild(b);
+    bar.appendChild(el('div', 'support-form-status', '')).id = 'aya_status';
+    bar.appendChild(el('div', 'empty-hint', 'С включённой анонимной статистикой Ая получает сводку за прошедший день сама, раз в сутки. Без текстов, имён и данных профиля.'));
+    out.parentNode.appendChild(bar);
+  }
+
+  /* =====================================================================
+     § Договор -- модуль из lex-contract-module.html, вшит как srcdoc:
+     на Pages стоит X-Frame-Options: DENY, отдельный файл в iframe не откроется,
+     а в скачанной карточке файла рядом нет.
+     ===================================================================== */
+  let cOverlay = null, cFrame = null;
+  function cTheme(){ return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark'; }
+  function cSend(type, extra){
+    if(!cFrame || !cFrame.contentWindow) return;
+    const prof = Object.assign({}, (typeof lexProfile === 'function') ? lexProfile() : {});
+    if(prof.mail && typeof lexMailFull === 'function') prof.mail = lexMailFull(prof.mail);
+    cFrame.contentWindow.postMessage(Object.assign({ channel: 'lex-contract-host', type, theme: cTheme(), profile: prof }, extra || {}), '*');
+  }
+  function cClose(){ if(cOverlay){ cOverlay.classList.remove('open'); cOverlay.setAttribute('aria-hidden', 'true'); } }
+  function cBuild(){
+    if(cOverlay) return true;
+    const src = $('lex_contract_src'); if(!src) return false;
+    cOverlay = el('div', 'lex-contract-overlay'); cOverlay.setAttribute('aria-hidden', 'true');
+    const shell = el('div', 'lex-contract-shell');
+    cFrame = document.createElement('iframe'); cFrame.className = 'lex-contract-frame'; cFrame.title = 'Договор на оказание юридических услуг';
+    cFrame.srcdoc = src.textContent.replace(/<\\\/script/g, '</' + 'script');
+    shell.appendChild(cFrame); cOverlay.appendChild(shell); document.body.appendChild(cOverlay);
+    cOverlay.addEventListener('click', e=>{ if(e.target === cOverlay) cClose(); });
+    document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && cOverlay.classList.contains('open')){ e.stopPropagation(); cClose(); } }, true);
+    window.addEventListener('message', e=>{
+      if(e.source !== cFrame.contentWindow || !e.data || e.data.channel !== 'lex-contract-module') return;
+      if(e.data.type === 'ready' || e.data.type === 'request-context') cSend('context', { refresh: !!e.data.refresh });
+      if(e.data.type === 'close') cClose();
+    });
+    cFrame.addEventListener('load', ()=> cSend('context'));
+    if('MutationObserver' in window) new MutationObserver(()=>{ if(cOverlay.classList.contains('open')) cSend('context'); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return true;
+  }
+  window.LexContractModule = {
+    open(){ if(!cBuild()) return; cOverlay.classList.add('open'); cOverlay.setAttribute('aria-hidden', 'false'); cSend('context'); },
+    close: cClose,
+    refresh(){ cSend('context', { refresh: true }); }
+  };
+
+  /* ---------- старт ---------- */
+  function start(){
+    wire(); renderMila(); wireAya();
+    const cb = $('contract_open_btn'); if(cb) cb.addEventListener('click', ()=> window.LexContractModule.open());
+    setTimeout(sendDaily, 8000);
+    setInterval(sendDaily, 3600 * 1000);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true }); else start();
+})();
+</script>
 </body>
 </html>
