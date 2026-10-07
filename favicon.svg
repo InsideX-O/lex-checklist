@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+<style>
+:root { --bg: #171B22; --accent: #D4A227; }
+@media (prefers-color-scheme: light) { :root { --bg: #F5F2EB; --accent: #987517; } }
+.bg { fill: var(--bg); }
+.stroke-element { stroke: var(--accent); }
+</style>
+<rect class="bg" width="1024" height="1024"/>
+<rect class="stroke-element" x="40" y="40" width="944" height="944" rx="190" fill="none" stroke-width="7"/>
+<path class="stroke-element" d="M 350 285 L 350 586 L 545 585 L 655 700 L 806 540" fill="none" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="stroke-element" d="M 551.4 294.5 L 642.6 473.5 M 507.5 429.6 L 686.5 338.4" fill="none" stroke-width="60" stroke-linecap="round"/>
+</svg>
