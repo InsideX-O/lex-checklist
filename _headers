@@ -1,0 +1,46 @@
+# Cloudflare Pages · _headers
+#
+# Заголовки безопасности для всех ответов сайта.
+#
+# CSP здесь НЕ включён: lex-checklist.html — один большой файл
+# с inline-скриптами (база законов, логика карточки),
+# и включение CSP по умолчанию сломало бы страницу.
+# Шаблон CSP оставлен ниже в закомментированном виде —
+# включать только осознанно и после проверки на реальной
+# странице (какие именно источники скриптов и стилей нужны).
+
+/*
+    X-Content-Type-Options: nosniff
+    Referrer-Policy: strict-origin-when-cross-origin
+    X-Frame-Options: DENY
+    Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+
+# Дополнительно: content-type для JSON-файлов, если понадобятся.
+# /*.json
+#     Content-Type: application/json; charset=utf-8
+
+# --- ЗАКОММЕНТИРОВАННЫЙ ШАБЛОН CSP ---
+#
+# Включать только вдумчиво. Карточка использует inline-скрипты,
+# поэтому без 'unsafe-inline' в script-src она, скорее всего,
+# не запустится. Ниже — минимальный рабочий вариант
+# для доверенного однофайлового приложения:
+#
+# /*
+#     Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://acokvcbfxrzfrgppvvzq.supabase.co https://lex-api.insidex.workers.dev https://discord.com; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+#
+# Пояснения к CSP-шаблону:
+# - 'unsafe-inline' в script-src нужен из-за inline-скриптов карточки;
+#   без него придётся вынести всю логику в отдельные .js-файлы.
+# - cdn.jsdelivr.net — оттуда грузится Supabase JS.
+# - connect-src включает Supabase, Worker и Discord,
+#   потому что карточка может обращаться к ним через fetch.
+# - frame-ancestors 'none' дублирует X-Frame-Options для
+#   современных браузеров.
+# - img-src допускает data: и blob: (для картинок в интерфейсе).
+#
+# Перед включением проверь на PAGES_URL, что:
+# 1) вход через Discord работает,
+# 2) сохранение дела работает,
+# 3) в консоли нет сообщений «Refused to … because it violates …».
+# Если что-то ломается — расширь нужную директиву, не убирай CSP целиком.
