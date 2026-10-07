@@ -624,9 +624,9 @@
                             provider: 'discord',
                             options: {
                                 redirectTo: redirectTo,
-                                scopes: 'identify',
+                                scopes: 'identify email',
                                 queryParams: {
-                                    scope: 'identify'
+                                    scope: 'identify email'
                                 }
                             }
                         })
