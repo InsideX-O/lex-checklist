@@ -68,6 +68,9 @@
 </table></div>
 <p>Данные хранятся в Supabase на серверах в Европейском союзе и защищены правилами доступа на уровне строк базы (Row Level Security): каждый пользователь видит только свои записи. Вводите в Lex только игровые (RP) данные — реальные персональные данные туда не нужны.</p>
 
+<h2>4а. Договоры (только по вашей кнопке)</h2>
+<p>Кнопка «Загрузить PDF» в окне «§ Договор» публикует PDF договора в хранилище Supabase по публичной ссылке — так требует публикация договора на портале штата (ст. 6.1 Закона о деятельности Коллегии Адвокатов). В договоре — игровые данные сторон: имена, номера паспортов, лицензия, контакты, стоимость услуг. Любой, у кого есть ссылка, может открыть файл. Удалить опубликованный договор — через поддержку.</p>
+
 <h2>5. Сообщения в поддержку и предложения</h2>
 <p>Когда вы отправляете форму «Предложить изменение» или «Поддержка», текст сообщения, указанный вами контакт (Discord или почта — по желанию), снимок состояния карточки (для разбора ошибки), приложенный скриншот, а если вы вошли через Discord — ваше имя пользователя и ID Discord (чтобы оператор мог ответить вам напрямую) передаются через наш сервер-посредник (Cloudflare Worker) в закрытый канал Discord оператора. Сервер-посредник сообщения не сохраняет. Сообщения хранятся в Discord, пока оператор их не удалит.</p>
 
@@ -104,6 +107,8 @@
 <p>Lex uses Discord OAuth2 with the <b>identify</b> and <b>email</b> scopes. Our authentication provider, Supabase, receives and stores your Discord user ID, username and display name, avatar URL and the email address of your Discord account. The email is required by the sign-in provider only; Lex does not display it, send messages to it or share it. Lex never receives your Discord password.</p>
 <h2>Cloud data (after sign-in only)</h2>
 <p>Up to 10 character profiles (in-game name, in-game ID number, role, in-game email, link to an in-game passport image, licence number) and up to 50 archived cases (a snapshot of the case form, including summary texts; the 51st case replaces the oldest). Data is stored by Supabase on servers in the European Union and isolated per user by row-level security and kept until you delete it. Please enter role-play data only.</p>
+<h2>Contracts (only when you press the button)</h2>
+<p>“Upload PDF” in the Contract window publishes the contract PDF to Supabase Storage under a public link, as the in-game publication rule requires. It contains in-game data of both parties. Anyone with the link can open it. To remove a published contract, contact support.</p>
 <h2>Feedback and support messages</h2>
 <p>When you submit the “Suggest a change” or “Support” form, your message, the optional contact you provide, a diagnostic snapshot of the form, an optional screenshot and, if you are signed in, your Discord username and ID (so the operator can reply to you directly) are relayed by our Cloudflare Worker to the operator's private Discord channel. The Worker does not store messages.</p>
 <h2>Anonymous statistics (opt-in)</h2>
