@@ -5,899 +5,760 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Lex · тест авторизации</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <style>
-    :root {
-        --bg: #101418;
-        --fg: #e6e6e6;
-        --muted: #8a929a;
-        --line: #232a32;
-        --card: #161c22;
-        --accent: #4c8dff;
-        --danger: #d9534f;
-        --ok: #4caf50;
+  :root{
+    color-scheme:dark;
+    --bg:#0f1216; --panel:#171b21; --panel2:#1d222a; --border:#2a3038; --text:#e6e9ee; --muted:#8b93a1;
+    --accent:#c9a227; --accent-rgb:201,162,39; --on-accent:#14110a; --accent2:#7aa2f7;
+    --ok:#3fb950; --ok-rgb:63,185,80; --warn:#e8cf4d; --bad:#e5534b; --bad-rgb:229,83,75;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      color-scheme:light;
+      --bg:#efeae0; --panel:#fbf8f2; --panel2:#f2ede3; --border:#d6cfc0; --text:#1d2126; --muted:#5f6672;
+      --accent:#8a6a12; --accent-rgb:138,106,18; --on-accent:#fff; --accent2:#2b5fa8;
+      --ok:#1a7f37; --ok-rgb:26,127,55; --warn:#8a5a00; --bad:#bc2f27; --bad-rgb:188,47,39;
     }
-    * { box-sizing: border-box; }
-    body {
-        margin: 0;
-        padding: 16px;
-        font: 15px/1.45 -apple-system, BlinkMacSystemFont,
-            "Segoe UI", Roboto, Arial, sans-serif;
-        background: var(--bg);
-        color: var(--fg);
-    }
-    h1 { font-size: 20px; margin: 0 0 12px; }
-    h2 { font-size: 16px; margin: 20px 0 8px; }
-    .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 12px;
-        margin-bottom: 14px;
-    }
-    .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .row + .row { margin-top: 8px; }
-    button {
-        background: #1f2730;
-        color: var(--fg);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 8px 12px;
-        font: inherit;
-        cursor: pointer;
-    }
-    button:hover { background: #26303a; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
-    button.danger { background: var(--danger); border-color: var(--danger); color: #fff; }
-    input, select {
-        background: #0e1318;
-        color: var(--fg);
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        padding: 7px 9px;
-        font: inherit;
-        min-width: 0;
-    }
-    input { flex: 1 1 160px; }
-    label { color: var(--muted); font-size: 13px; min-width: 90px; }
-    ul { list-style: none; margin: 0; padding: 0; }
-    li {
-        border-top: 1px solid var(--line);
-        padding: 8px 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        align-items: center;
-    }
-    li:first-child { border-top: none; }
-    .grow { flex: 1 1 auto; min-width: 0; }
-    .muted { color: var(--muted); font-size: 13px; }
-    .tag {
-        display: inline-block;
-        font-size: 12px;
-        padding: 2px 6px;
-        border-radius: 6px;
-        background: #202932;
-        color: var(--muted);
-        margin-left: 6px;
-    }
-    .tag.active { background: #14361f; color: #8de6a1; }
-    .log {
-        background: #0a0e12;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        padding: 10px;
-        max-height: 340px;
-        overflow: auto;
-        white-space: pre-wrap;
-        word-break: break-word;
-        font: 12.5px/1.45 ui-monospace, Menlo, Consolas, monospace;
-    }
-    .log .line { display: block; }
-    .log .ok { color: #8de6a1; }
-    .log .err { color: #ff9d9a; }
-    .log .info { color: #9fb6d3; }
-    .sep { height: 1px; background: var(--line); margin: 10px 0; }
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; padding:16px; background:var(--bg); color:var(--text);
+    font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+  .wrap{ max-width:760px; margin:0 auto; }
+  header{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  header svg{ width:38px; height:38px; flex:0 0 38px; }
+  header b{ font-size:18px; display:block; }
+  header span{ font-size:12px; color:var(--muted); }
+  .card{ background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:12px; margin-bottom:14px; }
+  .label{ margin:18px 0 6px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .row + .row{ margin-top:8px; }
+  .grow{ flex:1 1 auto; min-width:0; }
+  .muted{ color:var(--muted); font-size:13px; }
+  button{ background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 12px; font:inherit; cursor:pointer; }
+  button:hover{ border-color:var(--accent); }
+  button:disabled{ opacity:.5; cursor:not-allowed; }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); font-weight:600; }
+  button.danger{ color:var(--bad); border-color:rgba(var(--bad-rgb),.6); }
+  button.sm{ padding:4px 9px; font-size:13px; }
+  input,select,textarea{ background:var(--panel); color:var(--text); border:1px solid var(--border); border-radius:8px; padding:7px 9px; font:inherit; min-width:0; width:100%; }
+  textarea{ resize:vertical; min-height:84px; }
+  .grid2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  @media (max-width:520px){ .grid2{ grid-template-columns:1fr; } }
+  .field{ display:grid; gap:3px; font-size:12px; color:var(--muted); }
+  .field input,.field select{ font-size:15px; color:var(--text); }
+  a{ color:var(--accent); text-decoration:none; }
+  [hidden]{ display:none !important; }
+
+  .pv-top{ display:flex; align-items:center; gap:12px; }
+  .pv-ava{ width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:17px; color:var(--on-accent); background:var(--accent); }
+  .pv-who{ flex:1; min-width:0; display:grid; }
+  .pv-who b{ font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pv-who span{ font-size:12px; color:var(--muted); }
+  .tag{ font-size:11px; font-weight:700; padding:1px 8px; border-radius:999px; border:1px solid var(--border); color:var(--muted); white-space:nowrap; }
+  .tag.on{ color:var(--accent); border-color:rgba(var(--accent-rgb),.6); }
+  .pv-grid{ margin-top:10px; border:1px solid var(--border); border-radius:10px; overflow:hidden; background:var(--panel); }
+  .pv-row{ display:flex; align-items:center; gap:10px; padding:7px 10px; border-top:1px solid var(--border); font-size:13px; }
+  .pv-row:first-child{ border-top:0; }
+  .pv-row>span{ width:96px; flex:0 0 96px; color:var(--muted); font-size:12px; }
+  .pv-row>b{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+  .pv-row>b.pv-empty{ color:var(--muted); font-weight:400; }
+  .pv-stats{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; margin-top:10px; }
+  .pv-tile{ border:1px solid var(--border); border-radius:9px; padding:7px 6px; text-align:center; background:var(--panel); }
+  .pv-tile b{ display:block; font-size:16px; color:var(--accent); }
+  .pv-tile span{ font-size:11px; color:var(--muted); }
+  .list{ display:grid; gap:6px; margin-top:10px; }
+  .item{ display:flex; align-items:center; gap:8px; padding:7px 8px; border:1px solid var(--border); border-radius:8px; background:var(--panel); }
+  .item.sel{ border-color:rgba(var(--accent-rgb),.7); }
+  .item .t{ flex:1; min-width:0; }
+  .item .t b{ display:block; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .item .t span{ display:block; font-size:11.5px; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  details{ margin-top:10px; border:1px solid var(--border); border-radius:8px; padding:6px 8px; background:var(--panel); }
+  summary{ cursor:pointer; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+  .bar{ height:6px; border-radius:99px; background:var(--panel); border:1px solid var(--border); overflow:hidden; margin-top:8px; }
+  .bar i{ display:block; height:100%; width:0; background:var(--accent); transition:width .15s; }
+  .status{ min-height:18px; margin-top:6px; font-size:13px; color:var(--muted); }
+  .status.ok{ color:var(--ok); } .status.err{ color:var(--bad); }
+  .log{ background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px; max-height:340px; overflow:auto; white-space:pre-wrap; word-break:break-word; font:12.5px/1.45 ui-monospace,Menlo,Consolas,monospace; }
+  .log .line{ display:block; } .log .ok{ color:var(--ok); } .log .err{ color:var(--bad); } .log .info{ color:var(--accent2); }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<h1>Lex · тест авторизации и API</h1>
+<header>
+  <svg viewBox="0 0 1024 1024" aria-hidden="true"><rect width="1024" height="1024" rx="190" fill="var(--panel2)"/><rect x="40" y="40" width="944" height="944" rx="190" fill="none" stroke="var(--accent)" stroke-width="14"/><path d="M350 285L350 586L545 585L655 700L806 540" fill="none" stroke="var(--accent)" stroke-width="96" stroke-linecap="round" stroke-linejoin="round"/><path d="M551.4 294.5L642.6 473.5M507.5 429.6L686.5 338.4" fill="none" stroke="var(--accent)" stroke-width="60" stroke-linecap="round"/></svg>
+  <div><b>Lex · тест авторизации и API</b><span>вход, профили из облака, 50 тестовых дел, репорты · карточка 2.3</span></div>
+</header>
 
+<!-- ВХОД -->
 <div class="card">
-    <div class="row">
-        <button id="btnSignIn" class="primary" type="button">Войти через Discord</button>
-        <button id="btnSignOut" type="button">Выйти</button>
-        <button id="btnRefresh" type="button">Обновить</button>
-    </div>
-    <div class="row">
-        <span class="muted">Состояние:</span>
-        <span id="statusUser" class="grow">—</span>
-    </div>
-    <div class="row">
-        <span class="muted">LexAuth.available():</span>
-        <span id="statusAvail">—</span>
-        <span class="muted">· LexApi.available():</span>
-        <span id="statusApiAvail">—</span>
-    </div>
+  <div class="row">
+    <button id="btnSignIn" class="primary" type="button">Войти через Discord</button>
+    <button id="btnSignOut" type="button">Выйти</button>
+    <button id="btnRefresh" type="button">Обновить</button>
+  </div>
+  <div class="row"><span class="muted">Состояние:</span><span id="statusUser" class="grow">—</span></div>
+  <div class="row"><span class="muted">LexAuth.available():</span><span id="statusAvail">—</span><span class="muted">· LexApi.available():</span><span id="statusApiAvail">—</span></div>
 </div>
 
-<h2>Профили</h2>
+<!-- ПРОФИЛЬ -->
+<div class="label">Профиль</div>
 <div class="card">
-    <div class="row">
-        <label for="p-name">Имя</label>
-        <input id="p-name" type="text" maxlength="80" placeholder="Иван Иванов">
+  <div id="pv_view">
+    <div class="pv-top">
+      <div class="pv-ava" id="pv_ava">?</div>
+      <div class="pv-who"><b id="pv_name">Профиль не выбран</b><span id="pv_role"></span></div>
+      <span class="tag" id="pv_tag">нет входа</span>
     </div>
-    <div class="row">
-        <label for="p-id">ID-карта</label>
-        <input id="p-id" type="text" maxlength="20" placeholder="12345">
+    <div class="pv-grid" id="pv_grid"></div>
+    <div class="pv-stats">
+      <div class="pv-tile"><b id="st_prof">0</b><span>профилей из 10</span></div>
+      <div class="pv-tile"><b id="st_cases">0</b><span>дел в облаке</span></div>
+      <div class="pv-tile"><b id="st_queue">0</b><span>в очереди</span></div>
+      <div class="pv-tile"><b id="st_role">—</b><span>роль</span></div>
     </div>
-    <div class="row">
-        <label for="p-role">Роль</label>
-        <select id="p-role">
-            <option value="">—</option>
-            <option value="adv">adv</option>
-            <option value="prok">prok</option>
-        </select>
+    <div class="row" style="margin-top:10px;">
+      <button id="btnEdit" class="primary" type="button" disabled>✎ Изменить</button>
+      <button id="btnNew" type="button" disabled>＋ Новый профиль</button>
     </div>
-    <div class="row">
-        <label for="p-mail">Discord РП</label>
-        <input id="p-mail" type="text" maxlength="60" placeholder="name#0000">
+  </div>
+
+  <div id="pv_edit" hidden>
+    <div class="muted" id="pe_title" style="margin-bottom:8px;">Изменение профиля</div>
+    <div class="grid2">
+      <label class="field">Имя и фамилия (персонаж)<input id="p-name" type="text" maxlength="80" placeholder="Alex Backwoods"></label>
+      <label class="field">№ ID-карты (паспорт)<input id="p-id" type="text" maxlength="20" placeholder="80429"></label>
+      <label class="field">Должность<select id="p-role"><option value="">—</option><option value="adv">Адвокат</option><option value="prok">Прокурор</option></select></label>
+      <label class="field">Статус адвоката<select id="p-kind"><option value="">—</option><option value="gov">Государственный</option><option value="private">Частный</option><option value="other">Другое</option></select></label>
+      <label class="field">№ лицензии <a href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer">реестр ↗</a><input id="p-license" type="text" maxlength="40" placeholder="PLSA 0000"></label>
+      <label class="field">Почта — логин (без @)<input id="p-mail" type="text" maxlength="60" placeholder="insidex_o"></label>
+      <label class="field">Домен почты<input id="p-domain" type="text" maxlength="60" placeholder="advup.agency" list="pv_domains"></label>
+      <label class="field">Телефон<input id="p-phone" type="text" maxlength="30" placeholder="номер в игре"></label>
+      <label class="field">Сервер<select id="p-server"><option value="redwood">Redwood</option></select></label>
+      <label class="field">Ссылка на копию паспорта<input id="p-passport" type="text" maxlength="300" placeholder="https://…"></label>
     </div>
-    <div class="row">
-        <label for="p-passport">Паспорт</label>
-        <input id="p-passport" type="text" maxlength="300" placeholder="https://...">
+    <datalist id="pv_domains"><option value="advup.agency"></option><option value="sa.gov"></option><option value="sa.com"></option></datalist>
+    <div class="row" style="margin-top:10px;">
+      <button id="btnProfileSave" class="primary" type="button">Сохранить</button>
+      <button id="btnProfileCancel" type="button">Отмена</button>
+      <span class="grow"></span>
+      <button id="btnProfileDelete" class="danger" type="button" hidden>Удалить профиль</button>
     </div>
-    <div class="row">
-        <label for="p-license">Удостоверение</label>
-        <input id="p-license" type="text" maxlength="40" placeholder="№ ...">
-    </div>
-    <div class="row">
-        <button id="btnProfileSave" class="primary" type="button">Создать профиль</button>
-        <button id="btnProfileCancel" type="button" style="display:none">Отменить редактирование</button>
-    </div>
-    <div class="sep"></div>
-    <ul id="listProfiles"><li class="muted">— пусто —</li></ul>
+  </div>
+
+  <div class="status" id="pv_status"></div>
+  <div class="list" id="listProfiles"></div>
 </div>
 
-<h2>Дела</h2>
+<!-- ДЕЛА -->
+<div class="label">Дела</div>
 <div class="card">
-    <div class="row">
-        <button id="btnCaseCreate" class="primary" type="button">Создать тестовое дело</button>
-        <button id="btnCaseList" type="button">Показать список</button>
-        <button id="btnCaseCount" type="button">Кол-во дел</button>
-        <button id="btnFlush" type="button">Отправить очередь</button>
-        <button id="btnWipe" class="danger" type="button">Удалить мои данные</button>
-    </div>
-    <div class="row">
-        <span class="muted">В очереди (локально):</span>
-        <span id="queueInfo" class="grow">—</span>
-    </div>
-    <div class="sep"></div>
-    <ul id="listCases"><li class="muted">— пусто —</li></ul>
+  <div class="row">
+    <button id="btnSend50" class="primary" type="button">Отправить 50 случайных</button>
+    <button id="btnSendAll" type="button">Отправить все</button>
+    <button id="btnCaseOne" type="button">Одно случайное</button>
+    <button id="btnCaseList" type="button">Показать список</button>
+    <button id="btnCaseCount" type="button">Кол-во дел</button>
+  </div>
+  <div class="row">
+    <button id="btnFlush" type="button">Отправить очередь</button>
+    <button id="btnClearCases" class="danger" type="button">Очистить мои дела</button>
+    <button id="btnWipe" class="danger" type="button">Удалить мои данные</button>
+  </div>
+  <div class="row"><span class="muted">В очереди (локально):</span><span id="queueInfo" class="grow">—</span></div>
+  <div class="bar" id="sendBar" hidden><i id="sendBarFill"></i></div>
+  <div class="status" id="cases_status"></div>
+  <details>
+    <summary>Тестовые дела из генератора карточки <span id="packInfo"></span></summary>
+    <div class="list" id="listPack"></div>
+  </details>
+  <details id="cloudDet">
+    <summary>Дела в облаке <span id="cloudInfo"></span></summary>
+    <div class="list" id="listCases"></div>
+  </details>
 </div>
 
-<h2>API Worker</h2>
+<!-- РЕПОРТЫ -->
+<div class="label">Репорт / предложение</div>
 <div class="card">
-    <div class="row">
-        <button id="btnTestHealth" type="button">Тест /health</button>
-        <button id="btnTestStats" type="button">Тест /stats (kind: test)</button>
-        <button id="btnTestSuggest" type="button">Тест /suggest (ТЕСТ)</button>
-    </div>
+  <div class="grid2">
+    <label class="field">Куда<select id="r-channel"><option value="suggest">Лея — идеи и баги (suggest)</option><option value="support">Мила — поддержка (support)</option></select></label>
+    <label class="field">Тип<select id="r-type"><option value="improve">Улучшение / баг карточки</option><option value="article">Правка статьи закона</option></select></label>
+  </div>
+  <div class="row" id="r-article-row" hidden><label class="field grow">Статья из выбранного дела<select id="r-article"></select></label></div>
+  <label class="field" style="margin-top:8px;">Текст<textarea id="r-text" maxlength="1500" placeholder="Что не так и что ожидалось"></textarea></label>
+  <div class="grid2" style="margin-top:8px;">
+    <label class="field">Контакт<input id="r-contact" type="text" maxlength="200" placeholder="подставится логин Discord"></label>
+    <label class="field">Скриншот (png / jpg / webp / gif, до 7 МБ)<input id="r-shot" type="file" accept="image/png,image/jpeg,image/webp,image/gif"></label>
+  </div>
+  <div class="row" style="margin-top:8px;">
+    <label class="muted" style="display:flex;gap:6px;align-items:center;"><input id="r-snap" type="checkbox" checked style="width:auto;"> приложить снимок карточки</label>
+    <select id="r-case" style="flex:1 1 220px;width:auto;"></select>
+  </div>
+  <div class="row" style="margin-top:8px;">
+    <button id="btnReportSend" class="primary" type="button">Отправить репорт</button>
+    <button id="btnReportSample" type="button">Подставить пример</button>
+  </div>
+  <div class="status" id="r-status"></div>
 </div>
 
-<h2>Журнал</h2>
+<!-- WORKER -->
+<div class="label">API Worker</div>
 <div class="card">
-    <div class="row">
-        <button id="btnLogClear" type="button">Очистить журнал</button>
-    </div>
-    <div class="sep"></div>
-    <div id="log" class="log"></div>
+  <div class="row">
+    <button id="btnTestHealth" type="button">Тест /health</button>
+    <button id="btnTestStats" type="button">/stats по 50 делам (kind: test)</button>
+    <button id="btnTestSuggest" type="button">Тест /suggest (ТЕСТ)</button>
+  </div>
+</div>
+
+<div class="label">Журнал</div>
+<div class="card">
+  <div class="row"><button id="btnLogClear" type="button">Очистить журнал</button></div>
+  <div id="log" class="log" style="margin-top:8px;"></div>
+</div>
+
 </div>
 
 <script src="lex-auth.js"></script>
 <script src="lex-api.js"></script>
+<script src="lex-testpack.js"></script>
 <script>
 (function () {
-    'use strict';
+  'use strict';
 
-    var MAX_LOG_LINES = 400;
+  var MAX_LOG_LINES = 400;
+  var SHOT_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+  var SHOT_MAX = 7 * 1024 * 1024;
+  var ERR = {
+    network: 'Нет связи.', unavailable: 'Недоступно в этом режиме (нужен https).', not_authenticated: 'Войдите через Discord.',
+    profiles_quota: 'Достигнут лимит профилей (10).', cases_quota: 'Достигнут лимит дел.', invalid_data: 'Некорректные данные.',
+    data_too_large: 'Дело слишком большое.', profile_not_found: 'Профиль не найден.', cloud_error: 'Ошибка облака.',
+    queue_full: 'Очередь переполнена.', local_storage: 'localStorage недоступен.', rate_limited: 'Слишком часто. Подожди немного.',
+    timeout: 'Сервер не ответил.', origin: 'Запрос отклонён (не с этого сайта).', too_large: 'Файлы слишком большие.',
+    bad_schema: 'Некорректные данные формы.', bad_request: 'Некорректные данные формы.', file_type: 'Недопустимый тип вложения.',
+    disabled: 'Отправка временно отключена.', webhook_invalid: 'Канал приёма недоступен.', upstream: 'Ошибка Discord.', unknown: 'Неизвестная ошибка.'
+  };
+  function errText(code) { return ERR[code] || (code ? String(code) : ERR.unknown); }
 
-    /* =====================================================
-       Журнал (только textContent)
-       ===================================================== */
+  /* ---------- helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function pad(v) { return v < 10 ? '0' + v : String(v); }
+  function todayString() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function clear(el) { while (el.firstChild) el.removeChild(el.firstChild); }
+  function mk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function btn(text, cls, fn) { var b = mk('button', cls || 'sm', text); b.type = 'button'; b.addEventListener('click', fn); return b; }
+  function setStatus(id, text, kind) { var e = $(id); e.className = 'status' + (kind ? ' ' + kind : ''); e.textContent = text || ''; }
+  function clip(s, n) { s = String(s == null ? '' : s); return s.length > n ? s.slice(0, n - 1) + '…' : s; }
+  function randomAnonId() { var a = 'abcdefghijklmnopqrstuvwxyz0123456789', o = 'test-anon-'; for (var i = 0; i < 12; i++) o += a.charAt(Math.floor(Math.random() * a.length)); return o; }
 
-    var logEl = document.getElementById('log');
+  var logEl = $('log');
+  function logLine(text, kind) {
+    try {
+      var s = mk('span', 'line ' + (kind || 'info'), '[' + pad(new Date().getHours()) + ':' + pad(new Date().getMinutes()) + ':' + pad(new Date().getSeconds()) + '] ' + String(text));
+      logEl.appendChild(s);
+      while (logEl.childNodes.length > MAX_LOG_LINES) logEl.removeChild(logEl.firstChild);
+      logEl.scrollTop = logEl.scrollHeight;
+    } catch (e) { /* ignore */ }
+  }
+  function logOk(m) { logLine(m, 'ok'); } function logErr(m) { logLine(m, 'err'); } function logInfo(m) { logLine(m, 'info'); }
 
-    function logLine(text, kind) {
-        try {
-            var span = document.createElement('span');
-            span.className = 'line ' + (kind || 'info');
-            span.textContent = '[' + timeStamp() + '] ' + String(text);
-            logEl.appendChild(span);
+  /* ---------- состояние ---------- */
+  var me = null;          // { discordName, discordId } | null
+  var profiles = [];      // из облака, единственный источник
+  var editing = null;     // null | 'new' | cloudId
+  var pack = null;        // распакованный пакет дел
+  var cases = [];         // собранные дела
+  var cloudCount = 0;
 
-            while (logEl.childNodes.length > MAX_LOG_LINES) {
-                logEl.removeChild(logEl.firstChild);
-            }
+  function active() { for (var i = 0; i < profiles.length; i++) if (profiles[i].isActive) return profiles[i]; return null; }
+  function byId(id) { for (var i = 0; i < profiles.length; i++) if (profiles[i].cloudId === id) return profiles[i]; return null; }
+  function authReady() { return !!(window.LexAuth && window.LexAuth.profiles); }
 
-            logEl.scrollTop = logEl.scrollHeight;
-        } catch (e) {
-            /* ignore */
-        }
+  /* =========================================================
+     Вход / статус
+     ========================================================= */
+  function refreshAvail() {
+    try { $('statusAvail').textContent = String(!!(window.LexAuth && window.LexAuth.available && window.LexAuth.available())); } catch (e) { $('statusAvail').textContent = 'error'; }
+    try { $('statusApiAvail').textContent = String(!!(window.LexApi && window.LexApi.available && window.LexApi.available())); } catch (e) { $('statusApiAvail').textContent = 'error'; }
+  }
+  function refreshUser() {
+    var el = $('statusUser');
+    if (!window.LexAuth || typeof window.LexAuth.user !== 'function') { el.textContent = 'LexAuth не загружен'; me = null; return Promise.resolve(null); }
+    return window.LexAuth.user().then(function (u) {
+      me = u || null;
+      if (!u) { el.textContent = 'не вошёл'; return null; }
+      var p = []; if (u.discordName) p.push(u.discordName); if (u.discordId) p.push('id=' + u.discordId);
+      el.textContent = p.join(' · ') || 'вошёл';
+      if (!$('r-contact').value && u.discordName) $('r-contact').value = u.discordName;
+      return u;
+    }).catch(function () { me = null; el.textContent = 'ошибка получения пользователя'; return null; });
+  }
+
+  /* =========================================================
+     Профили (только облако)
+     ========================================================= */
+  function mailFull(p) {
+    var m = String(p.mail || '').trim();
+    if (!m) return '';
+    if (m.indexOf('@') !== -1) return m;
+    return m + '@' + (p.mailDomain || (p.license ? 'advup.agency' : 'sa.gov'));
+  }
+  function kindText(k) { return k === 'gov' ? 'Государственный' : k === 'private' ? 'Частный' : k === 'other' ? 'Другое' : ''; }
+  function roleText(r) { return r === 'adv' ? 'Адвокат' : r === 'prok' ? 'Прокурор' : '—'; }
+  function initials(n) { var w = String(n || '').trim().split(/\s+/).filter(Boolean); return w.length ? (w[0][0] + (w[1] ? w[1][0] : '')).toUpperCase() : '?'; }
+
+  function row(label, value, link) {
+    var r = mk('div', 'pv-row'); r.appendChild(mk('span', null, label));
+    var b = mk('b', value ? '' : 'pv-empty', value || '—'); r.appendChild(b);
+    if (link) { var a = mk('a', null, 'реестр ↗'); a.href = link; a.target = '_blank'; a.rel = 'noopener noreferrer'; r.appendChild(a); }
+    return r;
+  }
+
+  function renderView() {
+    var p = active(), grid = $('pv_grid'); clear(grid);
+    $('st_prof').textContent = String(profiles.length);
+    $('st_cases').textContent = String(cloudCount);
+    $('btnNew').disabled = !me;
+    $('btnEdit').disabled = !p;
+    if (!me) { $('pv_tag').textContent = 'нет входа'; $('pv_tag').className = 'tag'; }
+    else { $('pv_tag').textContent = 'облако'; $('pv_tag').className = 'tag on'; }
+    if (!p) {
+      $('pv_ava').textContent = '?';
+      $('pv_name').textContent = me ? (profiles.length ? 'Выберите профиль ниже' : 'Профилей пока нет') : 'Войдите через Discord';
+      $('pv_role').textContent = me ? (profiles.length ? 'данные подставятся сразу' : 'нажмите «＋ Новый профиль»') : 'профили хранятся только в облаке';
+      $('st_role').textContent = '—';
+      return;
     }
+    $('pv_ava').textContent = initials(p.name);
+    $('pv_name').textContent = p.name || '(без имени)';
+    $('pv_role').textContent = roleText(p.role) + (me && me.discordName ? ' · Discord: ' + me.discordName : '');
+    $('st_role').textContent = p.role || '—';
+    grid.appendChild(row('ID-карта', p.id));
+    grid.appendChild(row('Лицензия', p.license, 'https://redwood-tables.duckdns.org/shared/AdvocatesSA1'));
+    grid.appendChild(row('Почта', mailFull(p)));
+    grid.appendChild(row('Телефон', p.phone));
+    grid.appendChild(row('Статус', kindText(p.roleKind)));
+    grid.appendChild(row('Сервер', p.server));
+    grid.appendChild(row('Паспорт', p.passport));
+    grid.appendChild(row('cloudId', p.cloudId));
+  }
 
-    function timeStamp() {
-        var d = new Date();
-        function pad(v) { return v < 10 ? '0' + v : String(v); }
-        return pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-    }
+  function renderProfiles() {
+    var list = $('listProfiles'); clear(list);
+    profiles.forEach(function (p) {
+      var it = mk('div', 'item' + (p.isActive ? ' sel' : ''));
+      var t = mk('div', 't'); t.appendChild(mk('b', null, p.name || '(без имени)'));
+      t.appendChild(mk('span', null, roleText(p.role) + (p.id ? ' · ID ' + p.id : '') + (p.license ? ' · ' + p.license : '')));
+      it.appendChild(t);
+      if (p.isActive) it.appendChild(mk('span', 'tag on', 'выбран'));
+      else it.appendChild(btn('Выбрать', 'sm', function () { doSelect(p.cloudId); }));
+      list.appendChild(it);
+    });
+  }
 
-    function logOk(msg) { logLine(msg, 'ok'); }
-    function logErr(msg) { logLine(msg, 'err'); }
-    function logInfo(msg) { logLine(msg, 'info'); }
+  function loadProfiles() {
+    if (!authReady()) return Promise.resolve();
+    return window.LexAuth.profiles.list().then(function (res) {
+      if (!res.ok) { logErr('profiles.list: ' + res.error); profiles = []; }
+      else { profiles = res.data || []; logInfo('profiles.list: ' + profiles.length + ' шт.'); }
+      renderProfiles(); renderView();
+    }).catch(function () { logErr('profiles.list: исключение'); });
+  }
 
-    function resultToString(res) {
-        try {
-            if (!res || typeof res !== 'object') {
-                return String(res);
-            }
-            return JSON.stringify(res);
-        } catch (e) {
-            return '[unserializable]';
-        }
-    }
+  function doSelect(cloudId) {
+    setStatus('pv_status', 'Выбираю…');
+    window.LexAuth.profiles.setActive(cloudId).then(function (res) {
+      if (!res.ok) { setStatus('pv_status', errText(res.error), 'err'); logErr('profiles.setActive: ' + res.error); return; }
+      logOk('profiles.setActive ok');
+      setStatus('pv_status', '');
+      return loadProfiles();
+    });
+  }
 
-    /* =====================================================
-       Утилиты
-       ===================================================== */
+  function showEdit(mode) {
+    editing = mode;
+    var isNew = mode === 'new', p = isNew ? {} : (byId(mode) || {});
+    $('pe_title').textContent = isNew ? 'Новый профиль' : 'Изменение профиля';
+    $('p-name').value = p.name || ''; $('p-id').value = p.id || ''; $('p-role').value = p.role || '';
+    $('p-license').value = p.license || ''; $('p-mail').value = p.mail || (isNew && me && me.discordName ? me.discordName : '');
+    $('p-passport').value = p.passport || '';
+    $('p-kind').value = p.roleKind || ''; $('p-domain').value = p.mailDomain || ''; $('p-phone').value = p.phone || ''; $('p-server').value = p.server || 'redwood';
+    $('btnProfileDelete').hidden = isNew;
+    $('pv_view').hidden = true; $('pv_edit').hidden = false;
+  }
+  function hideEdit() { editing = null; $('pv_edit').hidden = true; $('pv_view').hidden = false; }
 
-    function $(id) { return document.getElementById(id); }
+  function readForm() {
+    return { name: $('p-name').value, id: $('p-id').value, role: $('p-role').value, mail: $('p-mail').value.replace(/@.*$/, '').trim(),
+      passport: $('p-passport').value, license: $('p-license').value,
+      roleKind: $('p-kind').value, mailDomain: $('p-domain').value.replace(/^@/, '').trim(), phone: $('p-phone').value.trim(), server: $('p-server').value };
+  }
+  function doProfileSave() {
+    if (!authReady() || !editing) return;
+    var data = readForm(), isNew = editing === 'new';
+    setStatus('pv_status', 'Сохраняю…');
+    var req = isNew ? window.LexAuth.profiles.create(data) : window.LexAuth.profiles.update(editing, data);
+    req.then(function (res) {
+      if (!res.ok) { setStatus('pv_status', errText(res.error), 'err'); logErr('profiles.' + (isNew ? 'create' : 'update') + ': ' + res.error); return; }
+      logOk('profiles.' + (isNew ? 'create' : 'update') + ' ok: ' + (res.data && res.data.cloudId || ''));
+      var newId = res.data && res.data.cloudId;
+      hideEdit();
+      var after = isNew && newId && profiles.length === 0 ? window.LexAuth.profiles.setActive(newId) : Promise.resolve({ ok: true });
+      return after.then(loadProfiles).then(function () { setStatus('pv_status', 'Сохранено в облаке.', 'ok'); });
+    });
+  }
+  function doProfileDelete() {
+    if (!editing || editing === 'new') return;
+    if (!window.confirm('Удалить этот профиль из облака?')) return;
+    window.LexAuth.profiles.remove(editing).then(function (res) {
+      if (!res.ok) { setStatus('pv_status', errText(res.error), 'err'); logErr('profiles.remove: ' + res.error); return; }
+      logOk('profiles.remove ok'); hideEdit(); loadProfiles();
+    });
+  }
 
-    function todayString() {
-        var d = new Date();
-        function pad(v) { return v < 10 ? '0' + v : String(v); }
-        return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-    }
+  /* =========================================================
+     Пакет тестовых дел
+     ========================================================= */
+  function unpack() {
+    if (pack) return Promise.resolve(pack);
+    if (!window.LEX_TESTPACK) return Promise.reject(new Error('lex-testpack.js не загружен'));
+    if (typeof DecompressionStream !== 'function') return Promise.reject(new Error('Браузер без DecompressionStream'));
+    var bin = atob(window.LEX_TESTPACK), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return new Response(stream).text().then(function (txt) { pack = JSON.parse(txt); return pack; });
+  }
 
-    function randomAnonId() {
-        var alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        var out = 'test-anon-';
-        for (var i = 0; i < 12; i += 1) {
-            out += alphabet.charAt(Math.floor(Math.random() * alphabet.length));
-        }
-        return out;
-    }
+  // то же, что CaseStore.snapshot() в карточке: поля формы + показанные блоки + остальное
+  function buildCase(c) {
+    var F = Object.assign({}, pack.blank.F, c.F), S = Object.assign({}, pack.blank.shows, c.S);
+    var data = Object.assign({ F: F, shows: S }, c.R);
+    var sum = String(F.summary_out || '').trim(), fwv = String(F.final_word_out || '').trim();
+    var diag = c.diag.split('\u0001S').join(sum).split('\u0001W').join(fwv);
+    if (c.fwMode) diag += '\n\n' + String(F.summary_out || '') + '\n\n' + (c.fwMode === 2 ? c.fw : String(F.final_word_out || ''));
+    var localId = ('c-' + (F.f_start || '') + '-' + c.ms).replace(/[^A-Za-z0-9_.:-]/g, '').slice(0, 64);
+    return { n: 0, seed: c.seed, localId: localId, outcome: String(c.out || '').slice(0, 40), outText: c.outText, struct: c.struct, zone: c.zone,
+      arts: c.arts, artKeys: c.artKeys, ms: c.ms, data: data, diag: diag };
+  }
 
-    function randomLocalId() {
-        return 'test-' + Date.now() + '-' + Math.floor(Math.random() * 1e6);
-    }
+  function outLabel(code) {
+    for (var i = 0; i < cases.length; i++) if (cases[i].outcome === code) return cases[i].outText;
+    return code || 'без исхода';
+  }
 
-    /* =====================================================
-       Состояние
-       ===================================================== */
+  function renderPack() {
+    var list = $('listPack'); clear(list);
+    $('packInfo').textContent = '· ' + cases.length + ' шт. · карточка ' + pack.app + ' · ' + pack.db;
+    cases.forEach(function (c) {
+      var it = mk('div', 'item'), t = mk('div', 't');
+      t.appendChild(mk('b', null, '№' + c.n + ' · ' + c.outText));
+      t.appendChild(mk('span', null, c.struct + ' · ' + c.zone + ' · ' + c.arts.join(', ')));
+      it.appendChild(t);
+      it.appendChild(btn('В облако', 'sm', function () { sendOne(c).then(function (r) { finishSend([r]); }); }));
+      list.appendChild(it);
+    });
+    var sel = $('r-case'); clear(sel);
+    cases.forEach(function (c) { var o = mk('option', null, 'Дело №' + c.n + ' · ' + clip(c.outText, 40) + ' · ' + c.arts.join(', ')); o.value = String(c.n - 1); sel.appendChild(o); });
+    fillArticles();
+  }
 
-    var profiles = [];
-    var currentEditId = null;
+  /* =========================================================
+     Дела в облаке
+     ========================================================= */
+  function updateQueueInfo() {
+    var n = 0;
+    try { var raw = window.localStorage.getItem('lex_cases_queue'); if (raw) { var a = JSON.parse(raw); if (Array.isArray(a)) n = a.length; } $('queueInfo').textContent = String(n); }
+    catch (e) { $('queueInfo').textContent = '?'; }
+    $('st_queue').textContent = $('queueInfo').textContent;
+  }
 
-    /* =====================================================
-       Статус пользователя
-       ===================================================== */
-
-    function refreshAvail() {
-        try {
-            $('statusAvail').textContent = String(
-                window.LexAuth && typeof window.LexAuth.available === 'function'
-                    ? window.LexAuth.available()
-                    : false
-            );
-        } catch (e) {
-            $('statusAvail').textContent = 'error';
-        }
-
-        try {
-            $('statusApiAvail').textContent = String(
-                window.LexApi && typeof window.LexApi.available === 'function'
-                    ? window.LexApi.available()
-                    : false
-            );
-        } catch (e) {
-            $('statusApiAvail').textContent = 'error';
-        }
-    }
-
-    function refreshUser() {
-        var statusEl = $('statusUser');
-
-        if (!window.LexAuth || typeof window.LexAuth.user !== 'function') {
-            statusEl.textContent = 'LexAuth не загружен';
-            return Promise.resolve(null);
-        }
-
-        return window.LexAuth.user().then(function (u) {
-            if (!u) {
-                statusEl.textContent = 'не вошёл';
-                return null;
-            }
-            var parts = [];
-            if (u.discordName) parts.push(u.discordName);
-            if (u.discordId) parts.push('id=' + u.discordId);
-            statusEl.textContent = parts.join(' · ') || 'вошёл';
-            return u;
-        }).catch(function () {
-            statusEl.textContent = 'ошибка получения пользователя';
-            return null;
+  function renderCases(items) {
+    var list = $('listCases'); clear(list);
+    cloudCount = items.length; $('st_cases').textContent = String(cloudCount); $('cloudInfo').textContent = '· ' + cloudCount + ' шт.';
+    if (!items.length) { list.appendChild(mk('div', 'muted', '— пусто —')); return; }
+    items.forEach(function (c) {
+      var it = mk('div', 'item'), t = mk('div', 't');
+      t.appendChild(mk('b', null, outLabel(c.outcome)));
+      t.appendChild(mk('span', null, (c.createdAt || '—') + (c.withTexts ? ' · с текстами' : '') + ' · ' + (c.localId || '')));
+      it.appendChild(t);
+      it.appendChild(btn('Открыть', 'sm', function () {
+        window.LexAuth.cases.get(c.id).then(function (res) {
+          if (!res.ok) { logErr('cases.get: ' + res.error); return; }
+          var d = res.data || {}, F = d.data && d.data.F ? d.data.F : {};
+          logOk('cases.get: ' + (d.localId || '') + ' · ' + JSON.stringify(d.data || {}).length + ' байт · полей F: ' + Object.keys(F).length +
+            ' · статьи: ' + (d.data && d.data.chips ? d.data.chips.map(function (x) { return x.article; }).join(', ') : '—') + ' · app ' + d.appVersion + ' / db ' + d.dbVersion);
         });
-    }
-
-    /* =====================================================
-       Профили
-       ===================================================== */
-
-    function clearProfileForm() {
-        $('p-name').value = '';
-        $('p-id').value = '';
-        $('p-role').value = '';
-        $('p-mail').value = '';
-        $('p-passport').value = '';
-        $('p-license').value = '';
-        currentEditId = null;
-        $('btnProfileSave').textContent = 'Создать профиль';
-        $('btnProfileCancel').style.display = 'none';
-    }
-
-    function readProfileForm() {
-        return {
-            name: $('p-name').value,
-            id: $('p-id').value,
-            role: $('p-role').value,
-            mail: $('p-mail').value,
-            passport: $('p-passport').value,
-            license: $('p-license').value
-        };
-    }
-
-    function fillProfileForm(p) {
-        $('p-name').value = p.name || '';
-        $('p-id').value = p.id || '';
-        $('p-role').value = p.role || '';
-        $('p-mail').value = p.mail || '';
-        $('p-passport').value = p.passport || '';
-        $('p-license').value = p.license || '';
-    }
-
-    function renderProfiles() {
-        var list = $('listProfiles');
-        while (list.firstChild) list.removeChild(list.firstChild);
-
-        if (!profiles.length) {
-            var empty = document.createElement('li');
-            empty.className = 'muted';
-            empty.textContent = '— пусто —';
-            list.appendChild(empty);
-            return;
-        }
-
-        profiles.forEach(function (p) {
-            var li = document.createElement('li');
-
-            var main = document.createElement('div');
-            main.className = 'grow';
-
-            var title = document.createElement('div');
-            title.textContent = (p.name || '(без имени)') +
-                (p.id ? ' · ID ' + p.id : '') +
-                (p.role ? ' · ' + p.role : '');
-
-            var sub = document.createElement('div');
-            sub.className = 'muted';
-            sub.textContent =
-                'cloudId=' + (p.cloudId || '—') +
-                (p.mail ? ' · ' + p.mail : '') +
-                (p.license ? ' · уд. ' + p.license : '');
-
-            var activeTag = document.createElement('span');
-            activeTag.className = 'tag' + (p.isActive ? ' active' : '');
-            activeTag.textContent = p.isActive ? 'активен' : 'неактивен';
-            title.appendChild(activeTag);
-
-            main.appendChild(title);
-            main.appendChild(sub);
-            li.appendChild(main);
-
-            if (!p.isActive) {
-                var btnAct = document.createElement('button');
-                btnAct.type = 'button';
-                btnAct.textContent = 'Сделать активным';
-                btnAct.addEventListener('click', function () {
-                    doSetActive(p.cloudId);
-                });
-                li.appendChild(btnAct);
-            }
-
-            var btnEdit = document.createElement('button');
-            btnEdit.type = 'button';
-            btnEdit.textContent = 'Изменить';
-            btnEdit.addEventListener('click', function () {
-                currentEditId = p.cloudId;
-                fillProfileForm(p);
-                $('btnProfileSave').textContent = 'Сохранить изменения';
-                $('btnProfileCancel').style.display = '';
-            });
-            li.appendChild(btnEdit);
-
-            var btnDel = document.createElement('button');
-            btnDel.type = 'button';
-            btnDel.className = 'danger';
-            btnDel.textContent = 'Удалить';
-            btnDel.addEventListener('click', function () {
-                doRemoveProfile(p.cloudId);
-            });
-            li.appendChild(btnDel);
-
-            list.appendChild(li);
+      }));
+      it.appendChild(btn('Удалить', 'sm danger', function () {
+        window.LexAuth.cases.remove(c.id).then(function (res) {
+          if (!res.ok) { logErr('cases.remove: ' + res.error); return; }
+          logOk('cases.remove ok'); loadCases();
         });
+      }));
+      list.appendChild(it);
+    });
+  }
+  function loadCases() {
+    if (!authReady()) return Promise.resolve();
+    return window.LexAuth.cases.list({ limit: 50 }).then(function (res) {
+      if (!res.ok) { logErr('cases.list: ' + res.error); renderCases([]); return; }
+      logInfo('cases.list: ' + (res.data || []).length + ' шт.');
+      renderCases(res.data || []);
+    }).catch(function () { logErr('cases.list: исключение'); });
+  }
+
+  // одно дело -> LexAuth.cases.save, ровно как saveCase() в карточке
+  function sendOne(c) {
+    var p = active();
+    return window.LexAuth.cases.save({
+      localId: c.localId, outcome: c.outcome, closedAt: c.outcome ? new Date(c.ms).toISOString() : null, withTexts: true, data: c.data,
+      appVersion: String(pack.app), dbVersion: String(pack.db), profileId: p ? p.cloudId : null
+    }).then(function (res) {
+      if (res.ok) logOk('cases.save ok: ' + c.localId + ' · №' + c.n);
+      else logErr('cases.save №' + c.n + ': ' + res.error + (res.queued ? ' (в очереди)' : ''));
+      return { n: c.n, ok: !!res.ok, queued: !!res.queued, error: res.error };
+    });
+  }
+  function finishSend(results) {
+    var ok = results.filter(function (r) { return r.ok; }).length, q = results.filter(function (r) { return r.queued; }).length;
+    var bad = results.filter(function (r) { return !r.ok && !r.queued; });
+    var msg = 'Ушло в облако: ' + ok + ' из ' + results.length + (q ? ' · в очереди: ' + q : '') + (bad.length ? ' · ошибок: ' + bad.length + ' (' + errText(bad[0].error) + ')' : '');
+    setStatus('cases_status', msg, bad.length ? 'err' : 'ok');
+    updateQueueInfo(); loadCases();
+  }
+  function needLogin() {
+    if (me) return false;
+    setStatus('cases_status', 'Войдите через Discord.', 'err'); return true;
+  }
+  function shuffled(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function sendBatch(list) {
+    if (needLogin()) return;
+    var results = [], i = 0, bar = $('sendBar'), fill = $('sendBarFill');
+    function off() { bar.hidden = true; $('btnSendAll').disabled = false; $('btnSend50').disabled = false; }
+    bar.hidden = false; fill.style.width = '0'; $('btnSendAll').disabled = true; $('btnSend50').disabled = true;
+    (function next() {
+      if (i >= list.length) { off(); finishSend(results); return; }
+      var c = list[i++];
+      setStatus('cases_status', 'Отправляю ' + (i) + ' из ' + list.length + '…');
+      sendOne(c).then(function (r) {
+        results.push(r); fill.style.width = Math.round(i / list.length * 100) + '%';
+        if (!r.ok && !r.queued && (r.error === 'not_authenticated' || r.error === 'cases_quota')) { off(); finishSend(results); return; }
+        next();
+      });
+    })();
+  }
+  function sendRandom() {
+    if (needLogin()) return;
+    sendOne(cases[Math.floor(Math.random() * cases.length)]).then(function (r) { finishSend([r]); });
+  }
+  function doFlush() {
+    window.LexAuth.cases.flush().then(function (res) { logInfo('cases.flush: ' + (function () { try { return JSON.stringify(res); } catch (e) { return '[?]'; } })()); updateQueueInfo(); loadCases(); });
+  }
+  function doCount() {
+    window.LexAuth.cases.count().then(function (res) { if (!res.ok) { logErr('cases.count: ' + res.error); return; } logOk('cases.count: ' + res.data); });
+  }
+  function clearCases() {
+    if (needLogin()) return;
+    if (!window.confirm('Удалить все свои дела из облака? Профили останутся.')) return;
+    window.LexAuth.cases.list({ limit: 200 }).then(function (res) {
+      if (!res.ok) { logErr('cases.list: ' + res.error); return; }
+      var items = res.data || [], i = 0;
+      (function next() {
+        if (i >= items.length) { logOk('Дела очищены: ' + items.length); setStatus('cases_status', 'Удалено дел: ' + items.length, 'ok'); loadCases(); return; }
+        window.LexAuth.cases.remove(items[i++].id).then(next);
+      })();
+    });
+  }
+  function doWipe() {
+    if (!window.confirm('Удалить все свои профили и дела из облака?')) return;
+    window.LexAuth.wipe().then(function (res) {
+      if (!res.ok) { logErr('wipe: ' + res.error); return; }
+      logOk('wipe ok'); loadProfiles(); loadCases(); updateQueueInfo();
+    });
+  }
+
+  /* =========================================================
+     Репорты (формат embed — как в форме «Предложить» карточки)
+     ========================================================= */
+  var STYLE = {
+    article: { title: '📜 Правка статьи закона — карточка дела', color: 0xe5534b, label: 'Ошибка/правка в статье' },
+    improve: { title: '🛠 Улучшение карточки дела', color: 0xe0a030, label: 'Улучшение чек-листа' }
+  };
+  function embedChars(e) {
+    var n = (e.title || '').length + (e.description || '').length;
+    (e.fields || []).forEach(function (f) { n += String(f.name || '').length + String(f.value || '').length; });
+    return n;
+  }
+  function fitEmbed(e, max) {
+    var guard = 60; max = max || 5800;
+    while (embedChars(e) > max && guard-- > 0) {
+      var fs = (e.fields || []).slice().sort(function (a, b) { return String(b.value).length - String(a.value).length; });
+      var f = fs.filter(function (x) { return /^Текущий текст/.test(x.name); })[0] || fs[0];
+      if (!f) break;
+      var over = embedChars(e) - max, keep = Math.max(120, String(f.value).length - over - 20);
+      if (keep >= String(f.value).length) { e.fields.splice(e.fields.indexOf(f), 1); continue; }
+      var fence = /^```/.test(f.value);
+      f.value = fence ? '```\n' + f.value.slice(4, 4 + keep - 10) + '…\n```' : f.value.slice(0, keep) + '…';
     }
+    return e;
+  }
+  function fillArticles() {
+    var sel = $('r-article'); clear(sel);
+    var c = cases[+$('r-case').value || 0]; if (!c) return;
+    c.artKeys.forEach(function (k, i) { var o = mk('option', null, c.arts[i] || k); o.value = k; sel.appendChild(o); });
+  }
+  function syncType() { $('r-article-row').hidden = $('r-type').value !== 'article'; }
 
-    function loadProfiles() {
-        if (!window.LexAuth) return Promise.resolve();
-        return window.LexAuth.profiles.list().then(function (res) {
-            if (!res.ok) {
-                logErr('profiles.list: ' + res.error);
-                profiles = [];
-            } else {
-                profiles = res.data || [];
-                logInfo('profiles.list: ' + profiles.length + ' шт.');
-            }
-            renderProfiles();
-        }).catch(function () {
-            logErr('profiles.list: исключение');
-        });
+  function sendReport() {
+    var st = $('r-status'), text = $('r-text').value.trim(), type = $('r-type').value, channel = $('r-channel').value;
+    if (!text) { setStatus('r-status', 'Опишите проблему.', 'err'); return; }
+    if (!window.LexApi || !window.LexApi.available()) { setStatus('r-status', errText('unavailable'), 'err'); return; }
+    var style = STYLE[type], c = cases[+$('r-case').value || 0];
+    var fields = [{ name: 'Тип', value: style.label }], articleLine = '';
+    if (type === 'article' && c) {
+      var key = $('r-article').value, short = $('r-article').selectedOptions[0] ? $('r-article').selectedOptions[0].textContent : key;
+      articleLine = short;
+      var parts = key.split('|');
+      fields.push({ name: 'Текущий текст — ' + parts[0] + ', ст. ' + parts[1], value: clip((pack.arts || {})[key] || '(текст не найден в базе)', 950) });
     }
-
-    function doProfileSave() {
-        var p = readProfileForm();
-
-        if (!window.LexAuth) {
-            logErr('LexAuth не загружен');
-            return;
-        }
-
-        if (currentEditId) {
-            window.LexAuth.profiles.update(currentEditId, p).then(function (res) {
-                if (!res.ok) {
-                    logErr('profiles.update: ' + res.error);
-                    return;
-                }
-                logOk('profiles.update ok: ' + (res.data && res.data.name || ''));
-                clearProfileForm();
-                loadProfiles();
-            });
-        } else {
-            window.LexAuth.profiles.create(p).then(function (res) {
-                if (!res.ok) {
-                    logErr('profiles.create: ' + res.error);
-                    return;
-                }
-                logOk('profiles.create ok: cloudId=' + (res.data && res.data.cloudId || ''));
-                clearProfileForm();
-                loadProfiles();
-            });
-        }
+    var body = (articleLine ? clip(articleLine, 200) + '\n\n' : '') + clip(text, 1500 - (articleLine ? articleLine.length + 2 : 0));
+    fields.push({ name: articleLine ? '📋 Статьи + предложение (копировать)' : '📋 Предложение (копировать)', value: '```\n' + clip(body, 1000) + '\n```' });
+    var contact = $('r-contact').value.trim();
+    fields.push({ name: 'Контакт', value: contact ? (me && me.discordId && contact === me.discordName ? '<@' + me.discordId + '>' : '`' + clip(contact, 200) + '`') : 'не указан' });
+    var files = [];
+    var shot = $('r-shot').files && $('r-shot').files[0];
+    if (shot) {
+      if (SHOT_TYPES.indexOf(shot.type) === -1) { setStatus('r-status', errText('file_type'), 'err'); return; }
+      if (shot.size > SHOT_MAX) { setStatus('r-status', 'Скриншот больше 7 МБ.', 'err'); return; }
+      var ext = shot.type === 'image/jpeg' ? 'jpg' : shot.type.split('/')[1];
+      files.push({ name: 'screenshot.' + ext, blob: shot });
     }
-
-    function doSetActive(cloudId) {
-        if (!window.LexAuth || !cloudId) return;
-        window.LexAuth.profiles.setActive(cloudId).then(function (res) {
-            if (!res.ok) {
-                logErr('profiles.setActive: ' + res.error);
-                return;
-            }
-            logOk('profiles.setActive ok');
-            loadProfiles();
-        });
+    if ($('r-snap').checked && c) {
+      var snap = c.diag;
+      var fn = 'kartochka-' + new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-') + '.txt';
+      files.push({ name: fn, blob: new Blob([snap], { type: 'text/plain' }) });
+      fields.push({ name: '🗂 Снимок карточки', value: 'во вложении — ' + fn + ' (' + snap.split('\n').length + ' строк)' });
     }
+    if (me && me.discordId) fields.push({ name: 'Отправитель (вход через Discord)', value: (me.discordName ? me.discordName + ' · ' : '') + '<@' + me.discordId + '>' });
+    var embed = fitEmbed({ title: '[ТЕСТ] ' + style.title, color: style.color, fields: fields, timestamp: new Date().toISOString() });
+    if (files.length && shot) embed.image = { url: 'attachment://' + files[0].name };
+    $('btnReportSend').disabled = true; setStatus('r-status', 'Отправка…');
+    window.LexApi.send(channel, embed, files).then(function (res) {
+      $('btnReportSend').disabled = false;
+      if (!res || !res.ok) { var code = res && res.error; setStatus('r-status', errText(code), 'err'); logErr('/' + channel + ' → ' + code); return; }
+      setStatus('r-status', 'Отправлено (' + files.length + ' влож.).', 'ok'); logOk('/' + channel + ' ok · вложений: ' + files.length);
+    }, function () { $('btnReportSend').disabled = false; setStatus('r-status', errText('unknown'), 'err'); });
+  }
+  function sampleReport() {
+    var c = cases[+$('r-case').value || 0];
+    $('r-text').value = 'ТЕСТ репорта: в деле №' + (c ? c.n : '?') + ' карточка предлагает «' + (c ? c.outText : '—') + '», хотя по хронологии статей ожидал другой исход. Проверить п. 1.8 ПК.';
+  }
 
-    function doRemoveProfile(cloudId) {
-        if (!window.LexAuth || !cloudId) return;
-        window.LexAuth.profiles.remove(cloudId).then(function (res) {
-            if (!res.ok) {
-                logErr('profiles.remove: ' + res.error);
-                return;
-            }
-            logOk('profiles.remove ok');
-            loadProfiles();
-        });
-    }
+  /* =========================================================
+     Worker
+     ========================================================= */
+  function testHealth() {
+    fetch('https://lex-api.insidex.workers.dev/health', { method: 'GET' }).then(function (r) {
+      return r.text().then(function (t) { logInfo('/health → ' + r.status + ' ' + t); });
+    }).catch(function () { logErr('/health → network'); });
+  }
+  function topList(o, n) { return Object.keys(o).sort(function (a, b) { return o[b] - o[a]; }).slice(0, n || 15).map(function (k) { return [String(k).slice(0, 60), o[k]]; }); }
+  function testStats() {
+    if (!window.LexApi) { logErr('LexApi не загружен'); return; }
+    var arts = {}, outs = {}, structs = {}, roles = { adv: cases.length };
+    cases.forEach(function (c) {
+      c.arts.forEach(function (a) { arts[a] = (arts[a] || 0) + 1; });
+      outs[c.outText.slice(0, 40)] = (outs[c.outText.slice(0, 40)] || 0) + 1;
+      structs[c.struct] = (structs[c.struct] || 0) + 1;
+    });
+    window.LexApi.stats({
+      v: 1, kind: 'test', app: pack.app + ' ' + pack.build, db: String(pack.db), period: todayString(), anonId: randomAnonId(),
+      counters: { cases: cases.length, ogp: 0, secs: 0, events: 0 },
+      top: { arts: topList(arts), outcomes: topList(outs), structs: topList(structs), roles: topList(roles), buttons: [], fields: [], env: [['test', 1]] }
+    }).then(function (res) {
+      if (!res.ok) { logErr('/stats → ' + res.error); return; }
+      logOk('/stats ok' + (res.dup ? ' (dup)' : ''));
+    });
+  }
+  function testSuggest() {
+    if (!window.LexApi) { logErr('LexApi не загружен'); return; }
+    window.LexApi.send('suggest', {
+      title: 'Lex · тестовое предложение (ТЕСТ)', description: 'Проверка канала /suggest из auth-test.html.\nВремя: ' + new Date().toISOString(), color: 0x4c8dff,
+      fields: [{ name: 'Источник', value: 'auth-test.html', inline: true }, { name: 'Метка', value: 'ТЕСТ', inline: true }]
+    }, []).then(function (res) { if (!res.ok) { logErr('/suggest → ' + res.error); return; } logOk('/suggest ok'); });
+  }
 
-    /* =====================================================
-       Дела
-       ===================================================== */
+  /* =========================================================
+     Привязка и запуск
+     ========================================================= */
+  function bind() {
+    $('btnSignIn').addEventListener('click', function () {
+      if (!window.LexAuth) return;
+      window.LexAuth.signIn().then(function (res) { if (!res.ok) logErr('signIn: ' + res.error); else logInfo('signIn: начат редирект'); });
+    });
+    $('btnSignOut').addEventListener('click', function () {
+      if (!window.LexAuth) return;
+      window.LexAuth.signOut().then(function (res) {
+        if (!res.ok) logErr('signOut: ' + res.error); else logOk('signOut ok');
+        profiles = []; hideEdit(); refreshUser().then(function () { renderProfiles(); renderView(); renderCases([]); });
+      });
+    });
+    $('btnRefresh').addEventListener('click', function () { refreshAvail(); refreshUser().then(function () { return loadProfiles(); }).then(loadCases).then(updateQueueInfo); });
+    $('btnEdit').addEventListener('click', function () { var p = active(); if (p) showEdit(p.cloudId); });
+    $('btnNew').addEventListener('click', function () { showEdit('new'); });
+    $('btnProfileSave').addEventListener('click', doProfileSave);
+    $('btnProfileCancel').addEventListener('click', hideEdit);
+    $('btnProfileDelete').addEventListener('click', doProfileDelete);
+    $('btnSend50').addEventListener('click', function () { sendBatch(shuffled(cases).slice(0, 50)); });
+    $('btnSendAll').addEventListener('click', function () { sendBatch(cases); });
+    $('btnCaseOne').addEventListener('click', sendRandom);
+    $('btnCaseList').addEventListener('click', loadCases);
+    $('btnCaseCount').addEventListener('click', doCount);
+    $('btnFlush').addEventListener('click', doFlush);
+    $('btnClearCases').addEventListener('click', clearCases);
+    $('btnWipe').addEventListener('click', doWipe);
+    $('r-type').addEventListener('change', syncType);
+    $('r-case').addEventListener('change', fillArticles);
+    $('btnReportSend').addEventListener('click', sendReport);
+    $('btnReportSample').addEventListener('click', sampleReport);
+    $('btnTestHealth').addEventListener('click', testHealth);
+    $('btnTestStats').addEventListener('click', testStats);
+    $('btnTestSuggest').addEventListener('click', testSuggest);
+    $('btnLogClear').addEventListener('click', function () { clear(logEl); });
+    ['btnSend50', 'btnSendAll', 'btnCaseOne', 'btnReportSend', 'btnReportSample', 'btnTestStats'].forEach(function (id) { $(id).disabled = true; });
+  }
 
-    function renderCases(items) {
-        var list = $('listCases');
-        while (list.firstChild) list.removeChild(list.firstChild);
+  function bindAuthChange() {
+    try {
+      window.addEventListener('lex-auth-change', function (ev) {
+        var reason = ev && ev.detail && ev.detail.reason ? ev.detail.reason : 'unknown';
+        logInfo('lex-auth-change: ' + reason);
+        if (reason === 'sign_in' || reason === 'sign_out' || reason === 'profile_active' || reason === 'profile_remove') refreshUser().then(loadProfiles);
+        if (reason === 'cases_flush') { loadCases(); updateQueueInfo(); }
+      });
+    } catch (e) { /* ignore */ }
+  }
 
-        if (!items || !items.length) {
-            var empty = document.createElement('li');
-            empty.className = 'muted';
-            empty.textContent = '— пусто —';
-            list.appendChild(empty);
-            return;
-        }
+  function boot() {
+    bind(); bindAuthChange(); syncType(); refreshAvail(); updateQueueInfo(); renderView();
+    unpack().then(function () {
+      cases = pack.cases.map(function (c, i) { var b = buildCase(c); b.n = i + 1; return b; });
+      renderPack();
+      ['btnSend50', 'btnSendAll', 'btnCaseOne', 'btnReportSend', 'btnReportSample', 'btnTestStats'].forEach(function (id) { $(id).disabled = false; });
+      logInfo('Пакет дел: ' + cases.length + ' шт. (карточка ' + pack.app + ', база ' + pack.db + ')');
+    }).catch(function (e) { logErr('Пакет дел: ' + (e && e.message ? e.message : 'ошибка распаковки')); });
 
-        items.forEach(function (c) {
-            var li = document.createElement('li');
+    if (!window.LexAuth) { logErr('LexAuth не загружен (проверь путь lex-auth.js)'); return; }
+    window.LexAuth.ready.then(function (r) {
+      if (!r.ok) logErr('LexAuth.ready: ' + (r.error || 'unknown')); else logInfo('LexAuth.ready ok');
+      refreshAvail();
+      return refreshUser().then(loadProfiles).then(loadCases).then(updateQueueInfo);
+    }).catch(function () { logErr('LexAuth.ready: исключение'); });
+  }
 
-            var main = document.createElement('div');
-            main.className = 'grow';
-
-            var t = document.createElement('div');
-            t.textContent = (c.localId || '(без localId)');
-
-            var sub = document.createElement('div');
-            sub.className = 'muted';
-            sub.textContent =
-                (c.createdAt || '—') +
-                (c.closedAt ? ' · закрыто ' + c.closedAt : '') +
-                (c.outcome ? ' · ' + c.outcome : '') +
-                (c.withTexts ? ' · с текстами' : '');
-
-            main.appendChild(t);
-            main.appendChild(sub);
-            li.appendChild(main);
-
-            var btnOpen = document.createElement('button');
-            btnOpen.type = 'button';
-            btnOpen.textContent = 'Открыть';
-            btnOpen.addEventListener('click', function () {
-                if (!c.id) {
-                    logErr('case.id отсутствует');
-                    return;
-                }
-                window.LexAuth.cases.get(c.id).then(function (res) {
-                    if (!res.ok) {
-                        logErr('cases.get: ' + res.error);
-                        return;
-                    }
-                    logOk('cases.get: ' + JSON.stringify(res.data));
-                });
-            });
-            li.appendChild(btnOpen);
-
-            var btnDel = document.createElement('button');
-            btnDel.type = 'button';
-            btnDel.className = 'danger';
-            btnDel.textContent = 'Удалить';
-            btnDel.addEventListener('click', function () {
-                if (!c.id) {
-                    logErr('case.id отсутствует');
-                    return;
-                }
-                window.LexAuth.cases.remove(c.id).then(function (res) {
-                    if (!res.ok) {
-                        logErr('cases.remove: ' + res.error);
-                        return;
-                    }
-                    logOk('cases.remove ok');
-                    loadCases();
-                });
-            });
-            li.appendChild(btnDel);
-
-            list.appendChild(li);
-        });
-    }
-
-    function loadCases() {
-        if (!window.LexAuth) return Promise.resolve();
-        return window.LexAuth.cases.list({ limit: 50 }).then(function (res) {
-            if (!res.ok) {
-                logErr('cases.list: ' + res.error);
-                renderCases([]);
-                return;
-            }
-            logInfo('cases.list: ' + (res.data || []).length + ' шт.');
-            renderCases(res.data || []);
-        }).catch(function () {
-            logErr('cases.list: исключение');
-        });
-    }
-
-    function createTestCase() {
-        if (!window.LexAuth) {
-            logErr('LexAuth не загружен');
-            return;
-        }
-
-        var payload = {
-            localId: randomLocalId(),
-            outcome: '',
-            closedAt: null,
-            withTexts: false,
-            data: {
-                note: 'тестовое дело из auth-test.html',
-                created: new Date().toISOString(),
-                steps: [
-                    { id: 's1', text: 'пример шага 1', done: false },
-                    { id: 's2', text: 'пример шага 2', done: false }
-                ]
-            },
-            appVersion: '1.0-test',
-            dbVersion: '1'
-        };
-
-        window.LexAuth.cases.save(payload).then(function (res) {
-            if (!res.ok) {
-                logErr('cases.save: ' + res.error + (res.queued ? ' (в очереди)' : ''));
-                updateQueueInfo();
-                return;
-            }
-            logOk('cases.save ok: ' + res.data.localId);
-            loadCases();
-            updateQueueInfo();
-        });
-    }
-
-    function updateQueueInfo() {
-        try {
-            var raw = window.localStorage.getItem('lex_cases_queue');
-            var n = 0;
-            if (raw) {
-                var arr = JSON.parse(raw);
-                if (Array.isArray(arr)) n = arr.length;
-            }
-            $('queueInfo').textContent = String(n);
-        } catch (e) {
-            $('queueInfo').textContent = '?';
-        }
-    }
-
-    function doFlush() {
-        if (!window.LexAuth) return;
-        window.LexAuth.cases.flush().then(function (res) {
-            logInfo('cases.flush: ' + resultToString(res));
-            updateQueueInfo();
-            loadCases();
-        });
-    }
-
-    function doCount() {
-        if (!window.LexAuth) return;
-        window.LexAuth.cases.count().then(function (res) {
-            if (!res.ok) {
-                logErr('cases.count: ' + res.error);
-                return;
-            }
-            logOk('cases.count: ' + res.data);
-        });
-    }
-
-    function doWipe() {
-        if (!window.LexAuth) return;
-        if (!window.confirm('Удалить все свои профили и дела из облака?')) {
-            return;
-        }
-        window.LexAuth.wipe().then(function (res) {
-            if (!res.ok) {
-                logErr('wipe: ' + res.error);
-                return;
-            }
-            logOk('wipe ok');
-            loadProfiles();
-            loadCases();
-            updateQueueInfo();
-        });
-    }
-
-    /* =====================================================
-       Тесты Worker
-       ===================================================== */
-
-    function testHealth() {
-        var base = 'https://lex-api.insidex.workers.dev/health';
-
-        fetch(base, { method: 'GET' })
-            .then(function (r) {
-                return r.text().then(function (t) {
-                    logInfo('/health → ' + r.status + ' ' + t);
-                });
-            })
-            .catch(function () {
-                logErr('/health → network');
-            });
-    }
-
-    function testStats() {
-        if (!window.LexApi) {
-            logErr('LexApi не загружен');
-            return;
-        }
-
-        var payload = {
-            v: 1,
-            kind: 'test',
-            app: '1.0-test',
-            db: '1',
-            period: todayString(),
-            anonId: randomAnonId(),
-            counters: {
-                cases: 0,
-                opens: 0
-            },
-            top: {
-                demo: [
-                    ['пример-1', 3],
-                    ['пример-2', 1]
-                ]
-            },
-            cases: [
-                { localId: 'demo-1', outcome: 'ok' }
-            ]
-        };
-
-        window.LexApi.stats(payload).then(function (res) {
-            if (!res.ok) {
-                logErr('/stats → ' + res.error);
-                return;
-            }
-            logOk('/stats ok' + (res.dup ? ' (dup)' : ''));
-        });
-    }
-
-    function testSuggest() {
-        if (!window.LexApi) {
-            logErr('LexApi не загружен');
-            return;
-        }
-
-        var embed = {
-            title: 'Lex · тестовое предложение (ТЕСТ)',
-            description: 'Проверка канала /suggest из auth-test.html.\n' +
-                'Время: ' + new Date().toISOString(),
-            color: 0x4c8dff,
-            fields: [
-                { name: 'Источник', value: 'auth-test.html', inline: true },
-                { name: 'Метка', value: 'ТЕСТ', inline: true }
-            ]
-        };
-
-        window.LexApi.send('suggest', embed, []).then(function (res) {
-            if (!res.ok) {
-                logErr('/suggest → ' + res.error);
-                return;
-            }
-            logOk('/suggest ok');
-        });
-    }
-
-    /* =====================================================
-       Кнопки
-       ===================================================== */
-
-    function bind() {
-        $('btnSignIn').addEventListener('click', function () {
-            if (!window.LexAuth) return;
-            window.LexAuth.signIn().then(function (res) {
-                if (!res.ok) logErr('signIn: ' + res.error);
-                else logInfo('signIn: начат редирект');
-            });
-        });
-
-        $('btnSignOut').addEventListener('click', function () {
-            if (!window.LexAuth) return;
-            window.LexAuth.signOut().then(function (res) {
-                if (!res.ok) logErr('signOut: ' + res.error);
-                else logOk('signOut ok');
-                refreshUser();
-                loadProfiles();
-                loadCases();
-            });
-        });
-
-        $('btnRefresh').addEventListener('click', function () {
-            refreshAvail();
-            refreshUser().then(function () {
-                loadProfiles();
-                loadCases();
-                updateQueueInfo();
-            });
-        });
-
-        $('btnProfileSave').addEventListener('click', doProfileSave);
-        $('btnProfileCancel').addEventListener('click', function () {
-            clearProfileForm();
-        });
-
-        $('btnCaseCreate').addEventListener('click', createTestCase);
-        $('btnCaseList').addEventListener('click', loadCases);
-        $('btnCaseCount').addEventListener('click', doCount);
-        $('btnFlush').addEventListener('click', doFlush);
-        $('btnWipe').addEventListener('click', doWipe);
-
-        $('btnTestHealth').addEventListener('click', testHealth);
-        $('btnTestStats').addEventListener('click', testStats);
-        $('btnTestSuggest').addEventListener('click', testSuggest);
-
-        $('btnLogClear').addEventListener('click', function () {
-            while (logEl.firstChild) logEl.removeChild(logEl.firstChild);
-        });
-    }
-
-    /* =====================================================
-       Событие lex-auth-change
-       ===================================================== */
-
-    function bindAuthChange() {
-        try {
-            window.addEventListener('lex-auth-change', function (ev) {
-                var reason =
-                    ev && ev.detail && ev.detail.reason
-                        ? ev.detail.reason
-                        : 'unknown';
-                logInfo('lex-auth-change: ' + reason);
-
-                if (
-                    reason === 'sign_in' ||
-                    reason === 'sign_out' ||
-                    reason === 'profile_active' ||
-                    reason === 'profile_remove'
-                ) {
-                    refreshUser().then(function () {
-                        loadProfiles();
-                    });
-                }
-
-                if (reason === 'cases_flush') {
-                    loadCases();
-                    updateQueueInfo();
-                }
-            });
-        } catch (e) {
-            /* ignore */
-        }
-    }
-
-    /* =====================================================
-       Инициализация страницы
-       ===================================================== */
-
-    function boot() {
-        bind();
-        bindAuthChange();
-        refreshAvail();
-        updateQueueInfo();
-
-        if (!window.LexAuth) {
-            logErr('LexAuth не загружен (проверь путь lex-auth.js)');
-            return;
-        }
-
-        window.LexAuth.ready.then(function (r) {
-            if (!r.ok) {
-                logErr('LexAuth.ready: ' + (r.error || 'unknown'));
-            } else {
-                logInfo('LexAuth.ready ok');
-            }
-
-            refreshAvail();
-
-            return refreshUser().then(function () {
-                return loadProfiles();
-            }).then(function () {
-                return loadCases();
-            }).then(function () {
-                updateQueueInfo();
-            });
-        }).catch(function () {
-            logErr('LexAuth.ready: исключение');
-        });
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', boot);
-    } else {
-        boot();
-    }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
 })();
 </script>
 </body>

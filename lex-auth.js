@@ -944,6 +944,10 @@
             mail: row.mail || '',
             passport: row.passport || '',
             license: row.license || '',
+            phone: row.phone || '',
+            mailDomain: row.mail_domain || '',
+            roleKind: row.role_kind || '',
+            server: row.server || 'redwood',
             isActive: !!row.is_active
         };
     }
@@ -975,6 +979,24 @@
             license: normalizeString(
                 profile.license,
                 40
+            ),
+            phone: normalizeString(
+                profile.phone,
+                30
+            ),
+            mail_domain: normalizeString(
+                profile.mailDomain,
+                60
+            ),
+            role_kind:
+                profile.roleKind === 'gov' ||
+                profile.roleKind === 'private' ||
+                profile.roleKind === 'other'
+                    ? profile.roleKind
+                    : null,
+            server: normalizeString(
+                profile.server || 'redwood',
+                30
             )
         };
     }
@@ -1086,6 +1108,38 @@
         }
 
         if (
+            profile.phone &&
+            String(profile.phone).length > 30
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.mailDomain &&
+            String(profile.mailDomain).length > 60
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.roleKind &&
+            profile.roleKind !== 'gov' &&
+            profile.roleKind !== 'private' &&
+            profile.roleKind !== 'other'
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
             profile.role !== undefined &&
             profile.role !== null &&
             profile.role !== '' &&
@@ -1127,7 +1181,7 @@
                 return supabaseClient
                     .from('profiles')
                     .select(
-                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                        'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                     )
                     .eq(
                         'user_id',
@@ -1244,7 +1298,7 @@
                     .from('profiles')
                     .insert(row)
                     .select(
-                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                        'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                     )
                     .single()
                     .then(function (response) {
@@ -1345,7 +1399,7 @@
                         currentUser.id
                     )
                     .select(
-                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                        'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                     )
                     .maybeSingle()
                     .then(function (response) {
@@ -1544,7 +1598,7 @@
                         return supabaseClient
                             .from('profiles')
                             .select(
-                                'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                                'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                             )
                             .eq(
                                 'id',
