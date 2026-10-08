@@ -1630,10 +1630,59 @@
   .aya-bar{ margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
   .hl-actions #lex_discord_btn{ grid-column:span 2; }
   .hl-actions [hidden]{ display:none !important; }
-  .hl-actions.no-discord #contract_open_btn{ grid-column:span 3; }
+  .hl-actions.no-discord #docs_open_btn{ grid-column:span 3; }
   .hl-actions .lex-discord{ color:#fff; background:#5865F2; border-color:#5865F2; }
   .hl-actions .lex-discord:hover{ background:#4752c4; }
   .hl-actions .lex-discord.on{ color:var(--text); background:transparent; border-color:rgba(88,101,242,.7); overflow:hidden; text-overflow:ellipsis; }
+  /* ===== профиль: просмотр ===== */
+  .pv-top{ display:flex; align-items:center; gap:12px; }
+  .pv-ava{ width:46px; height:46px; flex:0 0 46px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:17px; color:var(--on-accent); background:var(--accent); }
+  .pv-who{ flex:1; min-width:0; display:grid; }
+  .pv-who b{ font-size:16px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pv-who span{ font-size:12px; color:var(--muted); }
+  .pv-grid{ margin-top:10px; border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+  .pv-row{ display:flex; align-items:center; gap:10px; padding:7px 10px; border-top:1px solid var(--border); font-size:13px; }
+  .pv-row:first-child{ border-top:0; }
+  .pv-row>span{ width:96px; flex:0 0 96px; color:var(--muted); font-size:12px; }
+  .pv-row>b{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+  .pv-row>b.pv-empty{ color:var(--muted); font-weight:400; }
+  .pv-row a, .pv-reg{ color:var(--accent); font-size:12px; text-decoration:none; white-space:nowrap; }
+  .field .pv-reg{ margin-left:4px; }
+  .pv-stats{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px; margin-top:10px; }
+  .pv-tile{ border:1px solid var(--border); border-radius:9px; padding:7px 6px; text-align:center; background:var(--panel2); }
+  .pv-tile b{ display:block; font-size:16px; color:var(--accent); }
+  .pv-tile span{ font-size:11px; color:var(--muted); }
+  .pv-acts{ margin-top:10px; }
+  .cl-det{ margin-top:8px; border:1px solid var(--border); border-radius:8px; padding:6px 8px; background:var(--panel); }
+  .cl-det summary{ cursor:pointer; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+  .cl-det[open] summary{ margin-bottom:6px; }
+  /* ===== подписки ===== */
+  .subs{ display:grid; gap:8px; }
+  .sub-card{ border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:var(--panel2); border-left:4px solid var(--border); }
+  .sub-card.s-boosty{ border-left-color:#f15f2c; }
+  .sub-card.s-patreon{ border-left-color:#8a4fff; }
+  .sub-card.s-boost{ border-left-color:#f0883e; }
+  .sub-card.s-limits{ border-left-color:var(--accent); }
+  .sub-h{ font-weight:800; }
+  .sub-p{ color:var(--accent); font-weight:700; margin:2px 0 6px; }
+  .sub-w{ font-size:12px; color:var(--muted); }
+  .sub-card ul{ margin:4px 0 6px; padding-left:18px; font-size:13px; }
+  .sub-card .btnrow{ margin-top:6px; }
+  .sub-btn{ display:inline-block; border:1px solid var(--border); border-radius:6px; padding:6px 12px; font-size:13px; font-weight:600; text-decoration:none; color:var(--text); }
+  .sub-btn.primary{ background:var(--accent); border-color:var(--accent); color:var(--on-accent); }
+  .lim-row{ display:flex; justify-content:space-between; gap:10px; padding:3px 0; font-size:13px; border-bottom:1px dashed var(--border); }
+  .lim-row span{ color:var(--muted); }
+  /* ===== документы ===== */
+  .doc-tiles{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .doc-tile{ display:grid; gap:3px; text-align:left; padding:12px; border:1px solid var(--border); border-radius:10px; background:var(--panel2); color:var(--text); cursor:pointer; font-family:inherit; }
+  .doc-tile:hover:not(:disabled){ border-color:var(--accent); background:rgba(var(--accent-rgb),.08); }
+  .doc-tile:disabled{ opacity:.5; cursor:default; }
+  .doc-tile .dt-ic{ font-size:20px; color:var(--accent); }
+  .doc-tile b{ font-size:14px; }
+  .doc-tile span:last-child{ font-size:11.5px; color:var(--muted); }
+  .doc-tile.hot{ border-color:var(--accent); box-shadow:0 0 0 1px var(--accent) inset; }
+  .hl-actions #docs_open_btn.doc-hot{ border-color:var(--accent); color:var(--accent); }
+  @media (max-width:520px){ .doc-tiles{ grid-template-columns:1fr; } .pv-stats{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
   .footer-legal{ display:block; margin-top:4px; }
   .footer-legal a{ color:var(--muted); }
   .lex-contract-overlay{ position:fixed; inset:0; z-index:360; display:none; align-items:center; justify-content:center; padding:2vh 2vw; background:rgba(var(--shadow-rgb),.72); }
@@ -2479,7 +2528,7 @@
           <button type="button" class="timer-reset" id="timer_reset" title="Стереть введённое по делу и начать отсчёт заново. Роль, тема и база остаются">Новое дело</button>
           <button type="button" class="hl-act" id="tst_open_btn" title="Случайное тестовое дело — проверить, как работает карточка">🎲 Тест</button>
           <button type="button" class="hl-act" id="profile_open_btn" title="Мои данные для обращений: имя, ID, почта, паспорт">👤 Профиль</button>
-          <button type="button" class="hl-act" id="contract_open_btn" title="Договор на оказание юридических услуг (частный адвокат)">§ Договор</button>
+          <button type="button" class="hl-act" id="docs_open_btn" title="Сводка по делу, обращение в ОГП, договор">📄 Документы</button>
           <button type="button" class="hl-act lex-discord" id="lex_discord_btn" hidden>Войти через Discord</button>
         </div>
       </div>
@@ -2496,22 +2545,7 @@
 
     <div class="card">
       <h2>Действия</h2>
-      <div class="card-group-label">Документ</div>
-      <div class="btnrow act-row">
-        <button class="primary" id="summary_btn" onclick="actionSummary()">Сформировать сводку</button>
-        <button type="button" class="primary" id="ogp_btn" onclick="openOgpModal()" title="Открыть окно обращения в ОГП: данные бланка и готовый текст. Ничего никуда не отправляется.">Обращение в ОГП</button>
-        <button type="button" id="court_btn" disabled title="Шаблон обращения в суд пока не готов">Обращение в суд</button>
-        <button type="button" id="ogp_bbcode_btn" style="display:none;" onclick="buildOgpBBCode()">Собрать обращение (BBCode)</button>
-      </div>
-      <div id="out_kind_note" class="act-kind"></div>
-      <textarea id="summary_out" style="margin-top:6px; min-height:220px;" placeholder="Нажмите «Сформировать сводку» — здесь появится текст, готовый для вставки в чат."></textarea>
-      <div class="btnrow act-row">
-        <button onclick="copySummary()">Скопировать</button>
-        <button onclick="downloadSummary()">Скачать .txt</button>
-        <button onclick="window.print()">Печать / PDF</button>
-        <button type="button" id="copy_forum_btn" style="display:none;" onclick="copyAndOpenForum()" title="Собрать обращение в BBCode, скопировать и открыть новую тему в разделе обращений в ОГП">Скопировать и открыть форум ↗</button>
-      </div>
-      <div class="card-group-label" style="margin-top:14px;">Версия и обновление базы</div>
+      <div class="card-group-label">Версия и обновление базы</div>
       <div id="update_version" class="empty-hint" style="margin-bottom:6px;"></div>
       <div class="upd-row">
         <button type="button" id="whatsnew_btn" title="Что добавлено и исправлено в этой версии карточки и базы">Что нового</button>
@@ -2936,44 +2970,145 @@
 </div>
 
 <div class="law-modal-overlay" id="profile-overlay">
-  <div class="law-modal" id="profile-modal" style="width:min(560px, 100%);">
+  <div class="law-modal" id="profile-modal" style="width:min(600px, 100%);">
     <div class="law-modal-head">
-      <div class="law-modal-titles"><h3 style="margin:0;">Мой профиль</h3><div class="law-modal-sub">хранится в этом браузере, после входа через Discord — и в облаке · подставляется в обращения · «Новое дело» его не трогает</div></div>
+      <div class="law-modal-titles"><h3 style="margin:0;">Мой профиль</h3><div class="law-modal-sub" id="pv_sub">в этом браузере · после входа через Discord — и в облаке · подставляется в обращения и договор</div></div>
       <button class="law-modal-close" id="profile-close" type="button" aria-label="Закрыть">✕</button>
     </div>
     <div class="law-modal-body" style="white-space:normal;">
-      <div class="grid2">
-        <label class="field">Имя и фамилия (персонаж)<input type="text" id="p_name" placeholder="Alex Backwoods" data-profile="name"></label>
-        <label class="field">№ ID-карты<input type="text" id="p_id" placeholder="80429" data-profile="id"></label>
-        <label class="field">Почта (логин Discord, @sa.gov добавится сам)<input type="text" id="p_mail" placeholder="insidex_o" data-profile="mail"></label>
-        <label class="field">Ссылка на копию паспорта<input type="text" id="p_passport" placeholder="ссылка" data-profile="passport"></label>
-        <label class="field">Должность<select id="p_role" data-profile="role"><option value="">—</option><option value="гос. адвокат">Государственный адвокат</option><option value="частный адвокат">Частный адвокат</option><option value="прокурор">Прокурор</option><option value="другое">Другое</option></select></label>
-        <label class="field">№ удостоверения / лицензии<input type="text" id="p_license" placeholder="если есть" data-profile="license"></label>
+      <!-- просмотр -->
+      <div id="pv_view">
+        <div class="pv-top">
+          <div class="pv-ava" id="pv_ava">?</div>
+          <div class="pv-who"><b id="pv_name">Профиль не заполнен</b><span id="pv_role"></span></div>
+          <span class="cl-tier t-free" id="pv_tier" title="Уровень доступа">Free</span>
+        </div>
+        <div class="pv-grid" id="pv_grid"></div>
+        <div class="pv-stats" id="pv_stats"></div>
+        <div class="btnrow pv-acts">
+          <button type="button" class="primary" id="pv_edit">✎ Изменить</button>
+          <button type="button" id="pv_sync" title="Сверить профиль этого браузера с облаком (вход через Discord)">☁ Синхронизировать</button>
+          <button type="button" id="stats_open_btn">📊 Статистика</button>
+        </div>
+        <div class="support-form-status" id="pv_status"></div>
       </div>
-      <div class="empty-hint">Только RP-данные персонажа. Сброс — кнопка «Настройки по умолчанию».</div>
-      <div class="card-group-label" style="margin-top:12px;">Статистика</div>
-      <label class="chk"><input type="checkbox" id="p_stats_on"><span class="lbl">Отправлять анонимную статистику использования — для улучшения карточки. Личные данные не отправляются</span></label>
-            <div class="card-group-label" style="margin-top:14px;">Облако · вход через Discord</div>
+      <!-- правка -->
+      <div id="pv_edit_box" hidden>
+        <div class="grid2">
+          <label class="field">Имя и фамилия (персонаж)<input type="text" id="p_name" placeholder="Alex Backwoods" data-profile="name"></label>
+          <label class="field">№ ID-карты (паспорт)<input type="text" id="p_id" placeholder="80429" data-profile="id"></label>
+          <label class="field">Должность<select id="p_role" data-profile="role"><option value="">—</option><option value="гос. адвокат">Государственный адвокат</option><option value="частный адвокат">Частный адвокат</option><option value="прокурор">Прокурор</option><option value="другое">Другое</option></select></label>
+          <label class="field">№ лицензии <a class="pv-reg" href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer" title="Реестр лицензий частных адвокатов">реестр ↗</a><input type="text" id="p_license" placeholder="PLSA 0000" data-profile="license"></label>
+          <label class="field">Почта — логин<input type="text" id="p_mail" placeholder="insidex_o" data-profile="mail"></label>
+          <label class="field">Домен почты<input type="text" id="p_mail_domain" placeholder="advup.agency" data-profile="mailDomain" list="pv_domains"></label>
+          <label class="field">Телефон<input type="text" id="p_phone" placeholder="номер в игре" data-profile="phone"></label>
+          <label class="field">Ссылка на копию паспорта<input type="text" id="p_passport" placeholder="https://…" data-profile="passport"></label>
+        </div>
+        <datalist id="pv_domains"><option value="advup.agency">частный адвокат — по реестру лицензий</option><option value="sa.gov">рабочая почта госслужащего</option><option value="sa.com">гражданская почта</option></datalist>
+        <div class="empty-hint" style="margin-top:4px;">Только RP-данные персонажа. Почта собирается сама: логин@домен (частный адвокат — как в <a href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer">реестре лицензий ↗</a>; у клиентов — логин@sa.com). Телефон хранится только в этом браузере.</div>
+        <label class="chk" style="margin-top:8px;"><input type="checkbox" id="p_stats_on"><span class="lbl">Отправлять анонимную статистику (Ае) — без личных данных</span></label>
+        <div class="btnrow">
+          <button type="button" id="pv_cancel">Отмена</button>
+          <button type="button" id="pv_save_new" title="Сохранить поля как новый профиль в облаке (вход через Discord)">☁ Как новый в облако</button>
+          <button type="button" class="primary" id="profile-save">Сохранить</button>
+        </div>
+      </div>
+
+      <div class="card-group-label" style="margin-top:14px;">Облако · Discord</div>
       <div id="cl_box" class="cl-box">
         <div id="cl_off"><div class="empty-hint" id="cl_off_text" style="margin:0;"></div></div>
         <div id="cl_out" style="display:none;">
           <button type="button" class="primary cl-discord" id="cl_signin">Войти через Discord</button>
-          <div class="empty-hint">Профили (до 10) и архив дел (до 50) — в облаке, на любом устройстве. Без входа всё работает как раньше, в этом браузере. <a href="https://lex-checklist.pages.dev/privacy.html">Что хранится</a></div>
+          <div class="empty-hint">Профили (до 10) и архив дел (до 50) — в облаке, на любом устройстве; профиль этого браузера перенесётся туда сам. <a href="https://lex-checklist.pages.dev/privacy.html">Что хранится</a></div>
         </div>
         <div id="cl_in" style="display:none;">
-          <div class="cl-user"><span class="cl-uname" id="cl_user_name"></span><span class="cl-tier t-free" id="cl_tier" title="Уровень доступа. Тарифы и оплата — скоро">Free</span><button type="button" id="cl_signout">Выйти</button></div>
-          <div class="cl-sub">Профили в облаке <span id="cl_prof_n"></span></div>
-          <div id="cl_prof_list" class="cl-list"></div>
-          <div class="btnrow"><button type="button" id="cl_prof_add" title="Сохранить поля выше как новый облачный профиль">☁ В облако как новый</button></div>
-          <div class="empty-hint" style="margin-top:2px;">«Сохранить» внизу пишет и в этот браузер, и в активный облачный профиль.</div>
-          <div class="cl-sub">Архив дел <span id="cl_case_n"></span></div>
-          <div class="btnrow"><button type="button" id="cl_case_save">☁ Сохранить текущее дело</button><button type="button" id="cl_case_refresh" title="Обновить список">↻</button></div>
-          <div id="cl_case_list" class="cl-list"></div>
+          <div class="cl-user"><span class="cl-uname" id="cl_user_name"></span><span class="cl-tier t-free" id="cl_tier" title="Уровень доступа">Free</span><button type="button" id="cl_signout">Выйти</button></div>
+          <details class="cl-det" id="cl_prof_det"><summary>Профили в облаке <span id="cl_prof_n"></span></summary>
+            <div id="cl_prof_list" class="cl-list"></div>
+          </details>
+          <details class="cl-det" id="cl_case_det"><summary>Архив дел <span id="cl_case_n"></span></summary>
+            <div class="btnrow"><button type="button" id="cl_case_save">☁ Сохранить текущее дело</button><button type="button" id="cl_case_refresh" title="Обновить список">↻</button></div>
+            <div id="cl_case_list" class="cl-list"></div>
+          </details>
           <div class="btnrow" style="margin-top:8px;"><button type="button" class="danger" id="cl_wipe">Удалить мои данные из облака</button></div>
         </div>
         <div class="support-form-status" id="cl_status"></div>
       </div>
-      <div class="btnrow" style="margin-top:12px;"><button type="button" id="stats_open_btn">📊 Моя статистика</button><button type="button" class="primary" id="profile-save">Сохранить</button></div>
+      <div class="card-group-label" style="margin-top:14px;">Подписки Lex</div>
+      <div class="subs" id="lex_subs">
+        <div class="sub-card s-boosty">
+          <div class="sub-h">🟦 Lex Sub — Boosty</div><div class="sub-p">₽250 / месяц</div>
+          <div class="sub-w">Что даёт:</div>
+          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>+1 обращение в день</li><li>Все функции карточки без ограничений</li></ul>
+          <!-- [ПРОВЕРИТЬ] заменить на страницу автора Boosty, когда будет -->
+          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+        </div>
+        <div class="sub-card s-patreon">
+          <div class="sub-h">🟪 Lex Sub — Patreon</div><div class="sub-p">$3 / месяц</div>
+          <div class="sub-w">Что даёт:</div>
+          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>+1 обращение в день</li><li>Все функции карточки без ограничений</li></ul>
+          <!-- [ПРОВЕРИТЬ] заменить на страницу кампании Patreon, когда будет -->
+          <div class="btnrow"><a class="sub-btn primary" href="https://patreon.com/" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+        </div>
+        <div class="sub-card s-boost">
+          <div class="sub-h">🟧 PATRON HUB — Буст сервера</div><div class="sub-p">Требуется 2+ буста серверу</div>
+          <div class="sub-w">Что даёт:</div>
+          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>+1 обращение в день</li><li>Все функции карточки без ограничений</li></ul>
+          <div class="btnrow"><a class="sub-btn primary" href="https://discord.com/invite/Ykczusb" target="_blank" rel="noopener noreferrer">Как бустить</a><button type="button" class="sub-check">Проверить статус</button></div>
+        </div>
+        <div class="sub-card s-limits">
+          <div class="sub-h">ВАШИ ЛИМИТЫ СЕЙЧАС</div>
+          <div class="lim-row"><span>Тариф</span><b id="lim_tier">Free</b></div>
+          <div class="lim-row"><span>Вопросов ИИ</span><b id="lim_ai">0 из 3</b></div>
+          <div class="lim-row"><span>Обращений</span><b id="lim_appeals">0 из 1</b></div>
+          <div class="lim-row"><span>Триал</span><b id="lim_trial">не активирован</b></div>
+          <div class="btnrow"><button type="button" id="sub_trial">Активировать 7-дневный триал</button></div>
+        </div>
+        <div class="support-form-status" id="sub_status"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="law-modal-overlay" id="docs-overlay">
+  <div class="law-modal" id="docs-modal" style="width:min(560px, 100%);">
+    <div class="law-modal-head">
+      <div class="law-modal-titles"><h3 style="margin:0;">Документы</h3><div class="law-modal-sub">что собрать по делу · ничего не отправляется без вашей кнопки</div></div>
+      <button class="law-modal-close" id="docs-close" type="button" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="law-modal-body" style="white-space:normal;">
+      <div class="doc-tiles">
+        <button type="button" class="doc-tile" data-doc="summary"><span class="dt-ic">📝</span><b>Сводка по делу</b><span>текст для чата и для разбора: поля, статьи, флаги, итог</span></button>
+        <button type="button" class="doc-tile" data-doc="ogp" id="docs_ogp_tile"><span class="dt-ic">⚖️</span><b>Обращение в ОГП</b><span>бланк по ФОРМЕ ОГП (BBCode), пошлина $20 000 на счёт №788</span></button>
+        <button type="button" class="doc-tile" data-doc="contract"><span class="dt-ic">§</span><b>Договор на оказание услуг</b><span>частный адвокат: договор A4, PDF в облако, публикация в теме договоров</span></button>
+        <button type="button" class="doc-tile" data-doc="court" disabled><span class="dt-ic">🏛</span><b>Обращение в суд</b><span>скоро</span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="law-modal-overlay" id="summary-overlay">
+  <div class="law-modal" id="summary-modal" style="width:min(760px, 100%);">
+    <div class="law-modal-head">
+      <div class="law-modal-titles" style="display:flex; align-items:center; gap:8px;"><button class="alllaws-nav-btn" id="summary-back" type="button" aria-label="Назад к документам">←</button><h3 style="margin:0;">Сводка по делу</h3></div>
+      <button class="law-modal-close" id="summary-close" type="button" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="law-modal-body" id="summary-body" style="white-space:normal;">
+      <div class="card-group-label">Документ</div>
+      <div class="btnrow act-row">
+        <button class="primary" id="summary_btn" onclick="actionSummary()">Сформировать сводку</button>
+        <button type="button" class="primary" id="ogp_btn" onclick="openOgpModal()" title="Открыть окно обращения в ОГП: данные бланка и готовый текст. Ничего никуда не отправляется.">Обращение в ОГП</button>
+        <button type="button" id="court_btn" disabled title="Шаблон обращения в суд пока не готов">Обращение в суд</button>
+        <button type="button" id="ogp_bbcode_btn" style="display:none;" onclick="buildOgpBBCode()">Собрать обращение (BBCode)</button>
+      </div>
+      <div id="out_kind_note" class="act-kind"></div>
+      <textarea id="summary_out" style="margin-top:6px; min-height:220px;" placeholder="Нажмите «Сформировать сводку» — здесь появится текст, готовый для вставки в чат."></textarea>
+      <div class="btnrow act-row">
+        <button onclick="copySummary()">Скопировать</button>
+        <button onclick="downloadSummary()">Скачать .txt</button>
+        <button onclick="window.print()">Печать / PDF</button>
+        <button type="button" id="copy_forum_btn" style="display:none;" onclick="copyAndOpenForum()" title="Собрать обращение в BBCode, скопировать и открыть новую тему в разделе обращений в ОГП">Скопировать и открыть форум ↗</button>
+      </div>
     </div>
   </div>
 </div>
@@ -3305,12 +3440,14 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
   '2.3': {
-    title: 'Карточка 2.3 · облако и помощницы',
+    title: 'Карточка 2.3 · облако, документы, подписки',
     added: [
       "Вход через Discord (на сайте lex-checklist.pages.dev): до 10 профилей в облаке и архив до 50 дел — окно «👤 Профиль», блок «Облако»",
-      "Предложения и поддержка уходят через защищённый сервер: Лея — идеи и ошибки, Мила — поддержка (история ваших сообщений — в окне поддержки)",
-      "Ая — анонимная статистика: с вашего согласия раз в сутки сводка за прошедший день, без текстов и личных данных; кнопка «Отправить» в «Моей статистике»",
-      "«§ Договор» рядом с «Профилем»: договор частного адвоката на 4 листа A4 с гербом и печатью — физлицо или организация, абонемент + цены по услугам; PDF в облако одной кнопкой и готовый текст публикации для темы «Договоры Коллегии Адвокатов»",
+      "«📄 Документы» — одна кнопка вместо трёх: сводка по делу, обращение в ОГП и договор частного адвоката выбираются в одном окне",
+      "Договор: форма как у обращения в ОГП, герб и печать, абонемент + цены по услугам; листы A4 заполняются плотно, без пустых страниц; PDF в облако одной кнопкой и готовый текст публикации для темы «Договоры Коллегии Адвокатов»",
+      "Профиль переделан: карточка со статистикой, поля — только по кнопке «Изменить»; синхронизация с облаком, сохранение как нового профиля; строка телефона; почта собирается сама — адвокат логин@advup.agency (по реестру лицензий), клиенты логин@sa.com; рядом с № лицензии — ссылка на реестр",
+      "Блок «Подписки Lex» в профиле: Boosty, Patreon, буст сервера и ваши текущие лимиты (проверка подписок и триал — в ближайшем обновлении)",
+      "Предложения и поддержка — через защищённый сервер: Лея — идеи и ошибки, Мила — поддержка; Ая — анонимная статистика по согласию",
       "Логотип и иконка вкладки; в подвале — Условия использования и Политика конфиденциальности"
     ],
     fixed: [
@@ -3552,7 +3689,7 @@ const APP_HINTS = {
       x:'Родственные флаги — одной группой с раскрытием. Синяя строка — совпало с решением суда (судебная практика). Нажатие ведёт к месту. Двойное касание по плашке сворачивает её.' },
     { id:'fw-build', sel:'#fw_build', t:'Заключительное слово',
       x:'Собирается, когда дело готово: над кнопкой список, чего не хватает, каждый пункт ведёт к месту. Порядок: статьи по одной → обстоятельства → вывод по ст. 1.8 ПК последним.' },
-    { id:'ogp', sel:'#ogp_btn', mini:true, t:'Обращение в ОГП',
+    { id:'ogp', sel:'#docs_open_btn', mini:true, t:'Документы: сводка, ОГП, договор',
       x:'Отдельное окно со всеми полями бланка: заявитель, подозреваемый, ссылки, пошлина. Текст собирается сам, можно править и копировать. Данные адвоката берутся из 👤 Профиля.' },
     { id:'hl-actions', sel:'.hl-actions', t:'Новое дело · Тест · Профиль',
       x:'Кнопки теперь здесь, в плашке часового лимита. «Новое дело» стирает только дело и время. В 👤 Профиле — данные для обращений, «📊 Моя статистика» и согласие на анонимную статистику.' },
@@ -7846,7 +7983,7 @@ function buildOgpBBCode(){
   const aName = val('f_ogp_applicant') || (me ? prof.name : '') || '';
   L.push(G + '-[/COLOR] ИМЯ ФАМИЛИЯ: ' + (aName || '[вписать]'));
   L.push(G + '-[/COLOR] НОМЕР ID-КАРТЫ: ' + (val('f_ogp_applicant_id') || (me ? prof.id : '') || '[вписать]'));
-  L.push(G + '-[/COLOR] ЭЛЕКТРОННАЯ ПОЧТА: ' + (val('f_ogp_applicant_mail') || (me ? lexMailFull(prof.mail) : '') || '[вписать]'));
+  L.push(G + '-[/COLOR] ЭЛЕКТРОННАЯ ПОЧТА: ' + ((m=> m ? (me ? lexMailFull(m) : lexMailClient(m)) : '')(val('f_ogp_applicant_mail')) || (me ? lexMailFull(prof.mail) : '') || '[вписать]'));
   L.push(G + '-[/COLOR] ЯВЛЯЕТСЯ ЛИ ЗАЯВИТЕЛЬ ПОТЕРПЕВШИМ (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
   L.push(G + '-[/COLOR] ИМЕЮТСЯ ЛИ КАКИЕ-НИБУДЬ ТРЕБОВАНИЯ ПОТЕРПЕВШЕГО (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
   L.push('');
@@ -8275,8 +8412,11 @@ const OGP_FORUM_URL = 'https://forum.gta5rp.com/forums/obrashcheniye-v-ofis-gene
 // «Настройки по умолчанию» стирает (ключ lex_profile).
 const PROFILE_KEY = 'lex_profile';
 function lexProfile(){ try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null') || {}; } catch(e){ return {}; } }
-// почта в РП -- логин Discord; в обращениях всегда логин@sa.gov (если @ уже есть -- как ввели)
-function lexMailFull(m){ m = String(m || '').trim(); return m && m.indexOf('@') === -1 ? m + '@sa.gov' : m; }
+// почта в РП -- логин; домен из профиля (mailDomain), иначе: есть лицензия -- advup.agency (реестр частных адвокатов), нет -- sa.gov
+function lexMailFull(m, dom){ m = String(m || '').trim(); if(!m || m.indexOf('@') !== -1) return m; let p = {}; try { p = lexProfile() || {}; } catch(e){}
+  dom = String(dom || p.mailDomain || (p.license ? 'advup.agency' : 'sa.gov')).trim().replace(/^@/, ''); return m + '@' + dom; }
+// почта клиента (гражданские, организации, любые клиенты) -- логин@sa.com
+function lexMailClient(m){ m = String(m || '').trim(); return m && m.indexOf('@') === -1 ? m + '@sa.com' : m; }
 function lexProfileSave(p){ try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); return true; } catch(e){ return false; } }
 function openProfile(){
   const p = lexProfile();
@@ -8293,7 +8433,7 @@ function openProfile(){
   document.getElementById('profile-save').addEventListener('click', ()=>{
     const p = {};
     ov.querySelectorAll('[data-profile]').forEach(el=>{ const v = el.value.trim(); if(v) p[el.dataset.profile] = v; });
-    lexProfileSave(p); close();
+    lexProfileSave(p); if(window.LexProfileUI) LexProfileUI.saved(); else close();
     if(document.getElementById('ogp-overlay').classList.contains('open')) ogpModalSync();
   });
   const b = document.getElementById('profile_open_btn'); if(b) b.addEventListener('click', openProfile);
@@ -11782,7 +11922,7 @@ function renderForumNav(){
     if(e.target.closest && e.target.closest('#fnav_ogp_case')){
       ov.classList.remove('open');
       try { actionOgp(); buildOgpBBCode(); setOutKind('bbcode'); } catch(err){}
-      const t = document.getElementById('summary_out'); if(t) t.scrollIntoView({ block:'center', behavior:'smooth' });
+      const so = document.getElementById('summary-overlay'); if(so) so.classList.add('open');
     }
   });
 })();
@@ -15088,7 +15228,7 @@ window.LexTour = (function(){
     { sel:'#hl_card', t:'Часовой лимит', x:'Час по ст. 1.8 ПК и заморозки: адвокат, прокурор / судья / начальство. Здесь же «Новое дело», «Тест» и «Профиль».' },
     { sel:'#flags_card', t:'Флаги', x:'Всё, что нашла карточка: красное — нарушения, жёлтое — что отметить, зелёное — основания освобождения, синее — судебная практика. Нажмите на флаг — карточка покажет место.' },
     { sel:'#fw_build', t:'Заключительное слово', x:'Пока отмечено не всё, над кнопкой список «чего не хватает». Готово — слово собирается по каждой статье, вывод по ст. 1.8 ПК — последним.' },
-    { sel:'#ogp_btn', t:'Документы', x:'Сводка, обращение в ОГП и в суд — из данных дела. Ничего не отправляется, только собирается текст для копирования.' },
+    { sel:'#docs_open_btn', t:'Документы', x:'Одна кнопка: сводка по делу, обращение в ОГП, договор (обращение в суд — скоро) — из данных дела. Ничего не отправляется, только собирается текст для копирования.' },
     { sel:'#law-fab', t:'Нижняя панель', x:'Поиск статьи, все законы, памятки по прибытию и по залогу, навигатор форума, предложения.' },
   ];
   let i = 0, snap = null, on = false, onDone = null;
@@ -20111,7 +20251,7 @@ button,input,select,textarea{font:inherit}
 .toast{position:fixed;right:16px;bottom:16px;background:var(--panel2);padding:10px 13px;border:1px solid var(--border);border-radius:9px;opacity:0;transition:.2s;pointer-events:none}.toast.show{opacity:1}
 
 /* ===== лист договора ===== */
-.page{position:relative;width:210mm;height:297mm;overflow:hidden;padding:16mm 18mm 18mm;background:#fffdf8;color:#141414;box-shadow:var(--shadow);font:11pt/1.42 "Times New Roman",Times,"Liberation Serif","Noto Serif",Georgia,serif;text-align:justify}
+.page{position:relative;width:210mm;height:297mm;overflow:hidden;padding:0;background:#fffdf8;color:#141414;box-shadow:var(--shadow);font:11pt/1.42 "Times New Roman",Times,"Liberation Serif","Noto Serif",Georgia,serif;text-align:justify}
 .page::before{content:"";position:absolute;inset:7mm;border:1px solid #c9b47a;pointer-events:none}
 .page::after{content:"";position:absolute;inset:8.2mm;border:.4px solid #e2d6b0;pointer-events:none}
 .wm{position:absolute;left:50%;top:52%;width:120mm;height:120mm;transform:translate(-50%,-50%);opacity:.05;pointer-events:none}
@@ -20135,6 +20275,8 @@ button,input,select,textarea{font:inherit}
 .price tr:nth-child(even) td{background:#f6f1e3}
 .price td.sum{white-space:nowrap;font-weight:700;text-align:right}
 .price td.nt{font-size:9pt;color:#444}
+.pbody{position:absolute;left:18mm;right:18mm;top:15mm;bottom:19mm;overflow:hidden}
+.pbody>:first-child{margin-top:0}
 .bottom{position:absolute;bottom:10mm;left:18mm;right:18mm;display:flex;justify-content:space-between;border-top:.6px solid #c9b47a;padding-top:1.5mm;color:#6b6b6b;font:7.6pt Arial,Helvetica,sans-serif;letter-spacing:.04em}
 .parties{display:grid;grid-template-columns:1fr 1fr;gap:9mm;margin-top:3mm;text-align:left}
 .party h3{text-align:center;text-transform:uppercase;font-size:10.5pt;letter-spacing:.06em;margin:0 0 2mm;color:#1f3460;border-bottom:.6px solid #c9b47a;padding-bottom:1mm}
@@ -20165,6 +20307,8 @@ body.pdfmode .pages .page{zoom:1}
   .page:last-child{break-after:auto;page-break-after:auto}
 }
 [hidden]{display:none!important}
+.reg{color:var(--accent);font-size:10.5px;margin-left:4px;text-decoration:none}
+.page .doc>.head{margin-bottom:0}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><div><b>Договор на оказание юридических услуг</b><small>Lex · частный адвокат · публикация на портале штата</small></div></div>
@@ -20182,9 +20326,9 @@ body.pdfmode .pages .page{zoom:1}
   <label class="field full">Статус<select id="lawyerRole"><option value="Частный адвокат" selected>Частный адвокат</option></select></label>
   <label class="field full">Имя и фамилия<input id="lawyerName" placeholder="из профиля Lex"></label>
   <label class="field">№ паспорта (ID)<input id="lawyerId" placeholder="из профиля"></label>
-  <label class="field">Лицензия<input id="lawyerLicense" placeholder="PLSA 0000"></label>
+  <label class="field">Лицензия <a class="reg" href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer" title="Реестр лицензий частных адвокатов">реестр ↗</a><input id="lawyerLicense" placeholder="PLSA 0000"></label>
   <label class="field">Телефон<input id="lawyerPhone" placeholder="вручную"></label>
-  <label class="field">Почта<input id="lawyerEmail" placeholder="логин@sa.gov"></label>
+  <label class="field">Почта<input id="lawyerEmail" placeholder="как в реестре лицензий"></label>
   <label class="field full">Юридическая фирма (если состоите)<input id="lawyerFirm" placeholder="пусто — договор от своего имени"></label>
 </div>
 <p class="hint" id="firmHint" hidden>Состоите в фирме — договор заключается через неё и с её логотипом (ст. 7.2 Закона о деятельности Коллегии Адвокатов).</p>
@@ -20195,7 +20339,7 @@ body.pdfmode .pages .page{zoom:1}
   <label class="field full">Имя и фамилия<input id="clientName" placeholder="Имя Фамилия"></label>
   <label class="field">№ паспорта<input id="clientPassport" placeholder="паспорт"></label>
   <label class="field">Телефон<input id="clientPhone" placeholder="телефон"></label>
-  <label class="field full">Почта<input id="clientEmail" placeholder="почта"></label>
+  <label class="field full">Почта<input id="clientEmail" placeholder="логин — @sa.com добавится сам"></label>
 </div>
 <div class="grid" data-show="org" hidden>
   <label class="field full">Организация<input id="orgName" placeholder="напр. Weazel News"></label>
@@ -20203,7 +20347,7 @@ body.pdfmode .pages .page{zoom:1}
   <label class="field">№ паспорта представителя<input id="repPassport" placeholder="паспорт"></label>
   <label class="field">Должность<input id="repPosition" placeholder="напр. директор"></label>
   <label class="field">Телефон<input id="repPhone" placeholder="телефон"></label>
-  <label class="field">Почта<input id="repEmail" placeholder="почта"></label>
+  <label class="field">Почта<input id="repEmail" placeholder="логин — @sa.com"></label>
   <label class="field full">Сотрудники (необязательно, по одному в строке)<textarea id="orgStaff" placeholder="Имя Фамилия, паспорт"></textarea></label>
   <p class="hint full" style="grid-column:1/-1">Договор с организацией распространяется на всех её работников (ст. 6.4 Закона о деятельности Коллегии Адвокатов).</p>
 </div>
@@ -20236,19 +20380,18 @@ body.pdfmode .pages .page{zoom:1}
   <button class="btn" id="pubCopyBtn">Скопировать</button>
   <button class="btn" id="pubRebuild">Пересобрать</button>
 </div>
-<p class="hint">Договор публикуется в теме «SA-GOV · Договоры Коллегии Адвокатов» (ст. 6.1 Закона о деятельности Коллегии Адвокатов). Заключать договор в КПЗ, ФТ или во время процессуальных действий нельзя (ст. 6.6).</p>
+<p class="hint">Лицензию и почту адвоката сверяйте с <a href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer">реестром лицензий частных адвокатов ↗</a>. Договор публикуется в теме «SA-GOV · Договоры Коллегии Адвокатов» (ст. 6.1 Закона о деятельности Коллегии Адвокатов). Заключать договор в КПЗ, ФТ или во время процессуальных действий нельзя (ст. 6.6).</p>
 <div class="btnrow"><button class="btn" id="clearClient">Очистить заказчика</button></div>
 </aside>
 
-<section><div class="preview-head"><b>Предпросмотр</b><span id="pgInfo">4 страницы · A4</span></div>
-<div class="pages" id="pages">
-
-<article class="page"><div class="wm" data-art="wm"></div>
-  <div class="head"><div data-art="flag"></div><div><div class="t1">GOVERNMENT OF SAN ANDREAS · BAR ASSOCIATION</div><div class="t2">КОЛЛЕГИЯ АДВОКАТОВ ШТАТА САН-АНДРЕАС</div><div class="t3" data-v="headFirm"></div></div><div data-art="seal"></div></div>
+<section><div class="preview-head"><b>Предпросмотр</b><span id="pgInfo">A4</span></div>
+<div class="pages" id="pages"></div>
+<div id="flowSrc" class="doc" hidden>
+<div class="head"><div data-art="flag"></div><div><div class="t1">GOVERNMENT OF SAN ANDREAS · BAR ASSOCIATION</div><div class="t2">КОЛЛЕГИЯ АДВОКАТОВ ШТАТА САН-АНДРЕАС</div><div class="t3" data-v="headFirm"></div></div><div data-art="seal"></div></div>
   <div class="meta"><span>Договор № <b data-v="no"></b></span><span>г. Лос-Сантос, <b data-v="date"></b></span></div>
   <h1 class="doc-title">ДОГОВОР</h1>
   <div class="doc-sub">на оказание юридических услуг и предоставление правовой помощи</div>
-  <section class="doc">
+  
     <p><b data-v="lawyerRole"></b> <b data-v="lawyerName"></b>, паспорт № <b data-v="lawyerId"></b>, лицензия <b data-v="lawyerLicense"></b><span data-v-wrap="firm">, действующий от имени юридической фирмы «<b data-v="lawyerFirm"></b>»</span>, именуемый в дальнейшем <b>Исполнитель</b>, с одной стороны, и <span data-show="ind">гражданин Соединённых Штатов Америки <b data-v="clientName"></b>, паспорт № <b data-v="clientPassport"></b>, именуемый(ая)</span><span data-show="org" hidden>организация «<b data-v="orgName"></b>» в лице представителя <b data-v="repName"></b>, <span data-v="repPosition"></span>, паспорт № <b data-v="repPassport"></b>, действующего(ей) от имени организации, именуемая</span> в дальнейшем <b>Заказчик</b>, с другой стороны, совместно именуемые <b>Стороны</b>, заключили настоящий <b>Договор</b> о нижеследующем.</p>
     <h2>1. Предмет договора</h2>
     <p><b>1.1</b> Исполнитель по заданию Заказчика обязуется оказывать юридические услуги и правовую помощь в объёме и на условиях Договора, а Заказчик обязуется принять услуги и оплатить их.</p>
@@ -20256,13 +20399,7 @@ body.pdfmode .pages .page{zoom:1}
     <ul id="docScope"></ul>
     <p id="docStaffP" hidden><b>1.3</b> Услуги по Договору оказываются также работникам Заказчика в рамках их деятельности в организации (ст. 6.4 Закона «О деятельности Коллегии Адвокатов»)<span id="docStaff"></span>.</p>
     <p><b data-n="lawP">1.3</b> Услуги оказываются в соответствии с законодательством штата Сан-Андреас и Законом «О деятельности Коллегии Адвокатов». Защита при задержании и выпуск под залог — по вызову Заказчика (ст. 6.2, 6.2.1 того же Закона).</p>
-  </section>
-  <div class="bottom"><span>San Andreas Bar Association</span><span>Договор № <span data-v="no"></span> · стр. 1 из 4</span></div>
-</article>
-
-<article class="page"><div class="wm" data-art="wm"></div>
-  <section class="doc">
-    <h2>2. Стоимость услуг и порядок оплаты</h2>
+<h2>2. Стоимость услуг и порядок оплаты</h2>
     <table class="price"><thead><tr><th style="width:44%">Услуга</th><th style="width:20%;text-align:right">Стоимость</th><th>Условия</th></tr></thead><tbody id="docPrice"></tbody></table>
     <p><b>2.1</b> При подписании Договора Заказчик оплачивает <b data-v="totalNow"></b>.</p>
     <p><b>2.2</b> Государственные пошлины (за обращение в Офис Генерального Прокурора, по гражданскому иску в суд и иные) не входят в стоимость услуг и оплачиваются Заказчиком отдельно до подачи соответствующего документа.</p>
@@ -20276,13 +20413,7 @@ body.pdfmode .pages .page{zoom:1}
     <p class="ni"><b>3.2 Заказчик обязан:</b></p>
     <p><b>3.2.1</b> Предоставлять Исполнителю документы и достоверную информацию, необходимые для оказания услуг.</p>
     <p><b>3.2.2</b> Оплачивать услуги и пошлины в размерах и сроки, предусмотренные Договором.</p>
-  </section>
-  <div class="bottom"><span>San Andreas Bar Association</span><span>Договор № <span data-v="no"></span> · стр. 2 из 4</span></div>
-</article>
-
-<article class="page"><div class="wm" data-art="wm"></div>
-  <section class="doc">
-    <p class="ni"><b>3.3 Исполнитель имеет право:</b></p>
+<p class="ni"><b>3.3 Исполнитель имеет право:</b></p>
     <p><b>3.3.1</b> Получать документы и достоверную информацию, необходимые для оказания услуг.</p>
     <p><b>3.3.2</b> Получать оплату за оказанные услуги в размерах и сроки, предусмотренные Договором.</p>
     <p><b>3.3.3</b> В письменной форме заявить о прекращении действия Договора.</p>
@@ -20297,13 +20428,7 @@ body.pdfmode .pages .page{zoom:1}
     <p><b>4.4</b> Исполнитель не отвечает за неисполнение обязательств, вызванное чрезвычайными и непредотвратимыми обстоятельствами (форс-мажор), если они существенно повлияли на исполнение Договора.</p>
     <h2>5. Разрешение споров</h2>
     <p><b>5.1</b> Споры между Сторонами разрешаются путём переговоров; претензии излагаются любым доступным способом. Не урегулированный спор передаётся в суд штата Сан-Андреас.</p>
-  </section>
-  <div class="bottom"><span>San Andreas Bar Association</span><span>Договор № <span data-v="no"></span> · стр. 3 из 4</span></div>
-</article>
-
-<article class="page"><div class="wm" data-art="wm"></div>
-  <section class="doc">
-    <h2>6. Заключительные положения</h2>
+<h2>6. Заключительные положения</h2>
     <p><b>6.1</b> Договор вступает в силу с момента подписания Сторонами и публикации на портале штата и действует <b data-v="days"></b> дней. Действие может быть продлено дополнительным соглашением.</p>
     <p><b>6.2</b> Изменения вносятся по взаимному согласию Сторон дополнительным соглашением; приложения являются неотъемлемой частью Договора.</p>
     <p><b>6.3</b> Договор составлен в двух экземплярах, имеющих равную юридическую силу, по одному для каждой из Сторон.</p>
@@ -20323,15 +20448,12 @@ body.pdfmode .pages .page{zoom:1}
         <span>Телефон</span><b data-v="lawyerPhone"></b>
         <span>Почта</span><b data-v="lawyerEmail"></b></div></div>
     </div>
-    <div class="signs">
+    <div class="signs" data-keep="prev">
       <div><div class="sig" data-v="signerName"></div><div class="sigline">Подпись Заказчика</div></div>
       <div data-art="stamp"></div>
       <div><div class="sig" data-v="lawyerName"></div><div class="sigline">Подпись Исполнителя</div></div>
     </div>
-  </section>
-  <div class="bottom"><span>San Andreas Bar Association</span><span>Договор № <span data-v="no"></span> · стр. 4 из 4</span></div>
-</article>
-
+</div>
 </div></section></main>
 <div class="toast" id="toast" role="status"></div>
 <script>
@@ -20453,7 +20575,7 @@ SERVICES.forEach(s=>{
   svcState[s.id] = { on: saved.on !== undefined ? !!saved.on : true, a: saved.a !== undefined ? saved.a : s.a, b: saved.b !== undefined ? saved.b : s.b };
 });
 function saveCfg(){
-  LS.put(CFG_KEY, { svc: svcState, lawyerPhone: val('lawyerPhone'), lawyerFirm: val('lawyerFirm'), days: val('days'), hours: val('hours'), sigOn: $('sigOn').checked });
+  LS.put(CFG_KEY, { svc: svcState, lawyerFirm: val('lawyerFirm'), days: val('days'), hours: val('hours'), sigOn: $('sigOn').checked });
 }
 
 /* ---------- форма прайса ---------- */
@@ -20490,10 +20612,11 @@ function totalNow(){
   if(s.on && num(s.a) != null) return money(s.a);
   return 'стоимость оказанных услуг согласно разделу 2';
 }
+function clientMail(m){ m = String(m || '').trim(); return m && m.indexOf('@') === -1 ? m + '@sa.com' : m; }
 function signer(){
   return CT === 'ind'
-    ? { name: val('clientName'), pass: val('clientPassport'), phone: val('clientPhone'), mail: val('clientEmail') }
-    : { name: val('repName'), pass: val('repPassport'), phone: val('repPhone'), mail: val('repEmail') };
+    ? { name: val('clientName'), pass: val('clientPassport'), phone: val('clientPhone'), mail: clientMail(val('clientEmail')) }
+    : { name: val('repName'), pass: val('repPassport'), phone: val('repPhone'), mail: clientMail(val('repEmail')) };
 }
 
 /* ---------- отрисовка листа ---------- */
@@ -20509,7 +20632,7 @@ function render(){
     signerName: sg.name, signerPassport: sg.pass, signerPhone: sg.phone, signerEmail: sg.mail,
     days: val('days'), hours: val('hours'), totalNow: totalNow()
   };
-  document.querySelectorAll('.pages [data-v]').forEach(x=>{
+  document.querySelectorAll('#flowSrc [data-v]').forEach(x=>{
     const k = x.dataset.v, v = map[k] || '';
     const blank = x.classList.contains('sig') ? '' : (k === 'repPosition' ? 'должность' : '________________');
     x.textContent = v || blank; x.classList.toggle('empty', !v);
@@ -20541,23 +20664,78 @@ function render(){
   });
   $('totalNow').textContent = totalNow();
   document.body.classList.toggle('nosig', !$('sigOn').checked);
-  // печать адвоката -- с номером лицензии
-  const lic = val('lawyerLicense');
-  document.querySelectorAll('[data-art="stamp"]').forEach((x, i)=>{
-    const key = lic + '|' + (val('lawyerFirm') ? 1 : 0);
-    if(x.dataset.k === key) return; x.dataset.k = key;
-    x.innerHTML = ART.stamp('st' + i, val('lawyerFirm') ? 'ЮРИДИЧЕСКАЯ ФИРМА' : 'ЧАСТНЫЙ АДВОКАТ', esc(lic || 'ЛИЦЕНЗИЯ'));
+  renderPub();
+  clearTimeout(fitTimer); fitTimer = setTimeout(paginate, 60);
+}
+// поток блоков раскладывается по листам A4: без пустых хвостов, заголовок раздела не отрывается от текста
+function fillArt(root, n){
+  root.querySelectorAll('[data-art="flag"]').forEach(x=> x.innerHTML = ART.flag());
+  root.querySelectorAll('[data-art="seal"]').forEach((x, i)=> x.innerHTML = ART.seal('hs' + n + '_' + i));
+  root.querySelectorAll('[data-art="stamp"]').forEach((x, i)=>{
+    x.innerHTML = ART.stamp('st' + n + '_' + i, val('lawyerFirm') ? 'ЮРИДИЧЕСКАЯ ФИРМА' : 'ЧАСТНЫЙ АДВОКАТ', esc(val('lawyerLicense') || 'ЛИЦЕНЗИЯ'));
     const svg = x.firstChild; if(svg) svg.setAttribute('class', 'stamp');
   });
-  renderPub();
-  clearTimeout(fitTimer); fitTimer = setTimeout(fitPages, 60);
 }
-// длинные списки -- текст на листе ужимается, чтобы всё влезло в A4
-function fitPages(){
-  document.querySelectorAll('.page').forEach(p=>{
-    let fs = 11; p.style.fontSize = fs + 'pt';
-    while(p.scrollHeight > p.clientHeight + 1 && fs > 8.6){ fs -= .2; p.style.fontSize = fs.toFixed(1) + 'pt'; }
+function newPage(n){
+  const pg = document.createElement('article'); pg.className = 'page';
+  const wm = document.createElement('div'); wm.className = 'wm'; wm.innerHTML = ART.seal('wm' + n); pg.append(wm);
+  const body = document.createElement('div'); body.className = 'pbody doc'; pg.append(body);
+  const bt = document.createElement('div'); bt.className = 'bottom';
+  const l = document.createElement('span'); l.textContent = 'San Andreas Bar Association';
+  const r = document.createElement('span'); r.className = 'pgno'; bt.append(l, r); pg.append(bt);
+  $('pages').append(pg);
+  return body;
+}
+function over(body){ return body.scrollHeight > body.clientHeight + 1; }
+// блок, который нельзя оставлять последним на листе (заголовок раздела, «3.1 Заказчик имеет право:»)
+function sticky(x){ return x && (x.tagName === 'H2' || x.tagName === 'H1' || /\b(ni|doc-sub)\b/.test(x.className || '')); }
+function layout(fs){
+  const box = $('pages'); box.textContent = '';
+  const src = Array.from($('flowSrc').children).filter(x=> !x.hidden);
+  let n = 1, body = newPage(n);
+  body.style.fontSize = fs + 'pt';
+  const next = ()=>{ n++; body = newPage(n); body.style.fontSize = fs + 'pt'; return body; };
+  src.forEach(s=>{
+    const node = s.cloneNode(true);
+    node.removeAttribute('id'); node.querySelectorAll('[id]').forEach(x=> x.removeAttribute('id'));
+    body.append(node); fillArt(node, n);
+    if(!over(body) || body.children.length === 1) return;
+    // таблица цен делится по строкам, шапка повторяется
+    if(node.tagName === 'TABLE' && node.tBodies[0] && node.tBodies[0].rows.length > 1){
+      const rows = Array.from(node.tBodies[0].rows); node.tBodies[0].textContent = '';
+      let k = 0;
+      for(; k < rows.length; k++){ node.tBodies[0].append(rows[k]); if(over(body)){ node.tBodies[0].removeChild(rows[k]); break; } }
+      if(k === 0) body.removeChild(node);
+      const rest = rows.slice(k);
+      if(!rest.length) return;
+      const t2 = node.cloneNode(true); t2.tBodies[0].textContent = ''; rest.forEach(r=> t2.tBodies[0].append(r));
+      if(k === 0){ const prev = body.lastElementChild; next(); if(sticky(prev)){ prev.remove(); body.append(prev); } } else next();
+      body.append(t2);
+      return;
+    }
+    body.removeChild(node);
+    const carry = [node];
+    // держать вместе: заголовок с текстом; подписи с реквизитами
+    while(body.children.length > 1){
+      const prev = body.lastElementChild;
+      if(sticky(prev) || carry[0].dataset.keep === 'prev'){ body.removeChild(prev); carry.unshift(prev); } else break;
+    }
+    next(); carry.forEach(c=> body.append(c));
   });
+  return box.querySelectorAll('.page');
+}
+// шрифт подбирается так, чтобы листов было как можно меньше, а последний не пустовал
+function paginate(){
+  let best = null;
+  [11, 10.6, 10.2, 9.8].forEach(fs=>{
+    const pages = layout(fs);
+    const last = pages[pages.length - 1].querySelector('.pbody');
+    const lc = last.lastElementChild, fill = lc ? (lc.offsetTop + lc.offsetHeight) / last.clientHeight : 0;
+    if(!best || pages.length < best.n || (pages.length === best.n && best.fill < .25 && fill > best.fill)) best = { fs, n: pages.length, fill };
+  });
+  const pages = layout(best.fs), no = val('cNo') || '____';
+  pages.forEach((p, i)=> p.querySelector('.pgno').textContent = 'Договор № ' + no + ' · стр. ' + (i + 1) + ' из ' + pages.length);
+  $('pgInfo').textContent = pages.length + ' ' + (pages.length === 1 ? 'лист' : pages.length < 5 ? 'листа' : 'листов') + ' · A4';
 }
 
 /* ---------- публикация (форма темы договоров) ---------- */
@@ -20599,7 +20777,7 @@ function loadLibs(){
 }
 function makePdf(){
   return loadLibs().then(()=>{
-    document.body.classList.add('pdfmode'); fitPages();
+    document.body.classList.add('pdfmode'); paginate();
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
     const pages = Array.from(document.querySelectorAll('.page'));
@@ -20607,7 +20785,7 @@ function makePdf(){
       if(i) pdf.addPage();
       pdf.addImage(cv.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 210, 297);
     })), Promise.resolve()).then(()=> pdf.output('blob'));
-  }).finally(()=>{ document.body.classList.remove('pdfmode'); fitPages(); });
+  }).finally(()=>{ document.body.classList.remove('pdfmode'); paginate(); });
 }
 function pdfName(){ return 'dogovor-' + (val('cNo').replace(/[^\d]/g, '') || 'b-n') + '-' + (val('date') || 'date') + '.pdf'; }
 
@@ -20640,12 +20818,8 @@ const UP_ERR = {
 /* ---------- кнопки ---------- */
 function wire(){
   $('brandIc').innerHTML = ART.icon();
-  document.querySelectorAll('[data-art="flag"]').forEach(x=> x.innerHTML = ART.flag());
-  document.querySelectorAll('[data-art="seal"]').forEach((x, i)=> x.innerHTML = ART.seal('hs' + i));
-  document.querySelectorAll('[data-art="wm"]').forEach((x, i)=> x.innerHTML = ART.seal('wm' + i));
   buildSvcForm();
   const now = new Date(); $('date').value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-  if(cfg.lawyerPhone) $('lawyerPhone').value = cfg.lawyerPhone;
   if(cfg.lawyerFirm) $('lawyerFirm').value = cfg.lawyerFirm;
   if(cfg.days) $('days').value = cfg.days;
   if(cfg.hours) $('hours').value = cfg.hours;
@@ -20654,7 +20828,7 @@ function wire(){
   const form = document.querySelector('.form');
   form.addEventListener('input', e=>{
     if(e.target.id === 'pubOut'){ pubDirty = true; return; }
-    if(['lawyerPhone', 'lawyerFirm', 'days', 'hours'].indexOf(e.target.id) !== -1) saveCfg();
+    if(['lawyerFirm', 'days', 'hours'].indexOf(e.target.id) !== -1) saveCfg();
     render();
   });
   form.addEventListener('change', e=>{ if(e.target.id === 'sigOn') saveCfg(); render(); });
@@ -20781,7 +20955,10 @@ wire();
      Уровень доступа (заглушка до маршрута /me на Worker)
      ===================================================================== */
   window.LexTier = {
-    current: ()=> 'free',
+    // владелец Lex -- Premium бессрочно (до маршрута /me на Worker проверка здесь, по Discord ID)
+    OWNER_IDS: ['605094330222379199'],
+    current(){ const w = window.LexWho; return (w && this.OWNER_IDS.indexOf(String(w.id)) !== -1) ? 'premium' : 'free'; },
+    forever(){ const w = window.LexWho; return !!(w && this.OWNER_IDS.indexOf(String(w.id)) !== -1); },
     label: t=> ({ free:'Free', participant:'Участник', premium:'Premium' })[t] || 'Free',
     // оплата и тарифы -- заглушка
     upgrade(){ return Promise.resolve({ ok:false, error:'not_ready' }); },
@@ -21073,7 +21250,8 @@ wire();
       updateDiscordBtn(u);
       syncProfiles(u);
       $('cl_user_name').textContent = u.discordName || ('Discord ' + (u.discordId || ''));
-      const t = window.LexTier.current(); const tb = $('cl_tier'); tb.textContent = window.LexTier.label(t); tb.className = 'cl-tier t-' + t;
+      const t = window.LexTier.current(); const tb = $('cl_tier'); tb.textContent = window.LexTier.label(t) + (window.LexTier.forever() ? ' ∞' : ''); tb.className = 'cl-tier t-' + t;
+      if(window.LexProfileUI) LexProfileUI.render();
       loadProfiles(); loadCases();
     });
   }
@@ -21086,7 +21264,7 @@ wire();
     $('cl_signout').addEventListener('click', ()=>{
       A().signOut().then(()=>{ window.LexWho = null; syncedFor = null; activeCloudId = null; updateDiscordBtn(null); status('Вы вышли. Профиль в этом браузере остался.', 'ok'); refresh(); });
     });
-    $('cl_prof_add').addEventListener('click', createFromForm);
+    const pn = $('pv_save_new'); if(pn) pn.addEventListener('click', createFromForm);
     $('cl_case_save').addEventListener('click', saveCase);
     $('cl_case_refresh').addEventListener('click', ()=>{ status(''); loadCases(); });
     $('cl_wipe').addEventListener('click', ()=> confirmBox({
@@ -21260,10 +21438,121 @@ wire();
     refresh(){ cSend('context', { refresh: true }); }
   };
 
+  /* =====================================================================
+     Документы: одна кнопка в плашке -> выбор (сводка, ОГП, договор, суд)
+     ===================================================================== */
+  function wireDocs(){
+    const ov = $('docs-overlay'), so = $('summary-overlay'), btn = $('docs_open_btn');
+    if(!ov || !btn) return;
+    const close = ()=> ov.classList.remove('open');
+    btn.addEventListener('click', ()=> ov.classList.add('open'));
+    $('docs-close').addEventListener('click', close);
+    ov.addEventListener('click', e=>{
+      if(e.target === ov){ close(); return; }
+      const t = e.target.closest && e.target.closest('[data-doc]'); if(!t || t.disabled) return;
+      const d = t.dataset.doc; close();
+      if(d === 'summary'){ so.classList.add('open'); const out = $('summary_out'); if(out && !out.value.trim() && typeof actionSummary === 'function'){ try { actionSummary(); } catch(err){} } }
+      if(d === 'ogp' && typeof openOgpModal === 'function') openOgpModal();
+      if(d === 'contract') window.LexContractModule.open();
+    });
+    if(so){
+      const sclose = ()=> so.classList.remove('open');
+      $('summary-close').addEventListener('click', sclose);
+      $('summary-back').addEventListener('click', ()=>{ sclose(); ov.classList.add('open'); });
+      so.addEventListener('click', e=>{ if(e.target === so) sclose(); });
+    }
+    // расхождение решений -> кнопка ОГП подсвечена; то же -- на кнопке «Документы» и плитке ОГП
+    const ob = $('ogp_btn');
+    if(ob && 'MutationObserver' in window){
+      const sync = ()=>{ const on = ob.classList.contains('primary'); btn.classList.toggle('doc-hot', on); const tile = $('docs_ogp_tile'); if(tile) tile.classList.toggle('hot', on); };
+      new MutationObserver(sync).observe(ob, { attributes: true, attributeFilter: ['class'] }); sync();
+    }
+  }
+
+  /* =====================================================================
+     Окно «Профиль»: просмотр (данные, статистика, тариф) / правка по кнопке
+     ===================================================================== */
+  const REGISTRY = 'https://redwood-tables.duckdns.org/shared/AdvocatesSA1';
+  let toastT = null;
+  function pvStatus(text, kind){ const s = $('pv_status'); if(!s) return; s.className = 'support-form-status' + (kind ? ' ' + kind : ''); s.textContent = text || ''; }
+  function subStatus(text){ const s = $('sub_status'); if(!s) return; s.className = 'support-form-status'; s.textContent = text; clearTimeout(toastT); toastT = setTimeout(()=>{ s.textContent = ''; }, 5000); }
+  function statsSummary(){
+    const S = window.LexStats; if(!S) return null;
+    const D = S.days() || {}, today = dayKey(new Date());
+    let cases = 0, rel = 0, ogp = 0, todayCases = 0;
+    Object.keys(D).forEach(k=>{ const x = D[k] || {}; cases += x.cases | 0; ogp += x.ogp | 0; if(k === today) todayCases += x.cases | 0; ['1','2','3','4','5','6'].forEach(o=>{ rel += ((x.out || {})[o] | 0); }); });
+    return { cases, rel, ogp, todayCases };
+  }
+  function row(label, value, href){
+    const r = el('div', 'pv-row'); r.appendChild(el('span', '', label));
+    const v = el('b', value ? '' : 'pv-empty', value || '—'); r.appendChild(v);
+    if(href){ const a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'реестр ↗'; a.className = 'pv-reg'; r.appendChild(a); }
+    return r;
+  }
+  function renderProfileView(){
+    const p = (typeof lexProfile === 'function') ? lexProfile() : {};
+    const name = (p.name || '').trim();
+    $('pv_name').textContent = name || 'Профиль не заполнен';
+    $('pv_ava').textContent = name ? name.split(/\s+/).map(w=> w[0]).join('').slice(0, 2).toUpperCase() : '?';
+    const roleTxt = { 'гос. адвокат':'Государственный адвокат', 'частный адвокат':'Частный адвокат', 'прокурор':'Прокурор', 'другое':'' }[p.role] || '';
+    $('pv_role').textContent = [roleTxt, window.LexWho && window.LexWho.name ? 'Discord: ' + window.LexWho.name : ''].filter(Boolean).join(' · ');
+    const g = $('pv_grid'); g.textContent = '';
+    g.appendChild(row('ID-карта', p.id));
+    g.appendChild(row('Лицензия', p.license, REGISTRY));
+    g.appendChild(row('Почта', (typeof lexMailFull === 'function') ? lexMailFull(p.mail) : p.mail));
+    g.appendChild(row('Телефон', p.phone));
+    const pr = row('Паспорт', ''); const pb = pr.querySelector('b');
+    if(/^https?:\/\//.test(p.passport || '')){ pb.textContent = ''; pb.className = ''; const a = document.createElement('a'); a.href = p.passport; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'копия паспорта ↗'; pb.appendChild(a); }
+    else if(p.passport){ pb.textContent = p.passport; pb.className = ''; }
+    g.appendChild(pr);
+    const st = statsSummary(), box = $('pv_stats'); box.textContent = '';
+    if(st){
+      [[st.cases, 'дел всего'], [st.cases ? st.rel + ' · ' + Math.round(st.rel * 100 / st.cases) + '%' : '0', 'освобождено'], [st.ogp, 'обращений в ОГП'], [st.todayCases, 'дел сегодня']].forEach(([v, l])=>{
+        const t = el('div', 'pv-tile'); t.appendChild(el('b', '', v)); t.appendChild(el('span', '', l)); box.appendChild(t);
+      });
+    }
+    const tier = window.LexTier.current(), forever = window.LexTier.forever();
+    const tb = $('pv_tier'); tb.textContent = window.LexTier.label(tier) + (forever ? ' ∞' : ''); tb.className = 'cl-tier t-' + tier; tb.title = forever ? 'Premium навсегда (владелец Lex)' : 'Уровень доступа';
+    $('lim_tier').textContent = forever ? 'Premium — бессрочно' : window.LexTier.label(tier);
+    $('lim_ai').textContent = tier === 'premium' ? 'без ограничений' : '0 из 3';
+    $('lim_appeals').textContent = tier === 'premium' ? 'без ограничений' : '0 из 1';
+    $('lim_trial').textContent = forever ? 'не нужен' : 'не активирован';
+    $('sub_trial').disabled = forever;
+    const sync = $('pv_sync');
+    if(sync){ sync.disabled = location.protocol !== 'https:'; sync.title = sync.disabled ? 'Облако работает на сайте lex-checklist.pages.dev' : (signedIn ? 'Сверить профиль с облаком: облачный активный профиль — главный' : 'Войти через Discord и перенести профиль в облако'); }
+  }
+  function setEdit(on){
+    $('pv_view').hidden = !!on; $('pv_edit_box').hidden = !on;
+    if(on){ const p = (typeof lexProfile === 'function') ? lexProfile() : {}; document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = p[e.dataset.profile] || ''; }); if(window.syncAllPrettySelects) window.syncAllPrettySelects(); const n = $('p_name'); if(n) n.focus(); }
+  }
+  window.LexProfileUI = {
+    render: renderProfileView,
+    saved(){ setEdit(false); renderProfileView(); pvStatus(signedIn && activeCloudId ? 'Сохранено в этом браузере и в облаке.' : 'Сохранено в этом браузере.', 'ok'); if($('ogp-overlay') && $('ogp-overlay').classList.contains('open') && typeof ogpModalSync === 'function') ogpModalSync(); }
+  };
+  function wireProfileUI(){
+    if(!$('pv_view')) return;
+    const pb = $('profile_open_btn'); if(pb) pb.addEventListener('click', ()=>{ setEdit(false); pvStatus(''); renderProfileView(); });
+    $('pv_edit').addEventListener('click', ()=> setEdit(true));
+    $('pv_cancel').addEventListener('click', ()=>{ setEdit(false); renderProfileView(); });
+    $('pv_sync').addEventListener('click', ()=>{
+      const LA = A(); if(!LA) return;
+      Promise.resolve(LA.ready).then(()=> LA.available() ? LA.user() : undefined).then(u=>{
+        if(u === undefined){ pvStatus('Облако недоступно — откройте карточку на сайте lex-checklist.pages.dev.', 'err'); return; }
+        if(!u){ pvStatus('Перехожу в Discord…'); LA.signIn().then(r=>{ if(!r.ok) pvStatus(authErr(r.error), 'err'); }); return; }
+        pvStatus('Синхронизирую…');
+        syncProfiles(u, true).then(()=>{ renderProfileView(); pvStatus('Профиль сверен с облаком: активный облачный профиль — в карточке.', 'ok'); });
+      });
+    });
+    document.querySelectorAll('#lex_subs .sub-check').forEach(b=> b.addEventListener('click', ()=> subStatus('Проверка подписок появится в ближайшем обновлении. Сейчас функция недоступна.')));
+    $('sub_trial').addEventListener('click', ()=> subStatus('Активация триала появится в ближайшем обновлении.'));
+    window.addEventListener('lex-auth-change', ()=>{ const ov = $('profile-overlay'); if(ov && ov.classList.contains('open')) renderProfileView(); });
+    renderProfileView();
+  }
+
   /* ---------- старт ---------- */
   function start(){
     wire(); renderMila(); wireAya();
-    const cb = $('contract_open_btn'); if(cb) cb.addEventListener('click', ()=> window.LexContractModule.open());
+    wireDocs(); wireProfileUI();
     setTimeout(sendDaily, 8000);
     setInterval(sendDaily, 3600 * 1000);
   }
