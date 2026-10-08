@@ -2972,7 +2972,7 @@
 <div class="law-modal-overlay" id="profile-overlay">
   <div class="law-modal" id="profile-modal" style="width:min(600px, 100%);">
     <div class="law-modal-head">
-      <div class="law-modal-titles"><h3 style="margin:0;">Мой профиль</h3><div class="law-modal-sub" id="pv_sub">в этом браузере · после входа через Discord — и в облаке · подставляется в обращения и договор</div></div>
+      <div class="law-modal-titles"><h3 style="margin:0;">Мой профиль</h3><div class="law-modal-sub" id="pv_sub">хранится в облаке · вход через Discord · подставляется в обращения и договор</div></div>
       <button class="law-modal-close" id="profile-close" type="button" aria-label="Закрыть">✕</button>
     </div>
     <div class="law-modal-body" style="white-space:normal;">
@@ -2987,13 +2987,15 @@
         <div class="pv-stats" id="pv_stats"></div>
         <div class="btnrow pv-acts">
           <button type="button" class="primary" id="pv_edit">✎ Изменить</button>
-          <button type="button" id="pv_sync" title="Сверить профиль этого браузера с облаком (вход через Discord)">☁ Синхронизировать</button>
+          <button type="button" id="pv_new" title="Добавить ещё один профиль в облако (до 10)">＋ Новый профиль</button>
+          <button type="button" id="pv_sync" title="Подтянуть актуальный профиль из облака">⟳ Обновить</button>
           <button type="button" id="stats_open_btn">📊 Статистика</button>
         </div>
         <div class="support-form-status" id="pv_status"></div>
       </div>
       <!-- правка -->
       <div id="pv_edit_box" hidden>
+        <div class="card-group-label" id="pv_edit_title" style="margin-top:0;">Редактирование профиля</div>
         <div class="grid2">
           <label class="field">Имя и фамилия (персонаж)<input type="text" id="p_name" placeholder="Alex Backwoods" data-profile="name"></label>
           <label class="field">№ ID-карты (паспорт)<input type="text" id="p_id" placeholder="80429" data-profile="id"></label>
@@ -3009,7 +3011,6 @@
         <label class="chk" style="margin-top:8px;"><input type="checkbox" id="p_stats_on"><span class="lbl">Отправлять анонимную статистику (Ае) — без личных данных</span></label>
         <div class="btnrow">
           <button type="button" id="pv_cancel">Отмена</button>
-          <button type="button" id="pv_save_new" title="Сохранить поля как новый профиль в облаке (вход через Discord)">☁ Как новый в облако</button>
           <button type="button" class="primary" id="profile-save">Сохранить</button>
         </div>
       </div>
@@ -3019,7 +3020,7 @@
         <div id="cl_off"><div class="empty-hint" id="cl_off_text" style="margin:0;"></div></div>
         <div id="cl_out" style="display:none;">
           <button type="button" class="primary cl-discord" id="cl_signin">Войти через Discord</button>
-          <div class="empty-hint">Профили (до 10) и архив дел (до 50) — в облаке, на любом устройстве; профиль этого браузера перенесётся туда сам. <a href="https://lex-checklist.pages.dev/privacy.html">Что хранится</a></div>
+          <div class="empty-hint">Профили (до 10) и архив дел (до 50) хранятся только в облаке, на любом устройстве. Без входа через Discord профиля в карточке нет. <a href="https://lex-checklist.pages.dev/privacy.html">Что хранится</a></div>
         </div>
         <div id="cl_in" style="display:none;">
           <div class="cl-user"><span class="cl-uname" id="cl_user_name"></span><span class="cl-tier t-free" id="cl_tier" title="Уровень доступа">Free</span><button type="button" id="cl_signout">Выйти</button></div>
@@ -3037,32 +3038,30 @@
       <div class="card-group-label" style="margin-top:14px;">Подписки Lex</div>
       <div class="subs" id="lex_subs">
         <div class="sub-card s-boosty">
-          <div class="sub-h">🟦 Lex Sub — Boosty</div><div class="sub-p">₽250 / месяц</div>
+          <div class="sub-h">🟦 Lex Sub — Boosty</div><div class="sub-p">300 ₽ / месяц</div>
           <div class="sub-w">Что даёт:</div>
-          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>+1 обращение в день</li><li>Все функции карточки без ограничений</li></ul>
-          <!-- [ПРОВЕРИТЬ] заменить на страницу автора Boosty, когда будет -->
-          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Patreon и бустом сервера</li></ul>
+          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/fkn_inside/purchase/3279522" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-patreon">
-          <div class="sub-h">🟪 Lex Sub — Patreon</div><div class="sub-p">$3 / месяц</div>
+          <div class="sub-h">🟪 Lex Sub — Patreon</div><div class="sub-p">75 CZK / месяц</div>
           <div class="sub-w">Что даёт:</div>
-          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>+1 обращение в день</li><li>Все функции карточки без ограничений</li></ul>
-          <!-- [ПРОВЕРИТЬ] заменить на страницу кампании Patreon, когда будет -->
+          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Boosty и бустом сервера</li></ul>
+          <!-- [ПРОВЕРИТЬ] заменить на страницу кампании Patreon -->
           <div class="btnrow"><a class="sub-btn primary" href="https://patreon.com/" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-boost">
           <div class="sub-h">🟧 PATRON HUB — Буст сервера</div><div class="sub-p">Требуется 2+ буста серверу</div>
           <div class="sub-w">Что даёт:</div>
-          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>+1 обращение в день</li><li>Все функции карточки без ограничений</li></ul>
+          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Boosty и Patreon</li></ul>
           <div class="btnrow"><a class="sub-btn primary" href="https://discord.com/invite/Ykczusb" target="_blank" rel="noopener noreferrer">Как бустить</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-limits">
           <div class="sub-h">ВАШИ ЛИМИТЫ СЕЙЧАС</div>
           <div class="lim-row"><span>Тариф</span><b id="lim_tier">Free</b></div>
-          <div class="lim-row"><span>Вопросов ИИ</span><b id="lim_ai">0 из 3</b></div>
-          <div class="lim-row"><span>Обращений</span><b id="lim_appeals">0 из 1</b></div>
+          <div class="lim-row"><span>Вопросов ИИ в день</span><b id="lim_ai">1</b></div>
           <div class="lim-row"><span>Триал</span><b id="lim_trial">не активирован</b></div>
-          <div class="btnrow"><button type="button" id="sub_trial">Активировать 7-дневный триал</button></div>
+          <div class="btnrow"><button type="button" id="sub_trial">Активировать 7-дневный триал (2 вопроса в день)</button></div>
         </div>
         <div class="support-form-status" id="sub_status"></div>
       </div>
@@ -3423,10 +3422,10 @@
    для ОГП: источник один на всё.
    ========================================================================== */
 const APP_VERSION = '2.3';
-const APP_DATE = '2026-10-07';
+const APP_DATE = '2026-10-08';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
-const APP_BUILD = '2026-10-07';
+const APP_BUILD = '2026-10-08';
 const DB_NAME = 'redwood';
 const DB_VERSION = 'redwood-1.5';
 const DB_DATE = '2026-10-06';
@@ -3442,11 +3441,11 @@ const APP_NEWS = {
   '2.3': {
     title: 'Карточка 2.3 · облако, документы, подписки',
     added: [
-      "Вход через Discord (на сайте lex-checklist.pages.dev): до 10 профилей в облаке и архив до 50 дел — окно «👤 Профиль», блок «Облако»",
+      "Вход через Discord (на сайте lex-checklist.pages.dev): до 10 профилей и архив до 50 дел — только в облаке; профиль в карточке подставляется сразу после выбора, «Изменить» пишет прямо в облако; без входа профиля нет, офлайн работает кеш активного профиля",
       "«📄 Документы» — одна кнопка вместо трёх: сводка по делу, обращение в ОГП и договор частного адвоката выбираются в одном окне",
       "Договор: форма как у обращения в ОГП, герб и печать, абонемент + цены по услугам; листы A4 заполняются плотно, без пустых страниц; PDF в облако одной кнопкой и готовый текст публикации для темы «Договоры Коллегии Адвокатов»",
-      "Профиль переделан: карточка со статистикой, поля — только по кнопке «Изменить»; синхронизация с облаком, сохранение как нового профиля; строка телефона; почта собирается сама — адвокат логин@advup.agency (по реестру лицензий), клиенты логин@sa.com; рядом с № лицензии — ссылка на реестр",
-      "Блок «Подписки Lex» в профиле: Boosty, Patreon, буст сервера и ваши текущие лимиты (проверка подписок и триал — в ближайшем обновлении)",
+      "Профиль переделан: карточка со статистикой, поля — только по кнопке «Изменить» (запись в облако), «＋ Новый профиль»; телефон; почта собирается сама — адвокат логин@advup.agency (по реестру лицензий), клиенты логин@sa.com; рядом с № лицензии — ссылка на реестр",
+      "Блок «Подписки Lex» в профиле: Boosty 300 ₽, Patreon 75 CZK, буст сервера (+5 вопросов ИИ в день каждый, суммируются), лимиты Free — 1 вопрос в день, триал 7 дней — 2 вопроса (проверка статуса, триал и ИИ-помощник — в ближайшем обновлении)",
       "Предложения и поддержка — через защищённый сервер: Лея — идеи и ошибки, Мила — поддержка; Ая — анонимная статистика по согласию",
       "Логотип и иконка вкладки; в подвале — Условия использования и Политика конфиденциальности"
     ],
@@ -8407,17 +8406,27 @@ function copyPlain(text){
   return ok;
 }
 const OGP_FORUM_URL = 'https://forum.gta5rp.com/forums/obrashcheniye-v-ofis-general-nogo-prokurora.1485/post-thread';
-// ---------- локальный профиль пользователя карточки ----------
-// Только RP-данные персонажа, только в этом браузере. «Новое дело» не трогает,
-// «Настройки по умолчанию» стирает (ключ lex_profile).
-const PROFILE_KEY = 'lex_profile';
-function lexProfile(){ try { return JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null') || {}; } catch(e){ return {}; } }
+// ---------- профиль пользователя карточки ----------
+// Профиль живёт только в облаке (Supabase, вход через Discord). В карточке -- лишь кеш
+// активного облачного профиля (ключ lex_profile_cloud, пишет и чистит LexAuth): без входа
+// через Discord профиля нет. «Новое дело» его не трогает.
+const PROFILE_KEY = 'lex_profile_cloud';
+function lexProfile(){
+  try {
+    const c = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null'), cp = c && c.profile; if(!cp) return {};
+    const kind = cp.roleKind || '';
+    const role = cp.role === 'prok' ? 'прокурор' : cp.role === 'adv' ? ((kind === 'private' || (!kind && cp.license)) ? 'частный адвокат' : 'гос. адвокат') : (kind === 'other' ? 'другое' : '');
+    const p = { name: cp.name, id: cp.id, role: role, license: cp.license, mail: cp.mail, mailDomain: cp.mailDomain, phone: cp.phone, passport: cp.passport };
+    Object.keys(p).forEach(k=>{ if(!p[k]) delete p[k]; });
+    return p;
+  } catch(e){ return {}; }
+}
 // почта в РП -- логин; домен из профиля (mailDomain), иначе: есть лицензия -- advup.agency (реестр частных адвокатов), нет -- sa.gov
 function lexMailFull(m, dom){ m = String(m || '').trim(); if(!m || m.indexOf('@') !== -1) return m; let p = {}; try { p = lexProfile() || {}; } catch(e){}
   dom = String(dom || p.mailDomain || (p.license ? 'advup.agency' : 'sa.gov')).trim().replace(/^@/, ''); return m + '@' + dom; }
 // почта клиента (гражданские, организации, любые клиенты) -- логин@sa.com
 function lexMailClient(m){ m = String(m || '').trim(); return m && m.indexOf('@') === -1 ? m + '@sa.com' : m; }
-function lexProfileSave(p){ try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); return true; } catch(e){ return false; } }
+function lexProfileSave(p){ return false; } // профиль пишется только в облако (LexProfileUI.save)
 function openProfile(){
   const p = lexProfile();
   document.querySelectorAll('#profile-overlay [data-profile]').forEach(el=>{ el.value = p[el.dataset.profile] || ''; });
@@ -8433,7 +8442,7 @@ function openProfile(){
   document.getElementById('profile-save').addEventListener('click', ()=>{
     const p = {};
     ov.querySelectorAll('[data-profile]').forEach(el=>{ const v = el.value.trim(); if(v) p[el.dataset.profile] = v; });
-    lexProfileSave(p); if(window.LexProfileUI) LexProfileUI.saved(); else close();
+    if(window.LexProfileUI) LexProfileUI.save(); else close();
     if(document.getElementById('ogp-overlay').classList.contains('open')) ogpModalSync();
   });
   const b = document.getElementById('profile_open_btn'); if(b) b.addEventListener('click', openProfile);
@@ -18169,6 +18178,10 @@ document.addEventListener('keydown', (e)=>{
             mail: row.mail || '',
             passport: row.passport || '',
             license: row.license || '',
+            phone: row.phone || '',
+            mailDomain: row.mail_domain || '',
+            roleKind: row.role_kind || '',
+            server: row.server || 'redwood',
             isActive: !!row.is_active
         };
     }
@@ -18200,6 +18213,24 @@ document.addEventListener('keydown', (e)=>{
             license: normalizeString(
                 profile.license,
                 40
+            ),
+            phone: normalizeString(
+                profile.phone,
+                30
+            ),
+            mail_domain: normalizeString(
+                profile.mailDomain,
+                60
+            ),
+            role_kind:
+                profile.roleKind === 'gov' ||
+                profile.roleKind === 'private' ||
+                profile.roleKind === 'other'
+                    ? profile.roleKind
+                    : null,
+            server: normalizeString(
+                profile.server || 'redwood',
+                30
             )
         };
     }
@@ -18311,6 +18342,38 @@ document.addEventListener('keydown', (e)=>{
         }
 
         if (
+            profile.phone &&
+            String(profile.phone).length > 30
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.mailDomain &&
+            String(profile.mailDomain).length > 60
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
+            profile.roleKind &&
+            profile.roleKind !== 'gov' &&
+            profile.roleKind !== 'private' &&
+            profile.roleKind !== 'other'
+        ) {
+            return {
+                ok: false,
+                error: 'invalid_data'
+            };
+        }
+
+        if (
             profile.role !== undefined &&
             profile.role !== null &&
             profile.role !== '' &&
@@ -18352,7 +18415,7 @@ document.addEventListener('keydown', (e)=>{
                 return supabaseClient
                     .from('profiles')
                     .select(
-                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                        'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                     )
                     .eq(
                         'user_id',
@@ -18469,7 +18532,7 @@ document.addEventListener('keydown', (e)=>{
                     .from('profiles')
                     .insert(row)
                     .select(
-                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                        'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                     )
                     .single()
                     .then(function (response) {
@@ -18570,7 +18633,7 @@ document.addEventListener('keydown', (e)=>{
                         currentUser.id
                     )
                     .select(
-                        'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                        'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                     )
                     .maybeSingle()
                     .then(function (response) {
@@ -18769,7 +18832,7 @@ document.addEventListener('keydown', (e)=>{
                         return supabaseClient
                             .from('profiles')
                             .select(
-                                'id,name,rp_id,role,mail,passport,license,is_active,created_at,updated_at'
+                                'id,name,rp_id,role,mail,passport,license,phone,mail_domain,role_kind,server,is_active,created_at,updated_at'
                             )
                             .eq(
                                 'id',
@@ -20985,28 +21048,27 @@ wire();
     document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ const v = String(e.value || '').trim(); if(v) p[e.dataset.profile] = v; });
     return p;
   }
+  const KIND_BY_ROLE = { 'гос. адвокат':'gov', 'прокурор':'gov', 'частный адвокат':'private', 'другое':'other' };
   function cloudFromLocal(p){
     const pass = p.passport || '';
-    return { name: p.name || '', id: p.id || '', role: roleToCloud(p.role || ''), mail: p.mail || '', passport: /^https:\/\//.test(pass) ? pass : '', license: p.license || '' };
+    return { name: p.name || '', id: p.id || '', role: roleToCloud(p.role || ''), roleKind: KIND_BY_ROLE[p.role || ''] || '', mail: p.mail || '', mailDomain: String(p.mailDomain || '').replace(/^@/, ''),
+      phone: p.phone || '', passport: /^https:\/\//.test(pass) ? pass : '', license: p.license || '', server: 'redwood' };
   }
   function checkCloudFields(c, raw){
     if(c.name.length > 80) return 'Имя длиннее 80 символов.';
     if(c.id.length > 20) return 'ID длиннее 20 символов.';
     if(c.mail.length > 60) return 'Почта длиннее 60 символов.';
+    if(c.mailDomain.length > 60) return 'Домен почты длиннее 60 символов.';
+    if(c.phone.length > 30) return 'Телефон длиннее 30 символов.';
     if(c.license.length > 40) return 'Лицензия длиннее 40 символов.';
-    if(raw.passport && !/^https:\/\//.test(raw.passport)) return 'Паспорт в облаке — только ссылка https://… (сейчас поле не сохранится).';
+    if(raw.passport && !/^https:\/\//.test(raw.passport)) return 'Паспорт в облаке — только ссылка https://…';
     if(c.passport.length > 300) return 'Ссылка на паспорт длиннее 300 символов.';
     return '';
   }
-  function applyToLocal(cp){
-    const cur = (typeof lexProfile === 'function') ? lexProfile() : {};
-    // облако главное; паспорт-не-https облако хранить не умеет -- такой локальный не стираем
-    const keepPass = !cp.passport && cur.passport && !/^https:\/\//.test(cur.passport) ? cur.passport : '';
-    const p = Object.assign({}, cur, { name: cp.name || '', id: cp.id || '', mail: cp.mail || '', passport: cp.passport || keepPass, license: cp.license || '', role: roleFromCloud(cp.role, cur.role) });
-    Object.keys(p).forEach(k=>{ if(p[k] === '') delete p[k]; });
-    if(typeof lexProfileSave === 'function') lexProfileSave(p);
-    document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = p[e.dataset.profile] || ''; });
-    if(window.syncAllPrettySelects) window.syncAllPrettySelects();
+  // профиль в карточке -- кеш активного облачного профиля (его пишет LexAuth); здесь только перерисовка
+  function applyToLocal(){
+    renderProfileView();
+    if($('ogp-overlay') && $('ogp-overlay').classList.contains('open') && typeof ogpModalSync === 'function') ogpModalSync();
   }
 
   function renderProfiles(list){
@@ -21014,7 +21076,7 @@ wire();
     const box = $('cl_prof_list'); if(!box) return;
     box.textContent = '';
     $('cl_prof_n').textContent = profilesCache.length + ' / 10';
-    if(!profilesCache.length){ box.appendChild(el('div', 'empty-hint', 'Профилей в облаке нет. Заполните поля выше и нажмите «В облако как новый».')); return; }
+    if(!profilesCache.length){ box.appendChild(el('div', 'empty-hint', 'Профилей в облаке нет. Нажмите «＋ Новый профиль» в окне профиля.')); return; }
     profilesCache.forEach(cp=>{
       const row = el('div', 'cl-row' + (cp.isActive ? ' active' : ''));
       const info = el('div', 'cl-info');
@@ -21024,8 +21086,6 @@ wire();
       row.appendChild(info);
       const acts = el('div', 'cl-acts');
       if(!cp.isActive) acts.appendChild(btn('Выбрать', '', ()=> setActive(cp), 'Сделать активным и подставить в карточку'));
-      else acts.appendChild(btn('Подставить', '', ()=>{ applyToLocal(cp); status('Профиль «' + (cp.name || '') + '» подставлен в карточку.', 'ok'); }, 'Подставить данные в поля выше'));
-      acts.appendChild(btn('⟳', '', ()=> updateFromForm(cp), 'Записать в этот облачный профиль текущие поля выше'));
       acts.appendChild(btn('✕', 'danger', ()=> removeProfile(cp), 'Удалить профиль из облака'));
       row.appendChild(acts);
       box.appendChild(row);
@@ -21045,51 +21105,54 @@ wire();
     status('Выбираю профиль…');
     A().profiles.setActive(cp.cloudId).then(r=>{
       if(!r.ok){ status(authErr(r.error), 'err'); return; }
-      applyToLocal(cp);
+      applyToLocal();
       status('Активный профиль: ' + (cp.name || '') + '. Данные подставлены в карточку.', 'ok');
       loadProfiles();
     });
   }
   function createFromForm(){
     const raw = formProfile(), c = cloudFromLocal(raw);
-    if(!c.name){ status('Заполните хотя бы имя персонажа.', 'err'); return; }
-    const bad = checkCloudFields(c, raw); if(bad && !/не сохранится/.test(bad)){ status(bad, 'err'); return; }
-    status('Сохраняю в облако…');
+    if(!c.name){ pvStatus('Заполните хотя бы имя персонажа.', 'err'); return; }
+    const bad = checkCloudFields(c, raw); if(bad){ pvStatus(bad, 'err'); return; }
+    pvStatus('Сохраняю в облако…');
     A().profiles.create(c).then(r=>{
-      if(!r.ok){ status(authErr(r.error), 'err'); return; }
-      status('Профиль сохранён в облаке.' + (bad ? ' ' + bad : ''), bad ? 'err' : 'ok');
-      loadProfiles();
+      if(!r.ok){ pvStatus(authErr(r.error), 'err'); return; }
+      const made = r.data;
+      const done = ()=>{ newMode = false; setEdit(false); loadProfiles(); renderProfileView(); pvStatus('Профиль сохранён в облаке.', 'ok'); };
+      if(made && made.cloudId && !made.isActive) A().profiles.setActive(made.cloudId).then(x=>{ if(x && x.ok) activeCloudId = made.cloudId; done(); });
+      else { if(made && made.cloudId) activeCloudId = made.cloudId; done(); }
     });
   }
-  function updateFromForm(cp){
+  function saveActiveFromForm(){
     const raw = formProfile(), c = cloudFromLocal(raw);
-    const bad = checkCloudFields(c, raw); if(bad && !/не сохранится/.test(bad)){ status(bad, 'err'); return; }
-    confirmBox({ title: 'Перезаписать облачный профиль?', text: '«' + (cp.name || '') + '» получит данные из полей выше.', okText: 'Перезаписать', tone: 'go', onOk(){
-      status('Обновляю…');
-      A().profiles.update(cp.cloudId, c).then(r=>{
-        if(!r.ok){ status(authErr(r.error), 'err'); return; }
-        status('Облачный профиль обновлён.' + (bad ? ' ' + bad : ''), bad ? 'err' : 'ok');
-        loadProfiles();
-      });
-    } });
+    if(!c.name){ pvStatus('Заполните хотя бы имя персонажа.', 'err'); return; }
+    const bad = checkCloudFields(c, raw); if(bad){ pvStatus(bad, 'err'); return; }
+    pvStatus('Сохраняю…');
+    A().profiles.update(activeCloudId, c).then(r=>{
+      if(!r.ok){ pvStatus(authErr(r.error), 'err'); return; }
+      setEdit(false); loadProfiles(); renderProfileView(); pvStatus('Сохранено в облаке.', 'ok');
+      if($('ogp-overlay') && $('ogp-overlay').classList.contains('open') && typeof ogpModalSync === 'function') ogpModalSync();
+    });
   }
   function removeProfile(cp){
-    confirmBox({ title: 'Удалить профиль из облака?', text: '«' + (cp.name || '') + '». Профиль в этом браузере не тронется.', okText: 'Удалить', tone: 'warn', onOk(){
+    confirmBox({ title: 'Удалить профиль из облака?', text: '«' + (cp.name || '') + '».', okText: 'Удалить', tone: 'warn', onOk(){
       A().profiles.remove(cp.cloudId).then(r=>{
         if(!r.ok){ status(authErr(r.error), 'err'); return; }
         status('Профиль удалён из облака.', 'ok');
-        loadProfiles();
+        loadProfiles().then(()=> A().profiles.list()).then(()=> renderProfileView());
       });
     } });
   }
 
-  /* ---------- вход: локальный профиль -> облако, дальше главный -- облачный ----------
-     нет совпадения (имя + ID) -- локальный добавляется в облако (в пустом облаке
-     становится активным сам, триггер БД); совпал -- пустые поля облака дополняются
-     из локального. Потом активный облачный профиль всегда подставляется в карточку. */
+  /* ---------- вход: профиль живёт только в облаке ----------
+     После входа список профилей читается из облака (LexAuth кладёт активный в кеш --
+     из него карточка и подставляет данные). Старый локальный профиль прежних версий
+     (ключ lex_profile) один раз переносится в облако и стирается. */
   let syncedFor = null, syncing = null;
   const norm = v=> String(v || '').trim().toLowerCase();
   const loginOf = u=> (u && /^[A-Za-z0-9_.]{2,32}$/.test(u.discordName || '')) ? u.discordName : '';
+  function legacyProfile(){ try { return JSON.parse(localStorage.getItem('lex_profile') || 'null') || null; } catch(e){ return null; } }
+  function dropLegacy(){ try { localStorage.removeItem('lex_profile'); } catch(e){} }
   function syncProfiles(u, force){
     if(!u || !A()) return Promise.resolve();
     const key = String(u.discordId || u.discordName || '1');
@@ -21100,31 +21163,26 @@ wire();
     syncing = A().profiles.list().then(r=>{
       if(!r || !r.ok){ msg = authErr(r && r.error); kind = 'err'; return null; }
       const list = r.data || [];
-      const local = (typeof lexProfile === 'function') ? lexProfile() : {};
-      if(!String(local.name || '').trim()) return list;
-      const c = cloudFromLocal(local);
+      const old = legacyProfile();
+      if(!old || !String(old.name || '').trim()){ dropLegacy(); return list; }
+      const c = cloudFromLocal(old);
       if(!c.mail && login) c.mail = login;
-      const m = list.find(cp=> norm(cp.name) === norm(local.name) && norm(cp.id) === norm(local.id));
-      if(!m){
-        if(list.length >= 10){ msg = 'В облаке уже 10 профилей — профиль «' + local.name + '» из этого браузера не перенесён.'; kind = 'err'; return list; }
-        return A().profiles.create(c).then(x=>{
-          if(x && x.ok) msg = list.length ? 'Профиль «' + local.name + '» из этого браузера добавлен в облако.' : 'Профиль из этого браузера перенесён в облако.';
-          else { msg = authErr(x && x.error); kind = 'err'; }
-          return null;
-        });
-      }
-      const merged = { name: m.name, id: m.id || c.id, role: m.role || c.role, mail: m.mail || c.mail, passport: m.passport || c.passport, license: m.license || c.license };
-      const need = ['id', 'role', 'mail', 'passport', 'license'].some(k=> merged[k] !== (m[k] || ''));
-      msg = 'Профиль синхронизирован с облаком.';
-      return need ? A().profiles.update(m.cloudId, merged).then(()=> null) : list;
+      const m = list.find(cp=> norm(cp.name) === norm(old.name) && norm(cp.id) === norm(old.id));
+      if(m){ dropLegacy(); return list; }
+      if(list.length >= 10){ msg = 'В облаке уже 10 профилей — старый профиль «' + old.name + '» из этого браузера не перенесён.'; kind = 'err'; return list; }
+      return A().profiles.create(c).then(x=>{
+        if(x && x.ok){ dropLegacy(); msg = 'Профиль «' + old.name + '» из этого браузера перенесён в облако.'; }
+        else { msg = authErr(x && x.error); kind = 'err'; }
+        return null;
+      });
     }).then(list=> list || A().profiles.list().then(r=> (r && r.ok) ? (r.data || []) : []))
     .then(list=>{
       let act = list.find(x=> x.isActive) || null;
       let step = Promise.resolve();
       if(!act && list.length){ act = list[0]; step = A().profiles.setActive(act.cloudId); }
-      if(act && !act.mail && login){ act = Object.assign({}, act, { mail: login }); const a = act; step = step.then(()=> A().profiles.update(a.cloudId, { name: a.name, id: a.id, role: a.role, mail: login, passport: a.passport, license: a.license })); }
+      if(act && !act.mail && login){ const a = act; act = Object.assign({}, act, { mail: login }); step = step.then(()=> A().profiles.update(a.cloudId, Object.assign({}, a, { mail: login }))); }
       return step.then(()=>{
-        if(act){ activeCloudId = act.cloudId; applyToLocal(act); if(!msg) msg = 'Активный профиль из облака: ' + (act.name || '') + '.'; }
+        if(act){ activeCloudId = act.cloudId; applyToLocal(); if(!msg) msg = 'Активный профиль из облака: ' + (act.name || '') + '.'; }
         syncedFor = key;
         if($('cl_prof_list')) loadProfiles();
         if(msg) status(msg, kind);
@@ -21143,7 +21201,7 @@ wire();
     if(wrap && wrap.classList) wrap.classList.toggle('no-discord', !https);
     if(!https) return;
     if(u){ b.textContent = '✓ ' + (u.discordName || 'Discord'); b.title = 'Вы вошли через Discord — профили и архив в окне «Профиль»'; b.classList.add('on'); }
-    else { b.textContent = 'Войти через Discord'; b.title = 'Профили и архив дел в облаке; локальный профиль перенесётся туда'; b.classList.remove('on'); }
+    else { b.textContent = 'Войти через Discord'; b.title = 'Профили и архив дел хранятся в облаке'; b.classList.remove('on'); }
   }
   function discordBtnClick(){
     const LA = A(); if(!LA) return;
@@ -21233,7 +21291,7 @@ wire();
     if(!LA){ show('cl_off'); $('cl_off_text').textContent = 'Облако не загрузилось.'; return; }
     if(location.protocol !== 'https:'){
       show('cl_off');
-      $('cl_off_text').textContent = 'Вход через Discord, облачные профили и архив дел работают на сайте. В скачанном файле карточка работает как раньше — всё хранится в этом браузере.';
+      $('cl_off_text').textContent = 'Вход через Discord, облачные профили и архив дел работают на сайте. Профиль хранится только в облаке: в скачанном файле (без входа через Discord) данные профиля подставить неоткуда — поля обращений заполняются вручную.';
       return;
     }
     if(!LA.available()){ show('cl_off'); $('cl_off_text').textContent = 'Подключаюсь к облаку…'; }
@@ -21262,25 +21320,16 @@ wire();
       A().signIn().then(r=>{ if(!r.ok) status(authErr(r.error), 'err'); });
     });
     $('cl_signout').addEventListener('click', ()=>{
-      A().signOut().then(()=>{ window.LexWho = null; syncedFor = null; activeCloudId = null; updateDiscordBtn(null); status('Вы вышли. Профиль в этом браузере остался.', 'ok'); refresh(); });
+      A().signOut().then(()=>{ window.LexWho = null; syncedFor = null; activeCloudId = null; updateDiscordBtn(null); status('Вы вышли. Профиль убран из памяти браузера.', 'ok'); refresh(); renderProfileView(); });
     });
-    const pn = $('pv_save_new'); if(pn) pn.addEventListener('click', createFromForm);
     $('cl_case_save').addEventListener('click', saveCase);
     $('cl_case_refresh').addEventListener('click', ()=>{ status(''); loadCases(); });
     $('cl_wipe').addEventListener('click', ()=> confirmBox({
-      title: 'Удалить мои данные из облака?', text: 'Все облачные профили и архив дел будут удалены безвозвратно. Профиль в этом браузере тоже очистится; текущее дело в карточке останется.',
+      title: 'Удалить мои данные из облака?', text: 'Все облачные профили и архив дел будут удалены безвозвратно. Профиль в карточке тоже очистится; текущее дело в карточке останется.',
       note: 'Удалить сам аккаунт входа — напишите в поддержку (Мила).', okText: 'Удалить всё', tone: 'warn',
-      onOk(){ status('Удаляю…'); A().wipe().then(r=>{ if(!r.ok){ status(authErr(r.error), 'err'); return; } syncedFor = 'wiped'; activeCloudId = null; document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = ''; }); if(window.syncAllPrettySelects) window.syncAllPrettySelects(); status('Облачные данные и профиль в этом браузере удалены.', 'ok'); refresh(); }); }
+      onOk(){ status('Удаляю…'); A().wipe().then(r=>{ if(!r.ok){ status(authErr(r.error), 'err'); return; } syncedFor = 'wiped'; activeCloudId = null; document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = ''; }); if(window.syncAllPrettySelects) window.syncAllPrettySelects(); status('Облачные данные и профиль в карточке удалены.', 'ok'); refresh(); renderProfileView(); }); }
     }));
     const pb = $('profile_open_btn'); if(pb) pb.addEventListener('click', ()=>{ status(''); refresh(); });
-    // «Сохранить» в окне профиля: локально (как раньше) + в активный облачный профиль
-    const ps = $('profile-save');
-    if(ps) ps.addEventListener('click', ()=>{
-      if(!signedIn || !activeCloudId || !A()) return;
-      const raw = formProfile(), c = cloudFromLocal(raw);
-      if(checkCloudFields(c, raw) && !/не сохранится/.test(checkCloudFields(c, raw))) return;
-      A().profiles.update(activeCloudId, c).then(()=>{});
-    }, true);
     window.addEventListener('lex-auth-change', ev=>{
       const why = ev && ev.detail && ev.detail.reason;
       if(why === 'sign_in' && A()) A().user().then(u=>{ if(u){ signedIn = true; window.LexWho = u.discordId ? { id: String(u.discordId), name: u.discordName || '' } : null; updateDiscordBtn(u); syncProfiles(u); } });
@@ -21492,10 +21541,10 @@ wire();
   function renderProfileView(){
     const p = (typeof lexProfile === 'function') ? lexProfile() : {};
     const name = (p.name || '').trim();
-    $('pv_name').textContent = name || 'Профиль не заполнен';
+    $('pv_name').textContent = name || (signedIn ? 'Профиль не создан' : 'Нет профиля');
     $('pv_ava').textContent = name ? name.split(/\s+/).map(w=> w[0]).join('').slice(0, 2).toUpperCase() : '?';
     const roleTxt = { 'гос. адвокат':'Государственный адвокат', 'частный адвокат':'Частный адвокат', 'прокурор':'Прокурор', 'другое':'' }[p.role] || '';
-    $('pv_role').textContent = [roleTxt, window.LexWho && window.LexWho.name ? 'Discord: ' + window.LexWho.name : ''].filter(Boolean).join(' · ');
+    $('pv_role').textContent = [roleTxt, window.LexWho && window.LexWho.name ? 'Discord: ' + window.LexWho.name : '', !name && !signedIn ? 'профиль хранится в облаке — войдите через Discord' : ''].filter(Boolean).join(' · ');
     const g = $('pv_grid'); g.textContent = '';
     g.appendChild(row('ID-карта', p.id));
     g.appendChild(row('Лицензия', p.license, REGISTRY));
@@ -21514,33 +21563,47 @@ wire();
     const tier = window.LexTier.current(), forever = window.LexTier.forever();
     const tb = $('pv_tier'); tb.textContent = window.LexTier.label(tier) + (forever ? ' ∞' : ''); tb.className = 'cl-tier t-' + tier; tb.title = forever ? 'Premium навсегда (владелец Lex)' : 'Уровень доступа';
     $('lim_tier').textContent = forever ? 'Premium — бессрочно' : window.LexTier.label(tier);
-    $('lim_ai').textContent = tier === 'premium' ? 'без ограничений' : '0 из 3';
-    $('lim_appeals').textContent = tier === 'premium' ? 'без ограничений' : '0 из 1';
+    $('lim_ai').textContent = tier === 'premium' ? 'без ограничений' : '1';
     $('lim_trial').textContent = forever ? 'не нужен' : 'не активирован';
     $('sub_trial').disabled = forever;
     const sync = $('pv_sync');
-    if(sync){ sync.disabled = location.protocol !== 'https:'; sync.title = sync.disabled ? 'Облако работает на сайте lex-checklist.pages.dev' : (signedIn ? 'Сверить профиль с облаком: облачный активный профиль — главный' : 'Войти через Discord и перенести профиль в облако'); }
+    if(sync){ sync.disabled = location.protocol !== 'https:'; sync.title = sync.disabled ? 'Облако работает на сайте lex-checklist.pages.dev' : (signedIn ? 'Подтянуть актуальный профиль из облака' : 'Войти через Discord'); }
+    const ed = $('pv_edit'), nw = $('pv_new');
+    if(ed) ed.disabled = !signedIn || !activeCloudId;
+    if(nw) nw.disabled = !signedIn;
   }
-  function setEdit(on){
+  let newMode = false;
+  function setEdit(on, isNew){
+    if(on && !signedIn){ pvStatus('Профиль хранится в облаке — сначала войдите через Discord.', 'err'); return; }
+    if(on && !isNew && !activeCloudId){ isNew = true; }
+    newMode = !!(on && isNew);
     $('pv_view').hidden = !!on; $('pv_edit_box').hidden = !on;
-    if(on){ const p = (typeof lexProfile === 'function') ? lexProfile() : {}; document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = p[e.dataset.profile] || ''; }); if(window.syncAllPrettySelects) window.syncAllPrettySelects(); const n = $('p_name'); if(n) n.focus(); }
+    if(on){
+      const p = newMode ? {} : ((typeof lexProfile === 'function') ? lexProfile() : {});
+      document.querySelectorAll('#profile-overlay [data-profile]').forEach(e=>{ e.value = p[e.dataset.profile] || ''; });
+      if(window.syncAllPrettySelects) window.syncAllPrettySelects();
+      const h = $('pv_edit_title'); if(h) h.textContent = newMode ? 'Новый профиль (сохранится в облако и станет активным)' : 'Редактирование профиля (запись в облако)';
+      const n = $('p_name'); if(n) n.focus();
+    }
   }
   window.LexProfileUI = {
     render: renderProfileView,
-    saved(){ setEdit(false); renderProfileView(); pvStatus(signedIn && activeCloudId ? 'Сохранено в этом браузере и в облаке.' : 'Сохранено в этом браузере.', 'ok'); if($('ogp-overlay') && $('ogp-overlay').classList.contains('open') && typeof ogpModalSync === 'function') ogpModalSync(); }
+    save(){ if(!signedIn){ pvStatus('Профиль хранится в облаке — сначала войдите через Discord.', 'err'); return; } if(newMode || !activeCloudId) createFromForm(); else saveActiveFromForm(); },
+    saved(){ setEdit(false); renderProfileView(); }
   };
   function wireProfileUI(){
     if(!$('pv_view')) return;
     const pb = $('profile_open_btn'); if(pb) pb.addEventListener('click', ()=>{ setEdit(false); pvStatus(''); renderProfileView(); });
-    $('pv_edit').addEventListener('click', ()=> setEdit(true));
+    $('pv_edit').addEventListener('click', ()=> setEdit(true, false));
+    const pnew = $('pv_new'); if(pnew) pnew.addEventListener('click', ()=> setEdit(true, true));
     $('pv_cancel').addEventListener('click', ()=>{ setEdit(false); renderProfileView(); });
     $('pv_sync').addEventListener('click', ()=>{
       const LA = A(); if(!LA) return;
       Promise.resolve(LA.ready).then(()=> LA.available() ? LA.user() : undefined).then(u=>{
         if(u === undefined){ pvStatus('Облако недоступно — откройте карточку на сайте lex-checklist.pages.dev.', 'err'); return; }
         if(!u){ pvStatus('Перехожу в Discord…'); LA.signIn().then(r=>{ if(!r.ok) pvStatus(authErr(r.error), 'err'); }); return; }
-        pvStatus('Синхронизирую…');
-        syncProfiles(u, true).then(()=>{ renderProfileView(); pvStatus('Профиль сверен с облаком: активный облачный профиль — в карточке.', 'ok'); });
+        pvStatus('Обновляю из облака…');
+        syncProfiles(u, true).then(()=>{ renderProfileView(); pvStatus('Профиль обновлён из облака.', 'ok'); });
       });
     });
     document.querySelectorAll('#lex_subs .sub-check').forEach(b=> b.addEventListener('click', ()=> subStatus('Проверка подписок появится в ближайшем обновлении. Сейчас функция недоступна.')));
