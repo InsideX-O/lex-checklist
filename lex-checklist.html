@@ -1658,6 +1658,8 @@
   .cl-det[open] summary{ margin-bottom:6px; }
   /* ===== подписки ===== */
   .subs{ display:grid; gap:8px; }
+  .sub-note{ border:1px dashed var(--border); border-radius:10px; padding:8px 12px; font-size:12.5px; line-height:1.45; color:var(--muted); background:var(--panel2); }
+  .sub-note b{ color:var(--accent); }
   .sub-card{ border:1px solid var(--border); border-radius:10px; padding:10px 12px; background:var(--panel2); border-left:4px solid var(--border); }
   .sub-card.s-boosty{ border-left-color:#f15f2c; }
   .sub-card.s-patreon{ border-left-color:#8a4fff; }
@@ -3037,18 +3039,18 @@
       </div>
       <div class="card-group-label" style="margin-top:14px;">Подписки Lex</div>
       <div class="subs" id="lex_subs">
+        <div class="sub-note" id="sub_note"><b>Тестовый режим.</b> Чек-лист работает бесплатно, без подписок. Подписка и донат — по желанию, чтобы поддержать развитие. Автоматическая проверка подписок и ИИ-помощник подключатся позже.</div>
         <div class="sub-card s-boosty">
           <div class="sub-h">🟦 Lex Sub — Boosty</div><div class="sub-p">300 ₽ / месяц</div>
           <div class="sub-w">Что даёт:</div>
           <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Patreon и бустом сервера</li></ul>
-          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/fkn_inside/purchase/3279522" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/fkn_inside/purchase/3279519?ssource=DIRECT&amp;share=subscription_link" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-patreon">
-          <div class="sub-h">🟪 Lex Sub — Patreon</div><div class="sub-p">75 CZK / месяц</div>
+          <div class="sub-h">🟪 Lex Sub — Patreon</div><div class="sub-p">от 75 CZK / месяц · 3 уровня на выбор</div>
           <div class="sub-w">Что даёт:</div>
           <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Boosty и бустом сервера</li></ul>
-          <!-- [ПРОВЕРИТЬ] заменить на страницу кампании Patreon -->
-          <div class="btnrow"><a class="sub-btn primary" href="https://patreon.com/" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+          <div class="btnrow"><a class="sub-btn primary" href="https://www.patreon.com/c/insidex/membership" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-boost">
           <div class="sub-h">🟧 PATRON HUB — Буст сервера</div><div class="sub-p">Требуется 2+ буста серверу</div>
@@ -3061,7 +3063,7 @@
           <div class="lim-row"><span>Тариф</span><b id="lim_tier">Free</b></div>
           <div class="lim-row"><span>Вопросов ИИ в день</span><b id="lim_ai">1</b></div>
           <div class="lim-row"><span>Триал</span><b id="lim_trial">не активирован</b></div>
-          <div class="btnrow"><button type="button" id="sub_trial">Активировать 7-дневный триал (2 вопроса в день)</button></div>
+          <div class="btnrow"><button type="button" id="sub_trial" title="Откроет приглашение на Discord-сервер: роль Lex на 7 дней выдаётся автоматически (после запуска бота)">Триал 7 дней — вступить на сервер</button></div>
         </div>
         <div class="support-form-status" id="sub_status"></div>
       </div>
@@ -3445,7 +3447,7 @@ const APP_NEWS = {
       "«📄 Документы» — одна кнопка вместо трёх: сводка по делу, обращение в ОГП и договор частного адвоката выбираются в одном окне",
       "Договор: форма как у обращения в ОГП, герб и печать, абонемент + цены по услугам; листы A4 заполняются плотно, без пустых страниц; PDF в облако одной кнопкой и готовый текст публикации для темы «Договоры Коллегии Адвокатов»",
       "Профиль переделан: карточка со статистикой, поля — только по кнопке «Изменить» (запись в облако), «＋ Новый профиль»; телефон; почта собирается сама — адвокат логин@advup.agency (по реестру лицензий), клиенты логин@sa.com; рядом с № лицензии — ссылка на реестр",
-      "Блок «Подписки Lex» в профиле: Boosty 300 ₽, Patreon 75 CZK, буст сервера (+5 вопросов ИИ в день каждый, суммируются), лимиты Free — 1 вопрос в день, триал 7 дней — 2 вопроса (проверка статуса, триал и ИИ-помощник — в ближайшем обновлении)",
+      "Блок «Подписки Lex» в профиле: Boosty 300 ₽, Patreon 75 CZK, буст сервера (+5 вопросов ИИ в день каждый, суммируются), лимиты Free — 1 вопрос в день, триал 7 дней — 2 вопроса (тестовый режим: чек-лист бесплатный, подписка и донат по желанию; автопроверка подписок, триал по ссылке на сервер и ИИ-помощник — позже)",
       "Предложения и поддержка — через защищённый сервер: Лея — идеи и ошибки, Мила — поддержка; Ая — анонимная статистика по согласию",
       "Логотип и иконка вкладки; в подвале — Условия использования и Политика конфиденциальности"
     ],
@@ -21522,9 +21524,11 @@ wire();
      Окно «Профиль»: просмотр (данные, статистика, тариф) / правка по кнопке
      ===================================================================== */
   const REGISTRY = 'https://redwood-tables.duckdns.org/shared/AdvocatesSA1';
+  // триал = вступление на Discord-сервер X-HUB (ссылка-приглашение; позже -- отдельная ссылка, по которой бот сразу выдаёт роль Lex)
+  const TRIAL_URL = 'https://discord.com/invite/Ykczusb';
   let toastT = null;
   function pvStatus(text, kind){ const s = $('pv_status'); if(!s) return; s.className = 'support-form-status' + (kind ? ' ' + kind : ''); s.textContent = text || ''; }
-  function subStatus(text){ const s = $('sub_status'); if(!s) return; s.className = 'support-form-status'; s.textContent = text; clearTimeout(toastT); toastT = setTimeout(()=>{ s.textContent = ''; }, 5000); }
+  function subStatus(text){ const s = $('sub_status'); if(!s) return; s.className = 'support-form-status'; s.textContent = text; clearTimeout(toastT); toastT = setTimeout(()=>{ s.textContent = ''; }, 12000); }
   function statsSummary(){
     const S = window.LexStats; if(!S) return null;
     const D = S.days() || {}, today = dayKey(new Date());
@@ -21565,7 +21569,7 @@ wire();
     $('lim_tier').textContent = forever ? 'Premium — бессрочно' : window.LexTier.label(tier);
     $('lim_ai').textContent = tier === 'premium' ? 'без ограничений' : '1';
     $('lim_trial').textContent = forever ? 'не нужен' : 'не активирован';
-    $('sub_trial').disabled = forever;
+    $('sub_trial').disabled = false;
     const sync = $('pv_sync');
     if(sync){ sync.disabled = location.protocol !== 'https:'; sync.title = sync.disabled ? 'Облако работает на сайте lex-checklist.pages.dev' : (signedIn ? 'Подтянуть актуальный профиль из облака' : 'Войти через Discord'); }
     const ed = $('pv_edit'), nw = $('pv_new');
@@ -21606,8 +21610,12 @@ wire();
         syncProfiles(u, true).then(()=>{ renderProfileView(); pvStatus('Профиль обновлён из облака.', 'ok'); });
       });
     });
-    document.querySelectorAll('#lex_subs .sub-check').forEach(b=> b.addEventListener('click', ()=> subStatus('Проверка подписок появится в ближайшем обновлении. Сейчас функция недоступна.')));
-    $('sub_trial').addEventListener('click', ()=> subStatus('Активация триала появится в ближайшем обновлении.'));
+    // пока бота и таблицы подписок нет -- кнопки активны, но честно предупреждают (см. Lex_Баги.md, «Подписки»)
+    document.querySelectorAll('#lex_subs .sub-check').forEach(b=> b.addEventListener('click', ()=> subStatus('Автоматической проверки подписок пока нет. Чек-лист работает бесплатно, без подписок, в тестовом режиме — подписка и донат по желанию.')));
+    $('sub_trial').addEventListener('click', ()=>{
+      try { window.open(TRIAL_URL, '_blank', 'noopener,noreferrer'); } catch(e){}
+      subStatus('Открыл приглашение на сервер. Роль Lex на 7 дней будет выдаваться автоматически, когда заработает бот; сейчас чек-лист и так бесплатный (тестовый режим).');
+    });
     window.addEventListener('lex-auth-change', ()=>{ const ov = $('profile-overlay'); if(ov && ov.classList.contains('open')) renderProfileView(); });
     renderProfileView();
   }
