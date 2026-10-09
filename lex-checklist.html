@@ -1694,6 +1694,28 @@
   @media (max-width:700px){ .lex-contract-overlay{ padding:0; } .lex-contract-shell{ width:100vw; height:var(--vvh,100dvh); border-radius:0; } }
   @media print{ .lex-contract-overlay{ display:none !important; } }
 </style>
+<style>
+  /* ===== Обращение в ОГП: списки со ссылками, подсказки «Нужно…» ===== */
+  .ogp-need{ display:block; font-size:11.5px; line-height:1.35; color:var(--warn); }
+  .ogp-need:empty{ display:none; }
+  .ogp-lh{ margin:10px 0 4px; font-size:12px; font-weight:700; color:var(--text); }
+  .ogp-rows{ display:grid; gap:6px; }
+  .ogp-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) auto; gap:6px; align-items:center; }
+  .ogp-row .ogp-tc{ grid-column:1 / 3; }
+  .ogp-row .ogp-rn{ grid-column:1 / -1; }
+  .ogp-row .ogp-rn:empty{ display:none; }
+  .ogp-row input{ min-width:0; }
+  .ogp-row .ogp-del{ padding:4px 9px; }
+  .ogp-add{ margin:6px 0 8px; }
+  .ogp-miss{ margin:8px 0 2px; padding:8px 10px; border:1px solid rgba(var(--warn-rgb),.5); border-radius:8px; background:rgba(var(--warn-rgb),.08); font-size:12.5px; }
+  .ogp-miss b{ color:var(--warn); }
+  .ogp-miss ul{ margin:4px 0 0 18px; padding:0; }
+  .ogp-miss:empty{ display:none; }
+  .ogp-soft{ margin:6px 0 0; font-size:12px; color:var(--muted); }
+  .ogp-soft p{ margin:2px 0; }
+  #ogp-modal .btnrow button:disabled{ opacity:.45; cursor:not-allowed; }
+  @media (max-width:640px){ .ogp-row{ grid-template-columns:minmax(0,1fr) auto; } .ogp-row .ogp-cap{ grid-column:1 / -1; } .ogp-row .ogp-tc{ grid-column:1 / -1; } }
+</style>
 </head>
 <body>
 
@@ -2922,45 +2944,82 @@
       <div class="grid3">
         <label class="field">Имя и фамилия
           <input type="text" id="f_ogp_applicant" placeholder="Имя Фамилия заявителя">
+          <span class="ogp-need" data-need="f_ogp_applicant"></span>
         </label>
         <label class="field">№ ID-карты
           <input type="text" id="f_ogp_applicant_id" placeholder="напр. 80429">
+          <span class="ogp-need" data-need="f_ogp_applicant_id"></span>
         </label>
         <label class="field">Электронная почта
           <input type="text" id="f_ogp_applicant_mail" placeholder="почта для связи">
+          <span class="ogp-need" data-need="f_ogp_applicant_mail"></span>
         </label>
       </div>
-      <label class="chk"><input type="checkbox" id="f_ogp_victim"><span class="lbl">Заявитель — потерпевший и заявляет требования (тогда в бланк войдёт раздел IV, ст. 1.6 Регламента)</span></label>
-      <label class="field" id="f_ogp_demands_wrap" style="display:none;">Требования потерпевшего — по одному в строке
+      <div class="ogp-need" data-need="profile"></div>
+      <div class="card-group-label">Кто потерпевший</div>
+      <div class="basis-btns" id="ogp_vic_seg"><button type="button" class="basis-btn" data-vic="app" id="ogp_vic_app">Заявитель</button><button type="button" class="basis-btn" data-vic="other">Другой человек</button><button type="button" class="basis-btn" data-vic="none">Потерпевшего нет — сообщаю о нарушении</button></div>
+      <input type="hidden" id="f_ogp_vic" value="">
+      <input type="checkbox" id="f_ogp_victim" hidden data-derived="1">
+      <div class="grid2" id="ogp_vic_other_wrap" style="display:none;">
+        <label class="field">Потерпевший: имя и фамилия
+          <input type="text" id="f_ogp_vic_name" placeholder="Имя Фамилия">
+          <span class="ogp-need" data-need="f_ogp_vic_name"></span>
+        </label>
+        <label class="field">Потерпевший: № ID-карты (по желанию)
+          <input type="text" id="f_ogp_vic_id" placeholder="если известен">
+        </label>
+      </div>
+      <div class="empty-hint" id="ogp_vic_hint" style="margin-top:0;"></div>
+      <label class="field" id="f_ogp_demands_wrap" style="display:none;">Требования потерпевшего — по одному в строке (раздел IV, ст. 1.6 Регламента)
         <textarea id="f_ogp_demands" placeholder="напр. Признать задержание незаконным"></textarea>
+        <span class="ogp-need" data-need="f_ogp_demands"></span>
       </label>
       <div class="card-group-label">2. Подозреваемый (сотрудник)</div>
       <div class="grid3">
         <label class="field">Имя и фамилия
           <input type="text" id="f_ogp_suspect" placeholder="если известно">
+          <span class="ogp-need" data-need="f_ogp_suspect"></span>
         </label>
       </div>
       <div class="empty-hint" id="ogp_suspect_hint" style="margin-top:0;"></div>
+      <div class="ogp-need" data-need="card"></div>
       <div class="card-group-label">3. Материалы (ссылки)</div>
-      <div class="grid2">
-        <label class="field">Копия паспорта заявителя
-          <input type="text" id="f_ogp_passport" placeholder="ссылка">
-        </label>
-        <label class="field">Видео нарушения (своё)
-          <input type="text" id="f_ogp_evidence" placeholder="ссылка на видео">
-        </label>
-        <label class="field">Иные документы
-          <input type="text" id="f_ogp_other" placeholder="ссылка (договор, удостоверение и т. п.)">
-        </label>
-        <label class="field">Видео оплаты пошлины ($20.000, счёт №788)
-          <input type="text" id="f_ogp_fee" placeholder="ссылка — видео ДО подачи">
-        </label>
-      </div>
+      <div class="empty-hint" style="margin-top:0;">Ссылка в бланке прячется под подписью (гиперссылка). Каждая ссылка — http(s)://…</div>
+      <label class="field">Копия паспорта заявителя — ссылка
+        <input type="text" id="f_ogp_passport" placeholder="https://…">
+        <span class="ogp-need" data-need="f_ogp_passport"></span>
+      </label>
+      <div class="ogp-lh">Доказательства</div>
+      <div class="ogp-rows" id="ogp_ev_rows"></div>
+      <button type="button" class="ogp-add" data-add="ev">＋ Добавить доказательство</button>
       <label class="chk"><input type="checkbox" id="f_ogp_no_request"><span class="lbl">Не истребовать видео у инициатора (по умолчанию в бланке: «Истребовать у обвиняемого» — сотрудник хранит запись 72 часа, ст. 3.9 ПК)</span></label>
+      <div class="ogp-need" data-need="ev"></div>
+      <div class="ogp-lh">Иные документы</div>
+      <label class="field" id="ogp_rep_row">Документы представителя (паспорт адвоката, лицензия / удостоверение) — ссылка
+        <input type="text" id="f_ogp_repdocs" placeholder="https://…">
+        <span class="ogp-need" data-need="f_ogp_repdocs"></span>
+      </label>
+      <div class="ogp-rows" id="ogp_doc_rows"></div>
+      <button type="button" class="ogp-add" data-add="doc">＋ Добавить документ</button>
+      <div class="ogp-need" data-need="doc"></div>
+      <label class="field">Доказательства оплаты пошлины ($20 000, счёт №788) — ссылка на видео ДО подачи
+        <input type="text" id="f_ogp_fee" placeholder="https://…">
+        <span class="ogp-need" data-need="f_ogp_fee"></span>
+      </label>
+      <label class="field">Дата подачи (пусто — сегодня)
+        <input type="text" id="f_ogp_date" placeholder="ДД.ММ.ГГГГ">
+        <span class="ogp-need" data-need="f_ogp_date"></span>
+      </label>
+      <input type="hidden" id="f_ogp_lists" value="">
+      <datalist id="ogp_ev_caps"><option value="Видео задержания"></option><option value="Видео с бодикамеры"></option><option value="Запись камеры наблюдения"></option><option value="Скриншоты переписки"></option><option value="Видео нарушения"></option></datalist>
+      <datalist id="ogp_doc_caps"><option value="Договор об оказании юридических услуг"></option><option value="Копия лицензии / удостоверения адвоката"></option><option value="Медицинская справка"></option><option value="Протокол / постановление"></option></datalist>
+      
       <div class="card-group-label">4. Текст</div>
       <div class="basis-btns" id="ogp_kind_seg"><button type="button" class="basis-btn active" data-kind="bb">Бланк для форума (BBCode)</button><button type="button" class="basis-btn" data-kind="txt">Материал текстом</button></div>
       <div class="empty-hint" id="ogp_edit_note" style="margin:4px 0;">Текст собирается сам по полям выше и по карточке дела. Можно править прямо в поле; «Пересобрать» вернёт текст по полям.</div>
       <textarea id="ogp_out" style="min-height:260px; font-family:var(--mono); font-size:12px;"></textarea>
+      <div class="ogp-miss" id="ogp_miss"></div>
+      <div class="ogp-soft" id="ogp_soft"></div>
       <div class="btnrow">
         <button type="button" class="primary" id="ogp_copy_forum">Скопировать и открыть форум ↗</button>
         <button type="button" id="ogp_copy">Скопировать</button>
@@ -7928,116 +7987,6 @@ function actionOgp(){
 // Вставляется на форум как есть: разметку не трогаем, подставляем только
 // значения полей. Раздел IV существует только для потерпевшего (ст. 1.6
 // Регламента) -- иначе вырезается целиком.
-function buildOgpBBCode(){
-  const G = '[COLOR=rgb(236, 199, 129)]';
-  const structVal = document.getElementById('f_struct').value;
-  const deptText = (!structVal || structVal === 'other') ? (val('f_dept_other') || '') : selText('f_dept');
-  const badge = val('f_badge_num')
-    ? buildBadgePreview(structVal, (structVal === 'other' ? val('f_dept_other') : document.getElementById('f_dept').value), val('f_badge_num')).text
-    : '';
-  const victim = document.getElementById('f_ogp_victim');
-  const isVictim = !!(victim && victim.checked);
-  const today = new Date();
-  const dateStr = String(today.getDate()).padStart(2,'0') + '.' + String(today.getMonth()+1).padStart(2,'0') + '.' + today.getFullYear();
-
-  // описательная часть: фабула + перечень нарушений с нормами, сплошным текстом
-  const body = [];
-  body.push(ogpNarrative());
-  const items = ogpViolationItems();
-  if(items.length){
-    body.push('');
-    body.push('В ходе процедуры допущены следующие нарушения:');
-    items.forEach((it, n)=>{
-      const fresh = it.norms.filter(nm=>{
-        const num = (String(nm).match(/ст\.\s*([\d.]+)/) || [])[1];
-        return num ? it.claim.indexOf(num) < 0 : true;
-      });
-      body.push((n + 1) + '. ' + it.claim + (fresh.length ? ' — ' + fresh.join('; ') + '.' : ''));
-    });
-  } else {
-    body.push('');
-    body.push('[описать нарушения — в карточке дела они не отмечены]');
-  }
-  const qualBB = ogpOfficerQualification();
-  if(qualBB.length){
-    body.push('');
-    body.push('Полагаю, что в действиях сотрудника усматриваются признаки следующих составов:');
-    qualBB.forEach(q=> body.push(/^Перечень открытый/.test(q) ? '' + q : '- ' + q));
-  }
-
-  const notes = [];
-  if(val('n_video')) notes.push('По видеозаписи: ' + val('n_video'));
-  if(val('n_proceedings')) notes.push('В ходе процессуальных действий: ' + val('n_proceedings'));
-  if(val('n_outcome')) notes.push('Дополнительно: ' + val('n_outcome'));
-  if(notes.length){ body.push(''); notes.forEach(x=> body.push(x)); }
-
-  const L = [];
-  L.push('[RIGHT][FONT=georgia][FONT=georgia]В ОФИС ГЕНЕРАЛЬНОГО ПРОКУРОРА');
-  L.push('ШТАТА САН-АНДРЕАС,');
-  L.push('Истворн Уэй, Рокфорд Хиллс, Лос Сантос, 90012[/FONT][/FONT][/RIGHT]');
-  L.push('[FONT=georgia]' + G + '[B]I. ИНФОРМАЦИЯ О СТОРОНАХ ДЕЛА[/B][/COLOR]');
-  L.push('');
-  L.push('[FONT=georgia]' + G + '1. [/COLOR]ДАННЫЕ ЗАЯВИТЕЛЯ.');
-  const prof = (typeof lexProfile === 'function') ? lexProfile() : {};
-  const who = val('f_ogp_who') || 'client';
-  const me = who === 'me';
-  const aName = val('f_ogp_applicant') || (me ? prof.name : '') || '';
-  L.push(G + '-[/COLOR] ИМЯ ФАМИЛИЯ: ' + (aName || '[вписать]'));
-  L.push(G + '-[/COLOR] НОМЕР ID-КАРТЫ: ' + (val('f_ogp_applicant_id') || (me ? prof.id : '') || '[вписать]'));
-  L.push(G + '-[/COLOR] ЭЛЕКТРОННАЯ ПОЧТА: ' + ((m=> m ? (me ? lexMailFull(m) : lexMailClient(m)) : '')(val('f_ogp_applicant_mail')) || (me ? lexMailFull(prof.mail) : '') || '[вписать]'));
-  L.push(G + '-[/COLOR] ЯВЛЯЕТСЯ ЛИ ЗАЯВИТЕЛЬ ПОТЕРПЕВШИМ (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
-  L.push(G + '-[/COLOR] ИМЕЮТСЯ ЛИ КАКИЕ-НИБУДЬ ТРЕБОВАНИЯ ПОТЕРПЕВШЕГО (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
-  L.push('');
-  L.push(G + '2.[/COLOR] ДАННЫЕ ПОДОЗРЕВАЕМОГО.');
-  L.push(G + '-[/COLOR] ИМЯ ФАМИЛИЯ: ' + (val('f_ogp_suspect') || '[вписать, если известно]'));
-  const deptPart = (deptText && deptText !== '—') ? ', ' + deptText : '';
-  L.push(G + '-[/COLOR] МЕСТО РАБОТЫ: ' + (selText('f_struct') || '[структура]') + deptPart);
-  L.push(G + '-[/COLOR] ОПОЗНАВАТЕЛЬНЫЕ ЗНАК: ' + (badge || '[вписать]'));
-  L.push('');
-  L.push(G + '[B]II. ОПИСАТЕЛЬНАЯ ЧАСТЬ[/B][/COLOR]');
-  L.push('');
-  body.forEach(x=> L.push(x));
-  L.push('');
-  L.push(G + '[B]III. МАТЕРИАЛЫ ПО ОБРАЩЕНИЮ[/B]');
-  L.push('');
-  const noReq = !!(document.getElementById('f_ogp_no_request') || {}).checked;
-  const ev = val('f_ogp_evidence');
-  const evTxt = [ev, noReq ? '' : 'Истребовать у обвиняемого (видеозапись задержания хранится сотрудником 72 часа — ст. 3.9 Процессуального кодекса)'].filter(Boolean).join(' / ');
-  const other = [val('f_ogp_other'), (!me && prof.name && prof.license) ? 'Удостоверение представителя ' + prof.name + ': ' + prof.license : ''].filter(Boolean).join('; ');
-  L.push('-[/COLOR] КОПИЯ ПАСПОРТА: ' + (val('f_ogp_passport') || (me ? prof.passport : '') || '*Гиперссылка*'));
-  L.push(G + '-[/COLOR] ДОКАЗАТЕЛЬСТВА: ' + (evTxt || '*Гиперссылка*'));
-  L.push(G + '-[/COLOR] ИНЫЕ ДОКУМЕНТЫ: ' + (other || '*Гиперссылка*'));
-  L.push(G + '- [/COLOR]ДОКАЗАТЕЛЬСТВА ОПЛАТЫ ПОШЛИНЫ: ' + (val('f_ogp_fee') || '*Гиперссылка*'));
-  if(isVictim){
-    const demands = (val('f_ogp_demands') || '').split(/\n+/).map(x=> x.trim()).filter(Boolean);
-    L.push('');
-    L.push(G + '[B]IV. ПРОСИТЕЛЬНАЯ ЧАСТЬ[/B][/COLOR] [COLOR=rgb(184, 49, 47)][B](ТОЛЬКО ДЛЯ ПОТЕРПЕВШИХ)[/B][/COLOR]');
-    L.push('');
-    L.push('На основании вышеизложенного, прошу Офис Генерального Прокурора учесть мои следующие требования при передачи дела в суд:');
-    if(demands.length){ demands.forEach((d, n)=> L.push((n + 1) + '. ' + d)); }
-    else { L.push('1. [вписать требование]'); }
-    L.push('[/FONT][/FONT]');
-  } else {
-    L.push('[/FONT][/FONT]');
-  }
-  L.push('');
-  L.push('[RIGHT][FONT=georgia][FONT=georgia]Дата подачи: ' + dateStr);
-  const sign = me ? (aName || '___') : (prof.name ? prof.name + ' — представитель заявителя' + (prof.role ? ' (' + prof.role + ')' : '') : (aName || '___'));
-  L.push('Подпись Заявителя или его представителя: ' + sign + '[/FONT][/FONT][/RIGHT]');
-
-  const head = [];
-  head.push('ОБРАЩЕНИЕ В ОФИС ГЕНЕРАЛЬНОГО ПРОКУРОРА №[порядковый номер] — название темы строго в таком виде (ст. 1.1 Регламента).');
-  head.push('Пошлина $20.000 на счёт №788 оплачивается ДО подачи, видеозапись оплаты — в раздел III.');
-  head.push('Срок: ' + ogpDeadlineText());
-  if(!isVictim) head.push('Заявитель не потерпевший — раздел IV в бланк не включён (ст. 1.6 Регламента).');
-  head.push('--- ниже вставлять на форум как есть ---');
-  head.push('');
-
-  const text = head.join('\n') + fullLawNames(L.join('\n'));
-  document.getElementById('summary_out').value = text;
-  setOutKind('bbcode');
-  return text;
-}
 // Документы (обращение в ОГП, иск): закон называется полностью, без сокращений
 // (правило InsideX 28.09.2026).
 function fullLawNames(t){
@@ -8459,27 +8408,10 @@ function ogpModalBuild(force){
   try { t = OGP_KIND === 'bb' ? buildOgpBBCode() : actionOgp(); } catch(e){ t = 'Ошибка сборки: ' + e.message; }
   out.value = t; OGP_EDITED = false;
 }
-function ogpModalSync(){
-  const who = (document.getElementById('f_ogp_who').value) || 'client';
-  document.querySelectorAll('#ogp_who_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.who === who));
-  document.querySelectorAll('#ogp_kind_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.kind === OGP_KIND));
-  const p = lexProfile();
-  const line = document.getElementById('ogp_prof_line');
-  if(line) line.innerHTML = (p.name ? 'Профиль: <b>' + lawEscapeHtml(p.name) + '</b>' + (p.role ? ', ' + lawEscapeHtml(p.role) : '') + (p.id ? ', ID ' + lawEscapeHtml(p.id) : '') : 'Профиль не заполнен — имя, ID, почта и паспорт будут подставляться сами')
-    + '<button type="button" class="hl-ref-btn" id="ogp_prof_edit">' + (p.name ? '✎ изменить' : '👤 заполнить') + '</button>';
-  const vw = document.getElementById('f_ogp_victim'), dw = document.getElementById('f_ogp_demands_wrap');
-  if(dw) dw.style.display = vw && vw.checked ? '' : 'none';
-  const sh = document.getElementById('ogp_suspect_hint');
-  if(sh){
-    const st = document.getElementById('f_struct');
-    const sv = st ? st.value : '';
-    sh.textContent = 'Место работы и опознавательный знак берутся из карточки: ' + ((sv && typeof selText === 'function') ? selText('f_struct') : 'структура не выбрана') + (val('f_badge_num') ? ', знак ' + val('f_badge_num') : ', знак не указан') + '.';
-  }
-  ogpModalBuild(false);
-}
 function openOgpModal(){
   actionOgp();                 // материал для ОГП в поле «Действий», как раньше
   OGP_EDITED = false;
+  ogpRowsRender();
   document.getElementById('ogp-overlay').classList.add('open');
   ogpModalSync();
 }
@@ -8526,8 +8458,331 @@ function openOgpModal(){
     a.href = url; a.download = 'обращение_ОГП.txt'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
   });
 })();
+// ===== Обращение в ОГП: обязательные поля, списки «＋» со ссылками, потерпевший, подпись (решения InsideX, 09.10.2026) =====
+const OGP_URL_RE = /^https?:\/\/[^\s\[\]]{3,}$/i;
+function ogpUrlOk(u){ return OGP_URL_RE.test(String(u || '').trim()); }
+function ogpClean(s){ return String(s || '').replace(/[\[\]\r\n]+/g, ' ').replace(/\s+/g, ' ').trim(); }
+function ogpLink(u, cap){ return '[URL=' + String(u).trim() + ']' + (ogpClean(cap) || 'ссылка') + '[/URL]'; }
+function ogpRep(){ return (val('f_ogp_who') || 'client') !== 'me'; }
+function ogpLists(){
+  let o = null; try { o = JSON.parse(document.getElementById('f_ogp_lists').value || 'null'); } catch(e){ o = null; }
+  o = (o && typeof o === 'object') ? o : {};
+  const fix = a=> Array.isArray(a) ? a.slice(0, 20).map(r=> ({ c: String((r && r.c) || ''), u: String((r && r.u) || ''), t: String((r && r.t) || '') })) : [];
+  return { ev: fix(o.ev), doc: fix(o.doc) };
+}
+function ogpListsSave(L){ document.getElementById('f_ogp_lists').value = (L.ev.length || L.doc.length) ? JSON.stringify(L) : ''; }
+// кто потерпевший: app -- заявитель, other -- другой человек, none -- нет
+function ogpVic(){
+  const v = val('f_ogp_vic');
+  if(v === 'app' || v === 'other' || v === 'none') return v;
+  const cb = document.getElementById('f_ogp_victim'); if(cb && cb.checked) return 'app';
+  return ogpRep() ? 'app' : 'none';
+}
+function ogpLic(p){ return String((p && p.license) || '').replace(/^\s*№\s*/, '').trim(); }
+function ogpSign(me, aName, prof){
+  if(me) return aName || prof.name || '___';
+  if(!prof.name) return aName || '___';
+  const priv = prof.role === 'частный адвокат' || (prof.role !== 'гос. адвокат' && prof.role !== 'прокурор' && ogpLic(prof));
+  let s = prof.name;
+  if(priv && ogpLic(prof)) s += ', частный адвокат, лицензия №' + ogpLic(prof);
+  else s += ', ' + (prof.role === 'гос. адвокат' ? 'государственный адвокат' : (prof.role || 'представитель')) + (prof.id ? ', ID ' + prof.id : '');
+  return s + ' — представитель заявителя';
+}
+// Что мешает отправить: [{k: ключ подсказки, msg}] -- пусто = готово
+function ogpMissing(){
+  const M = [], add = (k, msg)=> M.push({ k: k, msg: msg });
+  const prof = (typeof lexProfile === 'function') ? lexProfile() : {};
+  const rep = ogpRep(), me = !rep, vic = ogpVic(), L = ogpLists();
+  if(!(val('f_ogp_applicant') || (me ? prof.name : ''))) add('f_ogp_applicant', 'Заявитель: имя и фамилия');
+  if(!(val('f_ogp_applicant_id') || (me ? prof.id : ''))) add('f_ogp_applicant_id', 'Заявитель: № ID-карты');
+  if(!(val('f_ogp_applicant_mail') || (me ? prof.mail : ''))) add('f_ogp_applicant_mail', 'Заявитель: электронная почта');
+  if(rep){
+    if(!prof.name || !prof.id || !prof.mail) add('profile', 'Профиль представителя: имя и фамилия, ID, почта (кнопка «заполнить» вверху окна)');
+    if(prof.role === 'частный адвокат' && !ogpLic(prof)) add('profile', 'Профиль: номер лицензии частного адвоката — он идёт в подпись');
+  }
+  if(vic === 'other' && !val('f_ogp_vic_name')) add('f_ogp_vic_name', 'Потерпевший: имя и фамилия');
+  if(vic === 'app' && !(val('f_ogp_demands') || '').split(/\n+/).some(x=> x.trim())) add('f_ogp_demands', 'Просительная часть: хотя бы одно требование');
+  const st = document.getElementById('f_struct');
+  if(!val('f_ogp_suspect') && !val('f_badge_num')) add('f_ogp_suspect', 'Подозреваемый: имя и фамилия (или опознавательный знак в карточке дела)');
+  if(!st || !st.value) add('card', 'Структура сотрудника — выберите в карточке дела');
+  let nv = 0; try { nv = ogpViolationItems().length; } catch(e){}
+  if(!nv) add('card', 'Описательная часть: в карточке дела не отмечены нарушения сотрудника');
+  if(!val('f_start')) add('card', 'Описательная часть: в карточке дела нет времени задержания');
+  if(!ogpUrlOk(val('f_ogp_passport') || (me ? prof.passport : ''))) add('f_ogp_passport', 'Копия паспорта заявителя: ссылка http(s)://…');
+  const evRows = L.ev.filter(r=> r.c.trim() || r.u.trim());
+  const evBad = [];
+  evRows.forEach((r, i)=>{ if(!ogpUrlOk(r.u)) evBad.push('строка ' + (i + 1)); });
+  if(evBad.length) add('ev', 'Доказательства: нужна ссылка http(s)://… (' + evBad.join(', ') + ')');
+  const noReq = !!(document.getElementById('f_ogp_no_request') || {}).checked;
+  if(!evRows.length && noReq) add('ev', 'Доказательства: добавьте ссылку или оставьте «Истребовать у обвиняемого»');
+  if(rep && !ogpUrlOk(val('f_ogp_repdocs'))) add('f_ogp_repdocs', 'Документы представителя: ссылка http(s)://…');
+  const dcRows = L.doc.filter(r=> r.c.trim() || r.u.trim());
+  const dcBad = [];
+  dcRows.forEach((r, i)=>{ if(!ogpUrlOk(r.u)) dcBad.push('строка ' + (i + 1)); });
+  if(dcBad.length) add('doc', 'Иные документы: нужна ссылка http(s)://… (' + dcBad.join(', ') + ')');
+  if(!ogpUrlOk(val('f_ogp_fee'))) add('f_ogp_fee', 'Доказательства оплаты пошлины: ссылка на видео');
+  if(val('f_ogp_date') && !/^\d{2}\.\d{2}\.\d{4}$/.test(val('f_ogp_date'))) add('f_ogp_date', 'Дата подачи: формат ДД.ММ.ГГГГ');
+  return M;
+}
+// Напоминания, которые не блокируют
+function ogpSoft(){
+  const S = [], L = ogpLists(), rep = ogpRep();
+  if(rep){
+    const caps = L.doc.map(r=> r.c).join(' | ');
+    const need = [];
+    if(!/договор/i.test(caps)) need.push('договор об оказании юридических услуг');
+    if(!/лиценз|удостоверен/i.test(caps)) need.push('копию лицензии / удостоверения (если не лежит в «Документах представителя»)');
+    if(need.length) S.push('Регламент, ст. 1.2: представителю нужны паспорт адвоката, договор и лицензия / удостоверение. Добавьте строкой «＋»: ' + need.join('; ') + '.');
+  }
+  if(L.ev.some(r=> ogpUrlOk(r.u) && !r.t.trim())) S.push('Видео длиннее 3 минут — укажите тайм-коды ключевых моментов в поле «тайм-коды».');
+  try { S.push(ogpDeadlineText()); } catch(e){}
+  return S;
+}
+function buildOgpBBCode(){
+  const G = '[COLOR=rgb(236, 199, 129)]';
+  const structVal = document.getElementById('f_struct').value;
+  const deptText = (!structVal || structVal === 'other') ? (val('f_dept_other') || '') : selText('f_dept');
+  const badge = val('f_badge_num')
+    ? buildBadgePreview(structVal, (structVal === 'other' ? val('f_dept_other') : document.getElementById('f_dept').value), val('f_badge_num')).text
+    : '';
+  const vic = ogpVic();
+  const isVictim = vic === 'app';
+  const miss = ogpMissing();
+  const today = new Date();
+  const dateStr = val('f_ogp_date') || (String(today.getDate()).padStart(2,'0') + '.' + String(today.getMonth()+1).padStart(2,'0') + '.' + today.getFullYear());
+  const prof = (typeof lexProfile === 'function') ? lexProfile() : {};
+  const who = val('f_ogp_who') || 'client';
+  const me = who === 'me';
+  const aName = val('f_ogp_applicant') || (me ? prof.name : '') || '';
+  const Lst = ogpLists();
+
+  // описательная часть: фабула + перечень нарушений с нормами, сплошным текстом
+  const body = [];
+  if(vic === 'other'){
+    body.push('Потерпевший: ' + (val('f_ogp_vic_name') || '[вписать]') + (val('f_ogp_vic_id') ? ' (№ ID-карты ' + val('f_ogp_vic_id') + ')' : '') + '.');
+    body.push('');
+  }
+  body.push(ogpNarrative());
+  const items = ogpViolationItems();
+  if(items.length){
+    body.push('');
+    body.push('В ходе процедуры допущены следующие нарушения:');
+    items.forEach((it, n)=>{
+      const fresh = it.norms.filter(nm=>{
+        const num = (String(nm).match(/ст\.\s*([\d.]+)/) || [])[1];
+        return num ? it.claim.indexOf(num) < 0 : true;
+      });
+      body.push((n + 1) + '. ' + it.claim + (fresh.length ? ' — ' + fresh.join('; ') + '.' : ''));
+    });
+  } else {
+    body.push('');
+    body.push('[описать нарушения — в карточке дела они не отмечены]');
+  }
+  const qualBB = ogpOfficerQualification();
+  if(qualBB.length){
+    body.push('');
+    body.push('Полагаю, что в действиях сотрудника усматриваются признаки следующих составов:');
+    qualBB.forEach(q=> body.push(/^Перечень открытый/.test(q) ? '' + q : '- ' + q));
+  }
+
+  const notes = [];
+  if(val('n_video')) notes.push('По видеозаписи: ' + val('n_video'));
+  if(val('n_proceedings')) notes.push('В ходе процессуальных действий: ' + val('n_proceedings'));
+  if(val('n_outcome')) notes.push('Дополнительно: ' + val('n_outcome'));
+  if(notes.length){ body.push(''); notes.forEach(x=> body.push(x)); }
+
+  const L = [];
+  L.push('[RIGHT][FONT=georgia][FONT=georgia]В ОФИС ГЕНЕРАЛЬНОГО ПРОКУРОРА');
+  L.push('ШТАТА САН-АНДРЕАС,');
+  L.push('Истворн Уэй, Рокфорд Хиллс, Лос Сантос, 90012[/FONT][/FONT][/RIGHT]');
+  L.push('[FONT=georgia]' + G + '[B]I. ИНФОРМАЦИЯ О СТОРОНАХ ДЕЛА[/B][/COLOR]');
+  L.push('');
+  L.push('[FONT=georgia]' + G + '1. [/COLOR]ДАННЫЕ ЗАЯВИТЕЛЯ.');
+  L.push(G + '-[/COLOR] ИМЯ ФАМИЛИЯ: ' + (aName || '[вписать]'));
+  L.push(G + '-[/COLOR] НОМЕР ID-КАРТЫ: ' + (val('f_ogp_applicant_id') || (me ? prof.id : '') || '[вписать]'));
+  L.push(G + '-[/COLOR] ЭЛЕКТРОННАЯ ПОЧТА: ' + ((m=> m ? (me ? lexMailFull(m) : lexMailClient(m)) : '')(val('f_ogp_applicant_mail')) || (me ? lexMailFull(prof.mail) : '') || '[вписать]'));
+  L.push(G + '-[/COLOR] ЯВЛЯЕТСЯ ЛИ ЗАЯВИТЕЛЬ ПОТЕРПЕВШИМ (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
+  L.push(G + '-[/COLOR] ИМЕЮТСЯ ЛИ КАКИЕ-НИБУДЬ ТРЕБОВАНИЯ ПОТЕРПЕВШЕГО (ДА/НЕТ): ' + (isVictim ? 'ДА' : 'НЕТ'));
+  L.push('');
+  L.push(G + '2.[/COLOR] ДАННЫЕ ПОДОЗРЕВАЕМОГО.');
+  L.push(G + '-[/COLOR] ИМЯ ФАМИЛИЯ: ' + (val('f_ogp_suspect') || 'неизвестно'));
+  const deptPart = (deptText && deptText !== '—') ? ', ' + deptText : '';
+  L.push(G + '-[/COLOR] МЕСТО РАБОТЫ: ' + (selText('f_struct') || '[структура]') + deptPart);
+  L.push(G + '-[/COLOR] ОПОЗНАВАТЕЛЬНЫЕ ЗНАК: ' + (badge || 'неизвестен'));
+  L.push('');
+  L.push(G + '[B]II. ОПИСАТЕЛЬНАЯ ЧАСТЬ[/B][/COLOR]');
+  L.push('');
+  body.forEach(x=> L.push(x));
+  L.push('');
+  L.push(G + '[B]III. МАТЕРИАЛЫ ПО ОБРАЩЕНИЮ[/B]');
+  L.push('');
+  const noReq = !!(document.getElementById('f_ogp_no_request') || {}).checked;
+  const passUrl = val('f_ogp_passport') || (me ? prof.passport : '');
+  const evItems = [];
+  Lst.ev.filter(r=> (r.c.trim() || r.u.trim()) && ogpUrlOk(r.u)).forEach((r, i)=>{
+    evItems.push(ogpLink(r.u, r.c || ('Доказательство ' + (i + 1))) + (ogpClean(r.t) ? ' (тайм-коды: ' + ogpClean(r.t) + ')' : ''));
+  });
+  if(!noReq) evItems.push('Истребовать у обвиняемого (видеозапись задержания хранится сотрудником 72 часа — ст. 3.9 Процессуального кодекса)');
+  const docItems = [];
+  if(!me && ogpUrlOk(val('f_ogp_repdocs'))) docItems.push(ogpLink(val('f_ogp_repdocs'), 'Документы представителя'));
+  Lst.doc.filter(r=> (r.c.trim() || r.u.trim()) && ogpUrlOk(r.u)).forEach((r, i)=>{ docItems.push(ogpLink(r.u, r.c || ('Документ ' + (i + 1)))); });
+  L.push('-[/COLOR] КОПИЯ ПАСПОРТА: ' + (ogpUrlOk(passUrl) ? ogpLink(passUrl, 'Копия паспорта заявителя') : '*Гиперссылка*'));
+  L.push(G + '-[/COLOR] ДОКАЗАТЕЛЬСТВА: ' + (evItems.join('; ') || '*Гиперссылка*'));
+  L.push(G + '-[/COLOR] ИНЫЕ ДОКУМЕНТЫ: ' + (docItems.join('; ') || (me ? 'нет' : '*Гиперссылка*')));
+  L.push(G + '- [/COLOR]ДОКАЗАТЕЛЬСТВА ОПЛАТЫ ПОШЛИНЫ: ' + (ogpUrlOk(val('f_ogp_fee')) ? ogpLink(val('f_ogp_fee'), 'Видео оплаты пошлины') : '*Гиперссылка*'));
+  if(isVictim){
+    const demands = (val('f_ogp_demands') || '').split(/\n+/).map(x=> x.trim()).filter(Boolean);
+    L.push('');
+    L.push(G + '[B]IV. ПРОСИТЕЛЬНАЯ ЧАСТЬ[/B][/COLOR] [COLOR=rgb(184, 49, 47)][B](ТОЛЬКО ДЛЯ ПОТЕРПЕВШИХ)[/B][/COLOR]');
+    L.push('');
+    L.push('На основании вышеизложенного, прошу Офис Генерального Прокурора учесть мои следующие требования при передачи дела в суд:');
+    if(demands.length){ demands.forEach((d, n)=> L.push((n + 1) + '. ' + d)); }
+    else { L.push('1. [вписать требование]'); }
+    L.push('[/FONT][/FONT]');
+  } else {
+    L.push('[/FONT][/FONT]');
+  }
+  L.push('');
+  L.push('[RIGHT][FONT=georgia][FONT=georgia]Дата подачи: ' + dateStr);
+  L.push('Подпись Заявителя или его представителя: ' + ogpSign(me, aName, prof) + '[/FONT][/FONT][/RIGHT]');
+
+  const head = [];
+  if(miss.length){
+    head.push('ЧЕРНОВИК — не готово. Не заполнено:');
+    miss.forEach(m=> head.push('— ' + m.msg));
+    head.push('Копирование и скачивание закрыты, пока список не пуст.');
+    head.push('');
+  }
+  head.push('ОБРАЩЕНИЕ В ОФИС ГЕНЕРАЛЬНОГО ПРОКУРОРА №[порядковый номер] — название темы строго в таком виде (ст. 1.1 Регламента).');
+  head.push('Пошлина $20.000 на счёт №788 оплачивается ДО подачи, видеозапись оплаты — в раздел III.');
+  head.push('Срок: ' + ogpDeadlineText());
+  if(vic === 'other') head.push('Потерпевший — другой человек: его данные только в описательной части, раздел IV в бланк не включён (ст. 1.6 Регламента).');
+  else if(!isVictim) head.push('Заявитель не потерпевший — раздел IV в бланк не включён (ст. 1.6 Регламента).');
+  head.push(miss.length ? '--- предпросмотр бланка (копировать нельзя, пока не заполнено) ---' : '--- ниже вставлять на форум как есть ---');
+  head.push('');
+
+  const text = head.join('\n') + fullLawNames(L.join('\n'));
+  document.getElementById('summary_out').value = text;
+  setOutKind('bbcode');
+  return text;
+}
+
+// ---- окно: строки списков ----
+let OGP_ROWS_ON = false;
+function ogpRowEl(kind, r){
+  const row = document.createElement('div'); row.className = 'ogp-row'; row.dataset.rk = kind;
+  const mk = (cls, ph, val0, list)=>{
+    const i = document.createElement('input'); i.type = 'text'; i.className = cls; i.placeholder = ph; i.value = val0 || '';
+    i.dataset.derived = '1'; if(list) i.setAttribute('list', list); return i;
+  };
+  row.appendChild(mk('ogp-cap', kind === 'ev' ? 'Подпись: напр. «Видео задержания»' : 'Подпись: напр. «Договор»', r.c, kind === 'ev' ? 'ogp_ev_caps' : 'ogp_doc_caps'));
+  row.appendChild(mk('ogp-url', 'https://…', r.u));
+  const del = document.createElement('button'); del.type = 'button'; del.className = 'ogp-del'; del.dataset.del = '1'; del.textContent = '✕'; del.title = 'Убрать строку';
+  row.appendChild(del);
+  if(kind === 'ev') row.appendChild(mk('ogp-tc', 'тайм-коды (видео дольше 3 минут)', r.t));
+  const rn = document.createElement('span'); rn.className = 'ogp-need ogp-rn'; row.appendChild(rn);
+  return row;
+}
+function ogpRowsRender(){
+  const L = ogpLists();
+  [['ev', 'ogp_ev_rows'], ['doc', 'ogp_doc_rows']].forEach(([k, id])=>{
+    const box = document.getElementById(id); if(!box) return;
+    while(box.firstChild) box.removeChild(box.firstChild);
+    L[k].forEach(r=> box.appendChild(ogpRowEl(k, r)));
+  });
+  OGP_ROWS_ON = true;
+}
+function ogpRowsRead(){
+  if(!OGP_ROWS_ON) return;
+  const L = { ev: [], doc: [] };
+  [['ev', 'ogp_ev_rows'], ['doc', 'ogp_doc_rows']].forEach(([k, id])=>{
+    document.querySelectorAll('#' + id + ' .ogp-row').forEach(row=>{
+      const g = c=> { const e = row.querySelector('.' + c); return e ? e.value : ''; };
+      L[k].push({ c: g('ogp-cap'), u: g('ogp-url'), t: g('ogp-tc') });
+    });
+  });
+  ogpListsSave(L);
+}
+function ogpModalSync(){
+  ogpRowsRead();
+  const who = (document.getElementById('f_ogp_who').value) || 'client';
+  const rep = who !== 'me';
+  document.querySelectorAll('#ogp_who_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.who === who));
+  document.querySelectorAll('#ogp_kind_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.kind === OGP_KIND));
+  const p = lexProfile();
+  const line = document.getElementById('ogp_prof_line');
+  if(line) line.innerHTML = (p.name ? 'Профиль: <b>' + lawEscapeHtml(p.name) + '</b>' + (p.role ? ', ' + lawEscapeHtml(p.role) : '') + (p.id ? ', ID ' + lawEscapeHtml(p.id) : '') : 'Профиль не заполнен — имя, ID, почта и паспорт будут подставляться сами')
+    + '<button type="button" class="hl-ref-btn" id="ogp_prof_edit">' + (p.name ? '✎ изменить' : '👤 заполнить') + '</button>';
+  const vic = ogpVic();
+  document.querySelectorAll('#ogp_vic_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.vic === vic));
+  const va = document.getElementById('ogp_vic_app'); if(va) va.textContent = rep ? 'Заявитель (клиент)' : 'Я';
+  const vo = document.getElementById('ogp_vic_other_wrap'); if(vo) vo.style.display = vic === 'other' ? '' : 'none';
+  const cb = document.getElementById('f_ogp_victim'); if(cb) cb.checked = vic === 'app';
+  const dw = document.getElementById('f_ogp_demands_wrap'); if(dw) dw.style.display = vic === 'app' ? '' : 'none';
+  const vh = document.getElementById('ogp_vic_hint');
+  if(vh) vh.textContent = vic === 'app' ? 'Заявитель — потерпевший: в бланк войдёт раздел IV с требованиями.'
+    : vic === 'other' ? 'Данные потерпевшего пойдут только в описательную часть, не в блок заявителя. Раздел IV не включается: если потерпевший хочет заявлять требования — подавайте от его имени как представитель.'
+    : 'Потерпевшего нет: раздел IV не включается, прошу проверить действия сотрудника.';
+  const rr = document.getElementById('ogp_rep_row'); if(rr) rr.style.display = rep ? '' : 'none';
+  const sh = document.getElementById('ogp_suspect_hint');
+  if(sh){
+    const st = document.getElementById('f_struct');
+    const sv = st ? st.value : '';
+    sh.textContent = 'Место работы и опознавательный знак берутся из карточки: ' + ((sv && typeof selText === 'function') ? selText('f_struct') : 'структура не выбрана') + (val('f_badge_num') ? ', знак ' + val('f_badge_num') : ', знак не указан') + '.';
+  }
+  ogpModalBuild(false);
+  // «Нужно…» под полями + общий список + блокировка кнопок
+  const ov = document.getElementById('ogp-overlay');
+  const miss = OGP_KIND === 'bb' ? ogpMissing() : [];
+  ov.querySelectorAll('.ogp-need[data-need]').forEach(s=>{
+    const mm = miss.filter(m=> m.k === s.dataset.need).map(m=> m.msg);
+    s.textContent = mm.length ? 'Нужно: ' + mm.join('; ') : '';
+  });
+  const box = document.getElementById('ogp_miss');
+  if(box){
+    while(box.firstChild) box.removeChild(box.firstChild);
+    if(miss.length){
+      const b = document.createElement('b'); b.textContent = 'Не заполнено (' + miss.length + ')'; box.appendChild(b);
+      const ul = document.createElement('ul'); miss.forEach(m=>{ const li = document.createElement('li'); li.textContent = m.msg; ul.appendChild(li); }); box.appendChild(ul);
+    }
+  }
+  const soft = document.getElementById('ogp_soft');
+  if(soft){
+    while(soft.firstChild) soft.removeChild(soft.firstChild);
+    if(OGP_KIND === 'bb') ogpSoft().forEach(t=>{ const pp = document.createElement('p'); pp.textContent = t; soft.appendChild(pp); });
+  }
+  ['ogp_copy_forum', 'ogp_copy', 'ogp_dl'].forEach(id=>{
+    const b = document.getElementById(id); if(!b) return;
+    b.disabled = miss.length > 0;
+    b.title = miss.length ? 'Сначала заполните обязательные поля' : '';
+  });
+}
+(function wireOgpLists(){
+  const ov = document.getElementById('ogp-overlay'); if(!ov) return;
+  ov.addEventListener('click', e=>{
+    const vb = e.target.closest('[data-vic]');
+    if(vb){ document.getElementById('f_ogp_vic').value = vb.dataset.vic; OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); return; }
+    const ad = e.target.closest('[data-add]');
+    if(ad){
+      ogpRowsRead();
+      const L = ogpLists(), k = ad.dataset.add === 'ev' ? 'ev' : 'doc';
+      if(L[k].length >= 20) return;
+      L[k].push({ c: '', u: '', t: '' }); ogpListsSave(L); ogpRowsRender();
+      const rows = document.querySelectorAll('#' + (k === 'ev' ? 'ogp_ev_rows' : 'ogp_doc_rows') + ' .ogp-row');
+      const last = rows[rows.length - 1]; if(last){ const c = last.querySelector('.ogp-cap'); if(c) c.focus(); }
+      OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); return;
+    }
+    const dl = e.target.closest('[data-del]');
+    if(dl){
+      const row = dl.closest('.ogp-row'); if(row && row.parentNode) row.parentNode.removeChild(row);
+      OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); return;
+    }
+  });
+})();
+
 const BB_BODY_MARK = '--- ниже вставлять на форум как есть ---';
 function copyAndOpenForum(){
+  if(ogpMissing().length){ const el0 = document.getElementById('out_kind_note'); if(el0) el0.textContent = 'Обращение не готово — заполните обязательные поля в окне «Обращение в ОГП».'; return; }
   let text = '';
   try { text = buildOgpBBCode(); } catch(e){ text = ''; }
   const i = text.indexOf(BB_BODY_MARK);
@@ -8579,7 +8834,7 @@ function doResetForm(){
   { const pa = document.getElementById('f_powers_ans'); if(pa) pa.value = ''; }
   ['basis32_4', 'basis32_5'].forEach(id=>{ const cb = document.getElementById(id); if(cb){ delete cb.dataset.auto; cb.disabled = false; const t = cb.closest('label') && cb.closest('label').querySelector('.qb-auto'); if(t) t.remove(); } });
   { const ie = document.getElementById('init_extra'); if(ie){ ie.open = false; delete ie.dataset.touched; } }
-  { const ow = document.getElementById('f_ogp_who'); if(ow) ow.value = 'client'; const oo = document.getElementById('ogp_out'); if(oo) oo.value = ''; }
+  { const ow = document.getElementById('f_ogp_who'); if(ow) ow.value = 'client'; ['f_ogp_vic', 'f_ogp_lists'].forEach(i=>{ const e = document.getElementById(i); if(e) e.value = ''; }); if(typeof ogpRowsRender === 'function') ogpRowsRender(); const oo = document.getElementById('ogp_out'); if(oo) oo.value = ''; }
   if(typeof recidReset === 'function') recidReset();
   document.getElementById('summary_out').value = '';
   setOutKind('');
@@ -20374,6 +20629,13 @@ body.pdfmode .pages .page{zoom:1}
 [hidden]{display:none!important}
 .reg{color:var(--accent);font-size:10.5px;margin-left:4px;text-decoration:none}
 .page .doc>.head{margin-bottom:0}
+
+.miss{border:1px dashed var(--req);border-radius:8px;padding:8px 10px;margin:8px 0;font-size:12px;color:var(--req);line-height:1.45}
+.miss b{display:block;margin-bottom:2px}
+.miss ul{margin:2px 0 0;padding-left:18px}
+.field input.need,.field select.need,.field textarea.need{border-color:var(--req)}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.chk input:disabled{opacity:.8}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><div><b>Договор на оказание юридических услуг</b><small>Lex · частный адвокат · публикация на портале штата</small></div></div>
@@ -20385,6 +20647,7 @@ body.pdfmode .pages .page{zoom:1}
 </header>
 <main class="layout"><aside class="form">
 <p class="sub">Поля → договор справа обновляется сразу. Внизу — готовый текст публикации для темы «Договоры Коллегии Адвокатов».</p>
+<div class="miss" id="missBox" hidden></div>
 
 <div class="lbl">1. Исполнитель</div>
 <div class="grid">
@@ -20420,7 +20683,7 @@ body.pdfmode .pages .page{zoom:1}
 <div class="lbl">3. Стоимость услуг</div>
 <div id="svcBox"></div>
 <div class="total"><span>К оплате при подписании</span><span id="totalNow">—</span></div>
-<p class="hint">Цены запоминаются в этом браузере. Пошлины штата Заказчик оплачивает отдельно, до подачи.</p>
+<p class="hint">Цены запоминаются в этом браузере. Пошлины штата Заказчик оплачивает отдельно, до подачи. Выезд по вызову оплачивается при выезде и в «К оплате при подписании» не входит.</p>
 
 <div class="lbl">4. Условия</div>
 <div class="grid">
@@ -20430,7 +20693,12 @@ body.pdfmode .pages .page{zoom:1}
   <label class="field">Оплата в течение, часов<input id="hours" type="number" min="1" value="3"></label>
 </div>
 <p class="hint" id="noHint"></p>
-<label class="chk" style="margin-top:6px"><input type="checkbox" id="sigOn" checked><span>Подписи сторон рукописным шрифтом</span></label>
+<div class="lbl" style="margin-top:12px">Дополнительные условия при задержании и спорах с госструктурами</div>
+<label class="chk"><input type="checkbox" id="cSilence" checked disabled><span><b>Хранить молчание</b> — при задержании не свидетельствовать против себя; говорить только о вызове адвоката и звонке <i>(обязательно)</i></span></label>
+<label class="chk" style="margin-top:5px"><input type="checkbox" id="cLaw" checked disabled><span><b>Соблюдение законодательства</b> — всегда иметь действующие лицензии (охота, рыбная ловля и др.) и медкарту <i>(обязательно)</i></span></label>
+<label class="chk" style="margin-top:5px"><input type="checkbox" id="cPolite"><span><b>Уважительное общение</b> — не выражаться, не отвечать на провокации</span></label>
+<label class="chk" style="margin-top:5px"><input type="checkbox" id="cCam"><span><b>Бодикамера</b> — запись всё время правонарушения и задержания (по желанию)</span></label>
+<label class="chk" style="margin-top:10px"><input type="checkbox" id="sigOn" checked><span>Подписи сторон рукописным шрифтом</span></label>
 
 <div class="lbl">5. Публикация на портале штата</div>
 <div class="grid">
@@ -20470,6 +20738,7 @@ body.pdfmode .pages .page{zoom:1}
     <p><b>2.2</b> Государственные пошлины (за обращение в Офис Генерального Прокурора, по гражданскому иску в суд и иные) не входят в стоимость услуг и оплачиваются Заказчиком отдельно до подачи соответствующего документа.</p>
     <p><b>2.3</b> Вознаграждение за выигранное дело выплачивается после вступления решения в силу; при проигрыше дела дополнительное вознаграждение не взимается.</p>
     <p><b>2.4</b> Оплата производится в течение <b data-v="hours"></b> часов с момента подписания Договора либо с момента оказания разовой услуги.</p>
+    <p id="docCallP" hidden><b>2.5</b> Выезд по вызову (защита при задержании, выпуск под залог) оплачивается при выезде; сумма залога вносится Заказчиком по законодательству штата и в стоимость услуг не входит.</p>
     <h2>3. Права и обязанности сторон</h2>
     <p class="ni"><b>3.1 Заказчик имеет право:</b></p>
     <p><b>3.1.1</b> Получать информацию о ходе оказания услуг любыми законными способами.</p>
@@ -20478,6 +20747,10 @@ body.pdfmode .pages .page{zoom:1}
     <p class="ni"><b>3.2 Заказчик обязан:</b></p>
     <p><b>3.2.1</b> Предоставлять Исполнителю документы и достоверную информацию, необходимые для оказания услуг.</p>
     <p><b>3.2.2</b> Оплачивать услуги и пошлины в размерах и сроки, предусмотренные Договором.</p>
+    <p data-cond="silence"><b class="cn"></b> При задержании хранить молчание и не свидетельствовать против себя, ограничиваясь требованием вызова адвоката и правом на звонок.</p>
+    <p data-cond="law"><b class="cn"></b> Соблюдать законодательство штата Сан-Андреас и всегда иметь при себе действующие лицензии (в том числе на осуществляемую деятельность — охоту, рыбную ловлю и иные) и действующую медицинскую карту.</p>
+    <p data-cond="polite" hidden><b class="cn"></b> При взаимодействии с представителями госструктур вести себя уважительно, не выражаться и не отвечать на провокации.</p>
+    <p data-cond="cam" hidden><b class="cn"></b> Вести запись нагрудной камерой (бодикамерой) на протяжении всего времени совершения правонарушения и задержания.</p>
 <p class="ni"><b>3.3 Исполнитель имеет право:</b></p>
     <p><b>3.3.1</b> Получать документы и достоверную информацию, необходимые для оказания услуг.</p>
     <p><b>3.3.2</b> Получать оплату за оказанные услуги в размерах и сроки, предусмотренные Договором.</p>
@@ -20491,6 +20764,8 @@ body.pdfmode .pages .page{zoom:1}
     <p><b>4.2</b> При неисполнении Исполнителем условий Договора Заказчик вправе обратиться в соответствующую инстанцию за компенсацией.</p>
     <p><b>4.3</b> Сторона, письменно заявившая о прекращении Договора, признаёт отсутствие претензий к другой Стороне по его положениям.</p>
     <p><b>4.4</b> Исполнитель не отвечает за неисполнение обязательств, вызванное чрезвычайными и непредотвратимыми обстоятельствами (форс-мажор), если они существенно повлияли на исполнение Договора.</p>
+    <p><b>4.5</b> Заказчик признаёт, что исполнение обязанностей, предусмотренных п. <span id="docCondRef"></span>, напрямую влияет на качество и результат защиты.</p>
+    <p><b>4.6</b> При нарушении этих обязанностей Исполнитель продолжает защиту в полном объёме, но не отвечает за последствия, вызванные нарушением (в том числе ухудшение позиции защиты, недопустимость или отсутствие доказательств, отказ в освобождении, назначенное наказание).</p>
     <h2>5. Разрешение споров</h2>
     <p><b>5.1</b> Споры между Сторонами разрешаются путём переговоров; претензии излагаются любым доступным способом. Не урегулированный спор передаётся в суд штата Сан-Андреас.</p>
 <h2>6. Заключительные положения</h2>
@@ -20562,25 +20837,80 @@ const ART = (function(){
       + '<text font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="' + size + '" fill="' + col + '" letter-spacing="' + (spacing || 0) + '">'
       + '<textPath href="#' + id + '" xlink:href="#' + id + '">' + text + '</textPath></text>';
   }
-  // герб-печать Коллегии (шапка и водяной знак)
+  /* ---------- текст по дуге: растянут симметрично, длина подгоняется под дугу ---------- */
+  let MS = null;
+  function measure(text, size, spacing){
+    try{
+      if(!MS){
+        MS = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        MS.setAttribute('style', 'position:absolute;left:-9999px;top:0;width:10px;height:10px;visibility:hidden');
+        MS.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'text'));
+        document.body.appendChild(MS);
+      }
+      const t = MS.firstChild;
+      t.setAttribute('font-family', 'Arial,Helvetica,sans-serif'); t.setAttribute('font-weight', '700');
+      t.setAttribute('font-size', size); t.setAttribute('letter-spacing', spacing || 0);
+      t.textContent = text;
+      const w = t.getComputedTextLength();
+      if(w > 0) return w;
+    }catch(e){}
+    return String(text).length * size * 0.68 + String(text).length * (spacing || 0);
+  }
+  function pt(r, deg){ const a = deg * Math.PI / 180; return [100 + r * Math.cos(a), 100 + r * Math.sin(a)]; }
+  // r -- радиус линии шрифта; bottom -- нижняя дуга (читается слева направо, буквы «смотрят» в центр); gap -- свободные градусы у левого/правого края
+  function arcText(id, r, text, size, col, bottom, gap, maxSp){
+    const span = 180 - 2 * gap, L = r * span * Math.PI / 180, target = L * 0.97;
+    let fs = size, w0 = measure(text, fs, 0);
+    if(w0 > target){ fs = Math.max(5.5, fs * target / w0); w0 = measure(text, fs, 0); }
+    const n = Math.max(1, text.length - 1);
+    const sp = Math.min(maxSp == null ? 4 : maxSp, Math.max(0, (target - w0) / n));
+    const a1 = bottom ? 180 - gap : 180 + gap, a2 = bottom ? gap : 360 - gap;
+    const p1 = pt(r, a1), p2 = pt(r, a2);
+    const d = 'M' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2) + ' A' + r + ' ' + r + ' 0 0 ' + (bottom ? 0 : 1) + ' ' + p2[0].toFixed(2) + ' ' + p2[1].toFixed(2);
+    return '<defs><path id="' + id + '" d="' + d + '"/></defs>'
+      + '<text font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="' + fs.toFixed(2) + '" fill="' + col + '" letter-spacing="' + sp.toFixed(2) + '" text-anchor="middle">'
+      + '<textPath href="#' + id + '" xlink:href="#' + id + '" startOffset="' + (50 + (sp / 2) / L * 100).toFixed(2) + '%">' + text + '</textPath></text>';
+  }
+  // авто-размер строки внутри круга: не шире maxW
+  function fitLine(text, size, maxW, minSize){
+    let fs = size, w = measure(text, fs, 0);
+    if(w > maxW) fs = Math.max(minSize || 6, fs * maxW / w);
+    w = measure(text, fs, 0);
+    return { fs: fs, tl: w > maxW ? maxW : 0 };
+  }
+  function lineSvg(y, text, size, maxW, col, weight){
+    const f = fitLine(text, size, maxW, 6);
+    return '<text x="100" y="' + y + '" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="' + (weight || 700) + '" font-size="' + f.fs.toFixed(2) + '" fill="' + col + '"'
+      + (f.tl ? ' textLength="' + f.tl.toFixed(1) + '" lengthAdjust="spacingAndGlyphs"' : '') + '>' + text + '</text>';
+  }
+
+  // герб Коллегии (шапка и водяной знак): надписи по дугам симметрично, девиз внутри убран
   function seal(p){
     p = p || 's';
     let s = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" aria-hidden="true">';
     s += '<circle cx="100" cy="100" r="96" fill="#fdfaf0" stroke="' + NAVY + '" stroke-width="4"/>';
-    s += '<circle cx="100" cy="100" r="89" fill="none" stroke="' + GOLD + '" stroke-width="1.6"/>';
+    s += '<circle cx="100" cy="100" r="90" fill="none" stroke="' + GOLD + '" stroke-width="1.6"/>';
     s += '<circle cx="100" cy="100" r="64" fill="none" stroke="' + NAVY + '" stroke-width="2"/>';
-    s += '<circle cx="100" cy="100" r="60" fill="none" stroke="' + GOLD + '" stroke-width=".8"/>';
-    s += ringText(p + 't', 76, 'SAN ANDREAS BAR ASSOCIATION ★ COLLEGIUM OF ADVOCATES ★', 11.2, NAVY, 1.1, 180);
-    s += star(100, 46, 4.2, GOLD) + star(84, 50, 3, GOLD) + star(116, 50, 3, GOLD);
+    s += '<circle cx="100" cy="100" r="60.5" fill="none" stroke="' + GOLD + '" stroke-width=".9"/>';
+    s += arcText(p + 'a', 72.5, 'SAN ANDREAS BAR ASSOCIATION', 10, NAVY, false, 17, 3.2);
+    s += arcText(p + 'b', 80.5, 'COLLEGIUM OF ADVOCATES', 10, NAVY, true, 17, 3.2);
+    const l = pt(77, 180), r = pt(77, 0);
+    s += star(l[0] + 1, l[1], 4.2, GOLD) + star(r[0] - 1, r[1], 4.2, GOLD);
+    s += star(100, 47, 4.4, GOLD) + star(85, 51, 3, GOLD) + star(115, 51, 3, GOLD);
     s += scales(NAVY, 3.4);
-    s += '<text x="100" y="153" text-anchor="middle" font-family="Georgia,serif" font-size="8.5" fill="' + NAVY + '" letter-spacing="1.5">LEX · JUS · VERITAS</text>';
+    s += star(100, 152, 3.6, GOLD);
     s += '</svg>';
     return s;
   }
-  // оттиск печати адвоката (синие чернила, неровный край)
-  function stamp(p, line1, line2){
-    p = p || 'st';
+  // оттиск печати адвоката: кольцо «КОЛЛЕГИЯ АДВОКАТОВ · ШТАТ САН-АНДРЕАС», внутри весы, имя и лицензия
+  // o = { name, license, firm }
+  function stamp(p, o){
+    p = p || 'st'; o = o || {};
     const INK = '#24408f';
+    const name = String(o.name || '').trim().toUpperCase() || '[ИМЯ ФАМИЛИЯ]';
+    const lic = String(o.license || '').trim().toUpperCase() || '[ЛИЦЕНЗИЯ]';
+    const firm = String(o.firm || '').trim().toUpperCase();
+    const E = x=> String(x).replace(/[&<>"']/g, c=> ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]);
     let s = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" aria-label="Печать адвоката">';
     s += '<defs><filter id="' + p + 'f" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/>'
       + '<feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.1 1.15" result="m"/>'
@@ -20588,12 +20918,21 @@ const ART = (function(){
     s += '<g filter="url(#' + p + 'f)">';
     s += '<circle cx="100" cy="100" r="95" fill="none" stroke="' + INK + '" stroke-width="5"/>';
     s += '<circle cx="100" cy="100" r="87" fill="none" stroke="' + INK + '" stroke-width="1.6"/>';
-    s += '<circle cx="100" cy="100" r="60" fill="none" stroke="' + INK + '" stroke-width="1.8"/>';
-    s += ringText(p + 't', 72, 'КОЛЛЕГИЯ АДВОКАТОВ ★ ШТАТ САН-АНДРЕАС ★', 13.5, INK, 1.4, 180);
-    s += '<g transform="translate(100 78) scale(.42) translate(-100 -100)">' + scales(INK, 6) + '</g>';
-    s += '<text x="100" y="118" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="10" fill="' + INK + '">' + line1 + '</text>';
-    s += '<text x="100" y="134" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-weight="700" font-size="10.5" fill="' + INK + '">' + line2 + '</text>';
-    s += star(100, 148, 4, INK);
+    s += '<circle cx="100" cy="100" r="61" fill="none" stroke="' + INK + '" stroke-width="1.8"/>';
+    s += arcText(p + 'a', 68.5, 'КОЛЛЕГИЯ АДВОКАТОВ', 12, INK, false, 16, 3.4);
+    s += arcText(p + 'b', 77.5, 'ШТАТ САН-АНДРЕАС', 12, INK, true, 16, 3.4);
+    const l = pt(73.5, 180), r = pt(73.5, 0);
+    s += star(l[0] + 1, l[1], 4.4, INK) + star(r[0] - 1, r[1], 4.4, INK);
+    s += '<g transform="translate(100 78) scale(.36) translate(-100 -100)">' + scales(INK, 6.5) + '</g>';
+    if(firm){
+      s += lineSvg(108, E('ФИРМА «' + firm + '»'), 9, 104, INK, 700);
+      s += lineSvg(122, E(name), 10.5, 100, INK, 700);
+      s += lineSvg(136, E(lic), 10, 90, INK, 700);
+    } else {
+      s += lineSvg(115, E(name), 11.5, 106, INK, 700);
+      s += lineSvg(130, E(lic), 10.5, 94, INK, 700);
+    }
+    s += star(100, 146, 3.4, INK);
     s += '</g></svg>';
     return s;
   }
@@ -20610,7 +20949,7 @@ const esc = s=> String(s == null ? '' : s).replace(/[&<>"']/g, c=> ({ '&':'&amp;
 const LS = { get(k, d){ try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? d : v; } catch(e){ return d; } }, put(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} } };
 const THREAD = 'https://forum.gta5rp.com/threads/sa-gov-dogovory-kollegii-advokatov.2591625/';
 const KNOWN_LAST = { no: 1511, date: '30.09.2026' };   // последний номер в теме на момент сборки
-const CFG_KEY = 'lex_contract_cfg', NO_KEY = 'lex_contract_last_no';
+const CFG_KEY = 'lex_contract_cfg2', CFG_OLD = 'lex_contract_cfg', NO_KEY = 'lex_contract_last_no';
 
 /* ---------- прайс ---------- */
 // a, b -- суммы ($); каждая услуга сама решает, как их показать
@@ -20624,23 +20963,29 @@ const SERVICES = [
   { id:'court', name:'Защита интересов Заказчика в суде', scope:'защита интересов Заказчика в суде',
     a:100000, b:100000, fields:[['a','$ за дело'], ['b','$ премия от']], price:s=> money(s.a), note:s=> 'за дело; при выигрыше — премия от ' + money(s.b) + ' по договорённости, в зависимости от дела; при проигрыше доплаты нет' },
   { id:'detain', name:'Защита при задержании по вызову (КПЗ, ФТ, процессуальные действия)', scope:'защита при задержании и процессуальных действиях — выезд по вызову',
-    a:20000, b:100000, fields:[['a','$ от'], ['b','$ до']], price:s=> money(s.a) + ' – ' + money(s.b), note:()=> 'в зависимости от сложности дела; возможны исключения' },
+    a:10000, b:10000, c:100000, fields:[['a','$ вызов'], ['b','$ дело от'], ['c','$ дело до']], price:s=> 'вызов ' + money(s.a) + ' + по делу ' + money(s.b) + ' – ' + money(s.c), note:()=> 'вызов оплачивается при выезде; сумма по делу — в зависимости от сложности, возможны исключения' },
   { id:'bail', name:'Выпуск под залог по вызову', scope:'выпуск под залог из Камер Предварительного Заключения по вызову',
-    a:'', fields:[['a','$ (пусто = тариф)']], price:s=> s.a ? money(s.a) : 'по тарифу Коллегии', note:()=> 'сумма залога — по действующему законодательству штата' }
+    a:5000, fields:[['a','$ вызов']], price:s=> 'вызов ' + money(s.a) + ' + залог', note:()=> 'вызов оплачивается при выезде; залог — по действующему законодательству штата, вносится Заказчиком и в стоимость услуг не входит' }
 ];
 function num(v){ const d = String(v == null ? '' : v).replace(/[^\d]/g, ''); return d ? +d : null; }
 function money(v){ const n = num(v); return n == null ? '________ $' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0$'; }
 
 /* ---------- состояние ---------- */
 let CT = 'ind';
-const cfg = LS.get(CFG_KEY, {});
+const cfg = (function(){
+  const cur = LS.get(CFG_KEY, null); if(cur) return cur;
+  // перенос из прежней версии: цены вызова и залога изменились (09.10.2026) — их прежние значения не берём
+  const old = LS.get(CFG_OLD, {}), svc = {};
+  Object.keys(old.svc || {}).forEach(k=>{ if(k !== 'detain' && k !== 'bail') svc[k] = old.svc[k]; });
+  return { svc: svc, lawyerFirm: old.lawyerFirm, days: old.days, hours: old.hours, sigOn: old.sigOn };
+})();
 const svcState = {};
 SERVICES.forEach(s=>{
   const saved = (cfg.svc || {})[s.id] || {};
-  svcState[s.id] = { on: saved.on !== undefined ? !!saved.on : true, a: saved.a !== undefined ? saved.a : s.a, b: saved.b !== undefined ? saved.b : s.b };
+  svcState[s.id] = { on: saved.on !== undefined ? !!saved.on : true, a: saved.a !== undefined ? saved.a : s.a, b: saved.b !== undefined ? saved.b : s.b, c: saved.c !== undefined ? saved.c : s.c };
 });
 function saveCfg(){
-  LS.put(CFG_KEY, { svc: svcState, lawyerFirm: val('lawyerFirm'), days: val('days'), hours: val('hours'), sigOn: $('sigOn').checked });
+  LS.put(CFG_KEY, { svc: svcState, lawyerFirm: val('lawyerFirm'), days: val('days'), hours: val('hours'), sigOn: $('sigOn').checked, polite: $('cPolite').checked, cam: $('cCam').checked });
 }
 
 /* ---------- форма прайса ---------- */
@@ -20658,7 +21003,7 @@ function buildSvcForm(){
     s.fields.forEach(([k, title])=>{
       const l = document.createElement('label');
       const inp = document.createElement('input'); inp.inputMode = 'numeric'; inp.value = st[k] === '' || st[k] == null ? '' : st[k];
-      inp.placeholder = s.id === 'bail' ? 'тариф' : '—';
+      inp.placeholder = '—';
       inp.addEventListener('input', ()=>{ st[k] = inp.value.replace(/[^\d]/g, ''); saveCfg(); render(); });
       l.append(inp, document.createTextNode(title));
       row.append(l);
@@ -20728,7 +21073,16 @@ function render(){
     tr.append(td1, td2, td3); tb.append(tr);
   });
   $('totalNow').textContent = totalNow();
+  $('docCallP').hidden = !(svcState.detain.on || svcState.bail.on);
+  // дополнительные условия: нумерация 3.2.3… идёт подряд по включённым
+  let cn = 2; const nums = [];
+  [['silence', true], ['law', true], ['polite', $('cPolite').checked], ['cam', $('cCam').checked]].forEach(([k, on])=>{
+    const p = document.querySelector('#flowSrc [data-cond="' + k + '"]'); if(!p) return;
+    p.hidden = !on; if(on){ cn++; const num = '3.2.' + cn; p.querySelector('.cn').textContent = num; nums.push(num); }
+  });
+  $('docCondRef').textContent = nums.length > 1 ? nums.slice(0, -1).join(', ') + ' и ' + nums[nums.length - 1] : (nums[0] || '');
   document.body.classList.toggle('nosig', !$('sigOn').checked);
+  gate();
   renderPub();
   clearTimeout(fitTimer); fitTimer = setTimeout(paginate, 60);
 }
@@ -20737,7 +21091,7 @@ function fillArt(root, n){
   root.querySelectorAll('[data-art="flag"]').forEach(x=> x.innerHTML = ART.flag());
   root.querySelectorAll('[data-art="seal"]').forEach((x, i)=> x.innerHTML = ART.seal('hs' + n + '_' + i));
   root.querySelectorAll('[data-art="stamp"]').forEach((x, i)=>{
-    x.innerHTML = ART.stamp('st' + n + '_' + i, val('lawyerFirm') ? 'ЮРИДИЧЕСКАЯ ФИРМА' : 'ЧАСТНЫЙ АДВОКАТ', esc(val('lawyerLicense') || 'ЛИЦЕНЗИЯ'));
+    x.innerHTML = ART.stamp('st' + n + '_' + i, { name: val('lawyerName'), license: val('lawyerLicense'), firm: val('lawyerFirm') });
     const svg = x.firstChild; if(svg) svg.setAttribute('class', 'stamp');
   });
 }
@@ -20832,6 +21186,59 @@ function noHint(){
   if(!val('cNo')) $('cNo').value = String(last + 1);
 }
 
+
+/* ---------- обязательные поля: пока не заполнены — ничего не создаётся, не скачивается, не отправляется и не загружается ---------- */
+const URL_RE = /^https?:\/\/\S+\.\S+/i;
+function missing(){
+  const m = [];
+  const need = (id, t, kind)=>{
+    const v = val(id); let bad = !v;
+    if(!bad && kind === 'name' && v.split(/\s+/).filter(Boolean).length < 2) bad = true;
+    if(!bad && kind === 'num' && !/\d/.test(v)) bad = true;
+    if(bad) m.push({ id: id, t: t });
+  };
+  need('lawyerName', 'Исполнитель — имя и фамилия', 'name');
+  need('lawyerId', 'Исполнитель — паспорт (ID)');
+  need('lawyerLicense', 'Исполнитель — лицензия');
+  need('lawyerPhone', 'Исполнитель — телефон');
+  need('lawyerEmail', 'Исполнитель — почта');
+  if(CT === 'ind'){
+    need('clientName', 'Заказчик — имя и фамилия', 'name'); need('clientPassport', 'Заказчик — паспорт');
+    need('clientPhone', 'Заказчик — телефон'); need('clientEmail', 'Заказчик — почта');
+  } else {
+    need('orgName', 'Организация — название'); need('repName', 'Представитель — имя и фамилия', 'name');
+    need('repPassport', 'Представитель — паспорт'); need('repPosition', 'Представитель — должность');
+    need('repPhone', 'Представитель — телефон'); need('repEmail', 'Представитель — почта');
+  }
+  need('cNo', '№ договора', 'num'); need('date', 'Дата');
+  const d = +val('days'), h = +val('hours');
+  if(!(d > 0)) m.push({ id: 'days', t: 'Срок, дней' });
+  if(!(h > 0)) m.push({ id: 'hours', t: 'Оплата в течение, часов' });
+  const on = SERVICES.filter(s=> svcState[s.id].on);
+  if(!on.length) m.push({ id: 'svcBox', t: 'Выберите хотя бы одну услугу' });
+  on.forEach(s=>{
+    const st = svcState[s.id];
+    s.fields.forEach(([k, title])=>{ if(s.id === 'claim' && k === 'a') return; if(num(st[k]) == null) m.push({ id: 'svcBox', t: s.name.split(' (')[0] + ' — ' + title.replace('$ ', '') }); });
+  });
+  if(svcState.detain.on && num(svcState.detain.b) != null && num(svcState.detain.c) != null && num(svcState.detain.b) > num(svcState.detain.c)) m.push({ id: 'svcBox', t: 'Защита при задержании — «дело от» больше «дело до»' });
+  return m;
+}
+function gate(){
+  const m = missing(), ids = {};
+  m.forEach(x=> ids[x.id] = 1);
+  document.querySelectorAll('.form input, .form select, .form textarea').forEach(e=> e.classList.toggle('need', !!ids[e.id] && e.id !== 'svcBox'));
+  const box = $('missBox');
+  if(m.length){
+    box.hidden = false; box.textContent = '';
+    const b = document.createElement('b'); b.textContent = 'Пока не заполнено — PDF, печать, загрузка и публикация недоступны:'; box.append(b);
+    const ul = document.createElement('ul'); m.forEach(x=>{ const li = document.createElement('li'); li.textContent = x.t; ul.append(li); }); box.append(ul);
+  } else { box.hidden = true; box.textContent = ''; }
+  const links = URL_RE.test(val('pubCopy')) && URL_RE.test(val('pubProof'));
+  ['pdfBtn', 'print', 'uploadBtn', 'pubCopyBtn'].forEach(id=>{ const e = $(id); if(e) e.disabled = m.length > 0; });
+  const pf = $('pubForum'); if(pf){ pf.disabled = m.length > 0 || !links; pf.title = m.length ? 'Сначала заполните обязательные поля' : (links ? '' : 'Нужны обе ссылки: ксерокопия договора и доказательства'); }
+  return m;
+}
+
 /* ---------- PDF ---------- */
 const LIBS = ['https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js', 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'];
 function loadLibs(){
@@ -20846,9 +21253,9 @@ function makePdf(){
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
     const pages = Array.from(document.querySelectorAll('.page'));
-    return pages.reduce((p, el, i)=> p.then(()=> window.html2canvas(el, { scale: 2, backgroundColor: '#fffdf8', windowWidth: 1400, logging: false }).then(cv=>{
+    return pages.reduce((p, el, i)=> p.then(()=> window.html2canvas(el, { scale: 3, backgroundColor: '#fffdf8', windowWidth: 1400, logging: false }).then(cv=>{
       if(i) pdf.addPage();
-      pdf.addImage(cv.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 210, 297);
+      pdf.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297);
     })), Promise.resolve()).then(()=> pdf.output('blob'));
   }).finally(()=>{ document.body.classList.remove('pdfmode'); paginate(); });
 }
@@ -20889,6 +21296,8 @@ function wire(){
   if(cfg.days) $('days').value = cfg.days;
   if(cfg.hours) $('hours').value = cfg.hours;
   if(cfg.sigOn === false) $('sigOn').checked = false;
+  if(cfg.polite) $('cPolite').checked = true;
+  if(cfg.cam) $('cCam').checked = true;
   noHint();
   const form = document.querySelector('.form');
   form.addEventListener('input', e=>{
@@ -20896,15 +21305,16 @@ function wire(){
     if(['lawyerFirm', 'days', 'hours'].indexOf(e.target.id) !== -1) saveCfg();
     render();
   });
-  form.addEventListener('change', e=>{ if(e.target.id === 'sigOn') saveCfg(); render(); });
+  form.addEventListener('change', e=>{ if(['sigOn', 'cPolite', 'cCam'].indexOf(e.target.id) !== -1) saveCfg(); render(); });
   $('clientType').addEventListener('click', e=>{
     const b = e.target.closest('[data-ct]'); if(!b) return;
     CT = b.dataset.ct; $('clientType').querySelectorAll('[data-ct]').forEach(x=> x.classList.toggle('on', x === b)); render();
   });
   $('refresh').onclick = ()=> send('request-context', { refresh: true });
   $('close').onclick = ()=> inLex ? send('close') : window.close();
-  $('print').onclick = ()=> window.print();
+  $('print').onclick = ()=>{ if(gate().length){ toast('Заполните обязательные поля'); return; } window.print(); };
   $('pdfBtn').onclick = ()=>{
+    if(gate().length){ toast('Заполните обязательные поля'); return; }
     const b = $('pdfBtn'); b.disabled = true; b.textContent = 'Собираю…';
     makePdf().then(blob=>{
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = pdfName(); document.body.append(a); a.click();
@@ -20912,6 +21322,7 @@ function wire(){
     }).catch(()=> toast(UP_ERR.lib)).finally(()=>{ b.disabled = false; b.textContent = '⬇ PDF'; });
   };
   $('uploadBtn').onclick = ()=>{
+    if(gate().length){ msg('Заполните обязательные поля — пока ничего не загружаем.', 'err'); return; }
     const up = inLex && parent.LexContractUpload;
     if(typeof up !== 'function'){ msg(UP_ERR.unavailable, 'err'); return; }
     const b = $('uploadBtn'); b.disabled = true; msg('Собираю PDF…');
@@ -20925,8 +21336,9 @@ function wire(){
     }).catch(()=> msg(UP_ERR.lib, 'err')).finally(()=>{ b.disabled = false; });
   };
   $('pubRebuild').onclick = ()=>{ pubDirty = false; renderPub(true); };
-  $('pubCopyBtn').onclick = ()=> copy($('pubOut').value).then(ok=> toast(ok ? 'Текст публикации скопирован' : 'Скопируйте текст из поля вручную'));
+  $('pubCopyBtn').onclick = ()=> gate().length ? toast('Заполните обязательные поля') : copy($('pubOut').value).then(ok=> toast(ok ? 'Текст публикации скопирован' : 'Скопируйте текст из поля вручную'));
   $('pubForum').onclick = ()=>{
+    if(gate().length || !(URL_RE.test(val('pubCopy')) && URL_RE.test(val('pubProof')))){ toast('Нужны все обязательные поля и обе ссылки'); return; }
     const n = +(val('cNo').replace(/[^\d]/g, '')); if(n) LS.put(NO_KEY, Math.max(n, +(LS.get(NO_KEY, 0)) || 0));
     copy($('pubOut').value).then(ok=>{ toast(ok ? 'Скопировано — вставьте ответом в теме' : 'Скопируйте текст вручную'); });
     window.open(THREAD + 'latest', '_blank', 'noopener');
