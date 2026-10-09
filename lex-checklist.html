@@ -20746,7 +20746,8 @@ button,input,select,textarea{font:inherit}
 .brand{display:flex;align-items:center;gap:8px;min-width:0}
 .brand .ic{width:24px;height:24px;flex:0 0 24px}
 .brand b{font-size:14px;line-height:1.2;color:var(--accent)}
-.top .x{grid-column:3;grid-row:1;background:transparent;border:0;color:var(--muted);font-size:19px;line-height:1;padding:2px 6px;border-radius:5px;cursor:pointer}
+.top .xs{grid-column:3;grid-row:1;display:flex;gap:2px}
+.top .x{background:transparent;border:0;color:var(--muted);font-size:19px;line-height:1;padding:2px 6px;border-radius:5px;cursor:pointer}
 .top .x:hover{color:var(--text);background:var(--panel2)}
 .tools{grid-column:2;grid-row:1;display:grid;gap:4px}
 .trow{display:flex;gap:5px}
@@ -20830,7 +20831,7 @@ button,input,select,textarea{font:inherit}
 
 @media(max-width:900px){
   .top{grid-template-columns:1fr auto}
-  .top .x{grid-column:2}
+  .top .xs{grid-column:2}
   .tools{grid-column:1/-1;grid-row:2}
   .layout{grid-template-columns:1fr}
   .form{position:relative;top:auto;max-height:none}
@@ -20870,7 +20871,7 @@ body.pdfmode .pages .page{zoom:1}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><b>Договор на оказание юридических услуг</b></div>
-  <button class="x" id="close" type="button" aria-label="Закрыть" title="Закрыть">✕</button>
+  <div class="xs"><button class="x" id="themeBtn" type="button" title="Светлая / тёмная тема">☀</button><button class="x" id="close" type="button" aria-label="Закрыть" title="Закрыть">✕</button></div>
   <div class="tools"><span class="state" id="status" hidden></span>
     <div class="trow">
       <button class="btn" id="myBtn" title="Сохранённые договоры и дополнения к ним">Мои договоры</button>
@@ -20934,8 +20935,8 @@ body.pdfmode .pages .page{zoom:1}
 </div>
 <p class="hint" id="noHint"></p>
 <div class="lbl" style="margin-top:12px">Дополнительные условия при задержании и спорах с госструктурами</div>
-<label class="chk"><input type="checkbox" id="cSilence" checked disabled><span><b>Хранить молчание</b> — при задержании не свидетельствовать против себя; говорить только о вызове адвоката и звонке <i>(обязательно)</i></span></label>
-<label class="chk" style="margin-top:5px"><input type="checkbox" id="cLaw" checked disabled><span><b>Соблюдение законодательства</b> — всегда иметь действующие лицензии (охота, рыбная ловля и др.) и медкарту <i>(обязательно)</i></span></label>
+<label class="chk"><input type="checkbox" id="cSilence" checked><span><b>Хранить молчание</b> — при задержании не свидетельствовать против себя; говорить только о вызове адвоката и звонке</span></label>
+<label class="chk" style="margin-top:5px"><input type="checkbox" id="cLaw" checked><span><b>Соблюдение законодательства</b> — всегда иметь действующие лицензии (охота, рыбная ловля и др.) и медкарту</span></label>
 <label class="chk" style="margin-top:5px"><input type="checkbox" id="cPolite"><span><b>Уважительное общение</b> — не выражаться, не отвечать на провокации</span></label>
 <label class="chk" style="margin-top:5px"><input type="checkbox" id="cCam"><span><b>Бодикамера</b> — запись всё время правонарушения и задержания (по желанию)</span></label>
 <label class="chk" style="margin-top:10px"><input type="checkbox" id="sigOn" checked><span>Подписи сторон рукописным шрифтом</span></label>
@@ -21240,7 +21241,7 @@ SERVICES.forEach(s=>{
   svcState[s.id] = { on: saved.on !== undefined ? !!saved.on : true, a: saved.a !== undefined ? saved.a : s.a, b: saved.b !== undefined ? saved.b : s.b, c: saved.c !== undefined ? saved.c : s.c };
 });
 function saveCfg(){
-  LS.put(CFG_KEY, { svc: svcState, lawyerFirm: val('lawyerFirm'), days: val('days'), hours: val('hours'), sigOn: $('sigOn').checked, polite: $('cPolite').checked, cam: $('cCam').checked });
+  LS.put(CFG_KEY, { svc: svcState, lawyerFirm: val('lawyerFirm'), days: val('days'), hours: val('hours'), sigOn: $('sigOn').checked, silence: $('cSilence').checked, law: $('cLaw').checked, polite: $('cPolite').checked, cam: $('cCam').checked });
 }
 
 /* ---------- форма прайса ---------- */
@@ -21332,7 +21333,7 @@ function render(){
   $('docCallP').hidden = !(svcState.detain.on || svcState.bail.on);
   // дополнительные условия: нумерация 3.2.3… идёт подряд по включённым
   let cn = 2; const nums = [];
-  [['silence', true], ['law', true], ['polite', $('cPolite').checked], ['cam', $('cCam').checked]].forEach(([k, on])=>{
+  [['silence', $('cSilence').checked], ['law', $('cLaw').checked], ['polite', $('cPolite').checked], ['cam', $('cCam').checked]].forEach(([k, on])=>{
     const p = document.querySelector('#flowSrc [data-cond="' + k + '"]'); if(!p) return;
     p.hidden = !on; if(on){ cn++; const num = '3.2.' + cn; p.querySelector('.cn').textContent = num; nums.push(num); }
   });
@@ -21536,10 +21537,12 @@ function applyProfile(p, replace){
   const st = $('status'); st.textContent = 'Профиль Lex подключён'; st.classList.add('ok');
 }
 const inLex = parent !== window;
+function themePref(){ try{ return localStorage.getItem('lex_contract_theme') || ''; }catch(e){ return ''; } }
+function setTheme(t){ document.documentElement.dataset.theme = t; const b = document.getElementById('themeBtn'); if(b) b.textContent = t === 'light' ? '☾' : '☀'; }
 function send(type, extra){ if(inLex) parent.postMessage(Object.assign({ channel: 'lex-contract-module', type }, extra || {}), '*'); }
 window.addEventListener('message', e=>{
   if(e.source !== parent || !e.data || e.data.channel !== 'lex-contract-host') return;
-  if(e.data.type === 'context'){ document.documentElement.dataset.theme = e.data.theme === 'light' ? 'light' : 'dark'; applyProfile(e.data.profile || {}, !!e.data.refresh); }
+  if(e.data.type === 'context'){ if(!themePref()) setTheme(e.data.theme === 'light' ? 'light' : 'dark'); applyProfile(e.data.profile || {}, !!e.data.refresh); }
 });
 
 let tt; function toast(s){ const t = $('toast'); t.textContent = s; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=> t.classList.remove('show'), 2600); }
@@ -21556,7 +21559,7 @@ const UP_ERR = {
 /* ---------- сохранённые договоры и дополнения (локально; позже — в профиль) ---------- */
 const DOCS_KEY = 'lex_contracts_v1';
 const SAVE_IDS = ['lawyerName', 'lawyerId', 'lawyerLicense', 'lawyerPhone', 'lawyerEmail', 'lawyerFirm', 'clientName', 'clientPassport', 'clientPhone', 'clientEmail', 'orgName', 'repName', 'repPassport', 'repPosition', 'repPhone', 'repEmail', 'orgStaff', 'cNo', 'date', 'days', 'hours', 'pubCopy', 'pubProof'];
-const SAVE_CHK = ['cPolite', 'cCam', 'sigOn'];
+const SAVE_CHK = ['cSilence', 'cLaw', 'cPolite', 'cCam', 'sigOn'];
 function docsLoad(){ const a = LS.get(DOCS_KEY, []); return Array.isArray(a) ? a : []; }
 function docsSave(a){ LS.put(DOCS_KEY, a); }
 function snapshot(){
@@ -21677,6 +21680,8 @@ function wire(){
   if(cfg.days) $('days').value = cfg.days;
   if(cfg.hours) $('hours').value = cfg.hours;
   if(cfg.sigOn === false) $('sigOn').checked = false;
+  if(cfg.silence === false) $('cSilence').checked = false;
+  if(cfg.law === false) $('cLaw').checked = false;
   if(cfg.polite) $('cPolite').checked = true;
   if(cfg.cam) $('cCam').checked = true;
   noHint();
@@ -21686,7 +21691,7 @@ function wire(){
     if(['lawyerFirm', 'days', 'hours'].indexOf(e.target.id) !== -1) saveCfg();
     render();
   });
-  form.addEventListener('change', e=>{ if(['sigOn', 'cPolite', 'cCam'].indexOf(e.target.id) !== -1) saveCfg(); render(); });
+  form.addEventListener('change', e=>{ if(['sigOn', 'cSilence', 'cLaw', 'cPolite', 'cCam'].indexOf(e.target.id) !== -1) saveCfg(); render(); });
   $('clientType').addEventListener('click', e=>{
     const b = e.target.closest('[data-ct]'); if(!b) return;
     CT = b.dataset.ct; $('clientType').querySelectorAll('[data-ct]').forEach(x=> x.classList.toggle('on', x === b)); render();
@@ -21709,6 +21714,8 @@ function wire(){
     }).catch(()=>{ $('addMsg').className = 'msg err'; $('addMsg').textContent = UP_ERR.lib; }).finally(()=>{ b.disabled = false; });
   };
   $('refresh').onclick = ()=> send('request-context', { refresh: true });
+  setTheme(themePref() || document.documentElement.dataset.theme || 'dark');
+  $('themeBtn').onclick = ()=>{ const t = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light'; try{ localStorage.setItem('lex_contract_theme', t); }catch(e){} setTheme(t); };
   $('close').onclick = ()=> inLex ? send('close') : window.close();
   $('print').onclick = ()=>{ if(gate().length){ toast('Заполните обязательные поля'); return; } saveCurrent(true); window.print(); };
   $('pdfBtn').onclick = ()=>{
