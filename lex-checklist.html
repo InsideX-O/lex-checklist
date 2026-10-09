@@ -20870,6 +20870,12 @@ body.pdfmode .pages .page{zoom:1}
 .mytitle{margin-bottom:6px}.myacts{display:flex;gap:6px;flex-wrap:wrap}
 .myadd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);font-size:12.5px;color:var(--muted)}
 .field input[readonly]{opacity:.8}
+
+.lblrow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lblrow .btn{text-transform:none;letter-spacing:0;padding:3px 9px;font-size:12px}
+.pubbtns .btn{flex:1 1 0;white-space:nowrap}
+.pubdesc{margin:8px 0 4px;padding-left:18px;font-size:11.5px;color:var(--muted)}
+.pubdesc b{color:var(--text)}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><b>Договор на оказание юридических услуг</b></div>
@@ -20880,11 +20886,6 @@ body.pdfmode .pages .page{zoom:1}
       <button class="btn" id="newBtn" title="Начать новый договор">＋ Новый</button>
       <button class="btn" id="saveBtn" title="Сохранить договор в этом браузере">💾 Сохранить</button>
     </div>
-    <div class="trow">
-      <button class="btn" id="refresh" title="Подгрузить из профиля Lex заново">↓ Из профиля</button>
-      <button class="btn" id="pdfBtn" title="Скачать договор файлом PDF">⬇ PDF</button>
-      <button class="btn" id="uploadBtn" title="Собрать PDF и загрузить в облако Lex — ссылка вставится в п. 4 публикации">☁ Загрузить</button>
-    </div>
   </div>
 </header>
 <main class="layout"><aside class="form">
@@ -20892,7 +20893,7 @@ body.pdfmode .pages .page{zoom:1}
 <div class="miss" id="missBox" hidden></div>
 
 <div id="mainForm">
-<div class="lbl">1. Исполнитель</div>
+<div class="lbl lblrow">1. Исполнитель <button type="button" class="btn" id="refresh" title="Подгрузить данные из профиля Lex">↓ Из профиля</button></div>
 <div class="grid">
   <label class="field full">Статус<input id="lawyerRole" value="Частный адвокат" readonly></label>
   <label class="field full">Имя и фамилия<input id="lawyerName" placeholder="из профиля Lex"></label>
@@ -20950,14 +20951,19 @@ body.pdfmode .pages .page{zoom:1}
   <label class="field full">4. Ксерокопия договора — ссылка<input id="pubCopy" placeholder="загрузите PDF кнопкой ниже или вставьте ссылку"></label>
   <label class="field full">5. Доказательства составления и подписей — ссылка<input id="pubProof" placeholder="видео / альбом imgur со скриншотами подписания"></label>
 </div>
-<div class="msg" id="upMsg"></div>
-<textarea class="out" id="pubOut" spellcheck="false"></textarea>
-<div class="btnrow">
-  <button class="btn primary" id="pubForum">Скопировать и открыть тему ↗</button>
-  <button class="btn" id="pubCopyBtn">Скопировать</button>
-  <button class="btn" id="pubRebuild">Пересобрать</button>
+<textarea id="pubOut" hidden></textarea>
+<div class="btnrow pubbtns">
+  <button class="btn" id="uploadBtn">☁ Загрузить</button>
+  <button class="btn" id="pdfBtn">⬇ PDF</button>
+  <button class="btn primary" id="pubForum">Создать тему ↗</button>
 </div>
-<p class="hint">Лицензию и почту адвоката сверяйте с <a href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer">реестром лицензий частных адвокатов ↗</a>. Договор публикуется в теме «SA-GOV · Договоры Коллегии Адвокатов» (ст. 6.1 Закона о деятельности Коллегии Адвокатов). Заключать договор в КПЗ, ФТ или во время процессуальных действий нельзя (ст. 6.6).</p>
+<div class="msg" id="upMsg"></div>
+<ol class="pubdesc">
+  <li><b>Загрузить</b> — собирает PDF и вставляет ссылку в п. 4.</li>
+  <li><b>PDF</b> — скачивает договор файлом.</li>
+  <li><b>Создать тему</b> — копирует текст и открывает форум, вставьте ответом.</li>
+</ol>
+<p class="hint">Публикация — в теме «SA-GOV · Договоры Коллегии Адвокатов» (ст. 6.1 Закона о деятельности Коллегии Адвокатов). Лицензию и почту сверяйте с <a href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer">реестром ↗</a>. Заключать договор в КПЗ, ФТ или при процессуальных действиях нельзя (ст. 6.6).</p>
 <div class="btnrow"><button class="btn" id="clearClient">Очистить заказчика</button></div>
 </div>
 <div id="addPanel" hidden>
@@ -20969,7 +20975,7 @@ body.pdfmode .pages .page{zoom:1}
   <label class="field full">Содержание — по одному пункту в строке<textarea id="addText" placeholder="напр. Добавить услугу «Обращение в ОГП» стоимостью 20 000 $"></textarea></label>
   <label class="field full">Ссылка на PDF дополнения (после загрузки)<input id="addLink" placeholder="загрузите PDF кнопкой ниже или вставьте ссылку"></label>
 </div>
-<div class="btnrow"><button class="btn primary" id="addUpload">☁ Загрузить PDF и вставить ссылку</button><button class="btn" id="addBack">← К договору</button></div>
+<div class="btnrow"><button class="btn primary" id="addUpload">☁ Загрузить PDF и вставить ссылку</button><button class="btn" id="addPdf">⬇ PDF</button><button class="btn" id="addBack">← К договору</button></div>
 <div class="msg" id="addMsg"></div>
 </div>
 </aside>
@@ -21504,7 +21510,7 @@ function gate(){
   } else { box.hidden = true; box.textContent = ''; }
   const links = URL_RE.test(val('pubCopy')) && URL_RE.test(val('pubProof'));
   const au = $('addUpload'); if(au) au.disabled = m.length > 0;
-  ['pdfBtn', 'uploadBtn', 'pubCopyBtn'].forEach(id=>{ const e = $(id); if(e) e.disabled = m.length > 0; });
+  ['pdfBtn', 'addPdf', 'uploadBtn'].forEach(id=>{ const e = $(id); if(e) e.disabled = m.length > 0; });
   const pf = $('pubForum'); if(pf){ pf.disabled = m.length > 0 || !links; pf.title = m.length ? 'Сначала заполните обязательные поля' : (links ? '' : 'Нужны обе ссылки: ксерокопия договора и доказательства'); }
   return m;
 }
@@ -21736,6 +21742,7 @@ function wire(){
       setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 4000); toast('PDF скачан');
     }).catch(()=> toast(UP_ERR.lib)).finally(()=>{ b.disabled = false; b.textContent = '⬇ PDF'; });
   };
+  $('addPdf').onclick = ()=> $('pdfBtn').onclick();
   $('uploadBtn').onclick = ()=>{
     if(gate().length){ msg('Заполните обязательные поля — пока ничего не загружаем.', 'err'); return; }
     const up = inLex && parent.LexContractUpload;
@@ -21751,8 +21758,6 @@ function wire(){
       else msg(UP_ERR[r && r.error] || ('Не загрузилось (' + (r && r.error) + ').'), 'err');
     }).catch(()=> msg(UP_ERR.lib, 'err')).finally(()=>{ b.disabled = false; });
   };
-  $('pubRebuild').onclick = ()=>{ pubDirty = false; renderPub(true); };
-  $('pubCopyBtn').onclick = ()=> gate().length ? toast('Заполните обязательные поля') : copy($('pubOut').value).then(ok=> toast(ok ? 'Текст публикации скопирован' : 'Скопируйте текст из поля вручную'));
   $('pubForum').onclick = ()=>{
     if(gate().length || !(URL_RE.test(val('pubCopy')) && URL_RE.test(val('pubProof')))){ toast('Нужны все обязательные поля и обе ссылки'); return; }
     const n = +(val('cNo').replace(/[^\d]/g, '')); if(n) LS.put(NO_KEY, Math.max(n, +(LS.get(NO_KEY, 0)) || 0));
