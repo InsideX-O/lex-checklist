@@ -1715,6 +1715,31 @@
   .ogp-soft p{ margin:2px 0; }
   #ogp-modal .btnrow button:disabled{ opacity:.45; cursor:not-allowed; }
   @media (max-width:640px){ .ogp-row{ grid-template-columns:minmax(0,1fr) auto; } .ogp-row .ogp-cap{ grid-column:1 / -1; } .ogp-row .ogp-tc{ grid-column:1 / -1; } }
+  .ogp-capw{ min-width:0; }
+  .ogp-row .ogp-capx, .ogp-row .ogp-tc{ grid-column:1 / 3; }
+  .ogp-row .ogp-capx[hidden]{ display:none; }
+  .ogp-sv{ display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; padding:6px 8px; margin-top:5px; border:1px solid var(--border); border-radius:8px; background:var(--panel2); font-size:12px; }
+  .ogp-sva{ display:flex; gap:5px; flex-wrap:wrap; }
+  .ogp-sva button{ padding:3px 8px; font-size:11.5px; }
+  #ogp_saved{ margin-top:12px; }
+  #ogp_saved summary{ cursor:pointer; color:var(--accent); font-weight:700; font-size:12.5px; }
+  /* оформление окна -- как у окна договора: золотые заголовки блоков, поля и кнопки того же вида */
+  #ogp-modal{ width:min(860px,100%) !important; }
+  #ogp-modal .law-modal-head{ background:var(--panel); border-bottom:1px solid var(--border); }
+  #ogp-modal .law-modal-titles h3{ color:var(--accent); font-size:15px; }
+  #ogp-modal .law-modal-titles h3::before{ content:'⚖'; display:inline-grid; place-items:center; width:30px; height:30px; margin-right:9px; border:1.5px solid var(--accent); border-radius:50%; font-size:15px; vertical-align:middle; }
+  #ogp-body .card-group-label{ margin:16px 0 6px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); font-weight:700; display:flex; align-items:center; gap:8px; }
+  #ogp-body .field{ font-size:11.5px; color:var(--muted); }
+  #ogp-body .field input[type=text], #ogp-body .field textarea{ background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:7px 9px; color:var(--text); outline:none; }
+  #ogp-body .field input[type=text]:focus, #ogp-body .field textarea:focus{ border-color:var(--accent); }
+  #ogp-body .basis-btns{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
+  #ogp-body .basis-btns .basis-btn{ flex:1; border-radius:999px; font-weight:600; font-size:12px; padding:5px 10px; }
+  #ogp-body .basis-btns .basis-btn.active{ border-color:var(--accent); color:var(--accent); background:rgba(var(--accent-rgb),.12); }
+  #ogp-body .btnrow{ display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+  #ogp-body .btnrow button, #ogp-body .ogp-add, #ogp-body .ogp-del, #ogp-body .ogp-sva button{ background:transparent; border:1px solid var(--border); border-radius:7px; color:var(--text); cursor:pointer; font-weight:600; font-size:12.5px; padding:6px 10px; }
+  #ogp-body .btnrow button:hover, #ogp-body .ogp-add:hover, #ogp-body .ogp-sva button:hover{ background:rgba(var(--accent-rgb),.10); }
+  #ogp-body .btnrow button.primary{ background:var(--accent); border-color:var(--accent); color:var(--on-accent, #1a1305); }
+  #ogp_out{ background:var(--bg); border:1px solid var(--border); border-radius:7px; color:var(--text); }
 </style>
 </head>
 <body>
@@ -3044,8 +3069,6 @@
         <span class="ogp-need" data-need="f_ogp_date"></span>
       </label>
       <input type="hidden" id="f_ogp_lists" value="">
-      <datalist id="ogp_ev_caps"><option value="Видео задержания"></option><option value="Видео с бодикамеры"></option><option value="Запись камеры наблюдения"></option><option value="Скриншоты переписки"></option><option value="Видео нарушения"></option></datalist>
-      <datalist id="ogp_doc_caps"><option value="Договор об оказании юридических услуг"></option><option value="Копия лицензии / удостоверения адвоката"></option><option value="Медицинская справка"></option><option value="Протокол / постановление"></option></datalist>
       
       <div class="card-group-label">4. Текст</div>
       <div class="basis-btns" id="ogp_kind_seg"><button type="button" class="basis-btn active" data-kind="bb">Бланк для форума (BBCode)</button><button type="button" class="basis-btn" data-kind="txt">Материал текстом</button></div>
@@ -3059,6 +3082,7 @@
         <button type="button" id="ogp_dl">Скачать .txt</button>
         <button type="button" id="ogp_rebuild">Пересобрать</button>
       </div>
+      <details id="ogp_saved"><summary id="ogp_saved_sum">Сохранённые обращения</summary><div id="ogp_saved_list"></div></details>
     </div>
   </div>
 </div>
@@ -8709,18 +8733,31 @@ function buildOgpBBCode(){
 
 // ---- окно: строки списков ----
 let OGP_ROWS_ON = false;
+const OGP_CAPS = {
+  ev: ['Видео задержания', 'Видео с бодикамеры', 'Запись камеры наблюдения', 'Скриншоты переписки', 'Видео нарушения'],
+  doc: ['Договор об оказании юридических услуг', 'Копия лицензии / удостоверения адвоката', 'Медицинская справка', 'Протокол / постановление']
+};
 function ogpRowEl(kind, r){
   const row = document.createElement('div'); row.className = 'ogp-row'; row.dataset.rk = kind;
-  const mk = (cls, ph, val0, list)=>{
+  const mk = (cls, ph, val0)=>{
     const i = document.createElement('input'); i.type = 'text'; i.className = cls; i.placeholder = ph; i.value = val0 || '';
-    i.dataset.derived = '1'; if(list) i.setAttribute('list', list); return i;
+    i.dataset.derived = '1'; return i;
   };
-  row.appendChild(mk('ogp-cap', kind === 'ev' ? 'Подпись: напр. «Видео задержания»' : 'Подпись: напр. «Договор»', r.c, kind === 'ev' ? 'ogp_ev_caps' : 'ogp_doc_caps'));
+  const w = document.createElement('div'); w.className = 'ogp-capw';
+  const sel = document.createElement('select'); sel.className = 'ogp-cap';
+  [['', 'Подпись ссылки…']].concat(OGP_CAPS[kind].map(x=> [x, x]), [['__other', 'Другое — свой текст']]).forEach(([v, t])=>{
+    const o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o);
+  });
+  const inList = OGP_CAPS[kind].indexOf(r.c) >= 0;
+  sel.value = !r.c ? '' : (inList ? r.c : '__other');
+  w.appendChild(sel); row.appendChild(w);
   row.appendChild(mk('ogp-url', 'https://…', r.u));
   const del = document.createElement('button'); del.type = 'button'; del.className = 'ogp-del'; del.dataset.del = '1'; del.textContent = '✕'; del.title = 'Убрать строку';
   row.appendChild(del);
+  const cx = mk('ogp-capx', 'свой текст подписи', inList ? '' : r.c); cx.hidden = sel.value !== '__other'; row.appendChild(cx);
   if(kind === 'ev') row.appendChild(mk('ogp-tc', 'тайм-коды (видео дольше 3 минут)', r.t));
   const rn = document.createElement('span'); rn.className = 'ogp-need ogp-rn'; row.appendChild(rn);
+  if(window.lexEnhanceSelect) window.lexEnhanceSelect(sel);
   return row;
 }
 function ogpRowsRender(){
@@ -8738,7 +8775,8 @@ function ogpRowsRead(){
   [['ev', 'ogp_ev_rows'], ['doc', 'ogp_doc_rows']].forEach(([k, id])=>{
     document.querySelectorAll('#' + id + ' .ogp-row').forEach(row=>{
       const g = c=> { const e = row.querySelector('.' + c); return e ? e.value : ''; };
-      L[k].push({ c: g('ogp-cap'), u: g('ogp-url'), t: g('ogp-tc') });
+      const sv = g('ogp-cap'), cx = row.querySelector('.ogp-capx'); if(cx) cx.hidden = sv !== '__other';
+      L[k].push({ c: sv === '__other' ? g('ogp-capx') : sv, u: g('ogp-url'), t: g('ogp-tc') });
     });
   });
   ogpListsSave(L);
@@ -8873,6 +8911,55 @@ function ogpMirrorPush(m){
     if(e.target.closest('#ogp_partner_add')){ setPartnerVisible(true); OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); }
     else if(e.target.closest('#ogp_partner_del')){ setPartnerVisible(false); OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); }
   });
+})();
+
+// ---- сохранённые обращения (локально; позже -- в профиль) ----
+const OGP_DOCS_KEY = 'lex_docs_ogp';
+function ogpDocsLoad(){ try { const a = JSON.parse(localStorage.getItem(OGP_DOCS_KEY) || '[]'); return Array.isArray(a) ? a : []; } catch(e){ return []; } }
+function ogpDocsSave(a){ try { localStorage.setItem(OGP_DOCS_KEY, JSON.stringify(a.slice(-30))); } catch(e){} }
+function ogpSaveDoc(){
+  const t = (document.getElementById('ogp_out') || {}).value || '';
+  const i = t.indexOf('--- ниже вставлять на форум как есть ---');
+  if(i < 0) return;
+  const body = t.slice(i + '--- ниже вставлять на форум как есть ---'.length).replace(/^\s*\n/, '');
+  const a = ogpDocsLoad();
+  const rec = { id: 'o' + Date.now().toString(36), saved: new Date().toISOString(), applicant: val('f_ogp_applicant') || '—', suspect: val('f_ogp_suspect') || val('f_badge_num') || '—', text: body };
+  if(a.length && a[a.length - 1].text === body) a[a.length - 1].saved = rec.saved; else a.push(rec);
+  ogpDocsSave(a); ogpSavedRender();
+}
+function ogpSavedRender(){
+  const box = document.getElementById('ogp_saved_list'), sm = document.getElementById('ogp_saved_sum'); if(!box) return;
+  const a = ogpDocsLoad().slice().reverse();
+  if(sm) sm.textContent = 'Сохранённые обращения (' + a.length + ')';
+  while(box.firstChild) box.removeChild(box.firstChild);
+  if(!a.length){ const p = document.createElement('p'); p.className = 'empty-hint'; p.textContent = 'Обращение сохраняется здесь, когда вы копируете или скачиваете готовый бланк.'; box.appendChild(p); return; }
+  a.forEach(r=>{
+    const row = document.createElement('div'); row.className = 'ogp-sv';
+    const d = new Date(r.saved);
+    const t = document.createElement('span'); t.textContent = String(d.getDate()).padStart(2, '0') + '.' + String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear() + ' · заявитель ' + r.applicant + ' · сотрудник ' + r.suspect;
+    const acts = document.createElement('span'); acts.className = 'ogp-sva';
+    const mkb = (txt, act)=>{ const b = document.createElement('button'); b.type = 'button'; b.textContent = txt; b.dataset.svAct = act; b.dataset.svId = r.id; return b; };
+    acts.append(mkb('Скопировать', 'copy'), mkb('Скачать .txt', 'dl'), mkb('✕', 'del'));
+    row.append(t, acts); box.appendChild(row);
+  });
+}
+(function wireOgpSaved(){
+  const ov = document.getElementById('ogp-overlay'); if(!ov) return;
+  ov.addEventListener('click', e=>{
+    const sv = e.target.closest('[data-sv-act]');
+    if(sv){
+      const a = ogpDocsLoad(), r = a.find(x=> x.id === sv.dataset.svId); if(!r) return;
+      if(sv.dataset.svAct === 'copy'){ const ok = copyPlain(r.text); const n = document.getElementById('ogp_edit_note'); if(n) n.textContent = ok ? 'Сохранённое обращение скопировано.' : 'Скопировать не удалось.'; }
+      else if(sv.dataset.svAct === 'dl'){
+        const blob = new Blob([r.text], { type: 'text/plain;charset=utf-8' }), url = URL.createObjectURL(blob), l = document.createElement('a');
+        l.href = url; l.download = 'обращение_ОГП.txt'; document.body.appendChild(l); l.click(); document.body.removeChild(l); URL.revokeObjectURL(url);
+      } else { ogpDocsSave(a.filter(x=> x.id !== r.id)); ogpSavedRender(); }
+      return;
+    }
+    const b = e.target.closest('#ogp_copy, #ogp_copy_forum, #ogp_dl');
+    if(b && !b.disabled) ogpSaveDoc();
+  });
+  ogpSavedRender();
 })();
 
 const BB_BODY_MARK = '--- ниже вставлять на форум как есть ---';
@@ -13248,6 +13335,7 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
   }
 
   document.querySelectorAll('select').forEach(enhance);
+  window.lexEnhanceSelect = enhance;
 
   // глобальная пересинхронизация -- нужна там, где значение меняют без события
   // change (например resetForm ставит selectedIndex = 0 напрямую)
@@ -20731,10 +20819,21 @@ body.pdfmode .pages .page{zoom:1}
 .field input.need,.field select.need,.field textarea.need{border-color:var(--req)}
 .btn[disabled]{opacity:.45;cursor:not-allowed}
 .chk input:disabled{opacity:.8}
+
+.mybox{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.55);display:grid;place-items:start center;padding:50px 14px;overflow:auto}
+.mybox[hidden]{display:none}
+.mycard{width:min(720px,100%);background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.myhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}.myhead b{color:var(--accent);flex:1;font-size:15px}.myhead .hint{margin:0;flex-basis:100%;order:3}
+.myrow{border:1px solid var(--border);border-radius:9px;padding:8px 10px;margin-bottom:7px;background:var(--panel2)}
+.mytitle{margin-bottom:6px}.myacts{display:flex;gap:6px;flex-wrap:wrap}
+.myadd{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);font-size:12.5px;color:var(--muted)}
+.field input[readonly]{opacity:.8}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><div><b>Договор на оказание юридических услуг</b><small>Lex · частный адвокат · публикация на портале штата</small></div></div>
   <div class="actions"><span class="state" id="status">Ожидаю Lex</span>
+    <button class="btn" id="myBtn" title="Сохранённые договоры и дополнения к ним">Мои договоры</button>
+    <button class="btn" id="saveBtn" title="Сохранить договор в этом браузере">💾 Сохранить</button>
     <button class="btn" id="refresh" title="Подставить данные из профиля Lex заново">↻ Профиль</button>
     <button class="btn" id="pdfBtn" title="Скачать договор файлом PDF">⬇ PDF</button>
     <button class="btn" id="print" title="Печать или «Сохранить как PDF» средствами браузера">Печать</button>
@@ -20744,14 +20843,15 @@ body.pdfmode .pages .page{zoom:1}
 <p class="sub">Поля → договор справа обновляется сразу. Внизу — готовый текст публикации для темы «Договоры Коллегии Адвокатов».</p>
 <div class="miss" id="missBox" hidden></div>
 
+<div id="mainForm">
 <div class="lbl">1. Исполнитель</div>
 <div class="grid">
-  <label class="field full">Статус<select id="lawyerRole"><option value="Частный адвокат" selected>Частный адвокат</option></select></label>
+  <label class="field full">Статус<input id="lawyerRole" value="Частный адвокат" readonly></label>
   <label class="field full">Имя и фамилия<input id="lawyerName" placeholder="из профиля Lex"></label>
   <label class="field">№ паспорта (ID)<input id="lawyerId" placeholder="из профиля"></label>
-  <label class="field">Лицензия <a class="reg" href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer" title="Реестр лицензий частных адвокатов">реестр ↗</a><input id="lawyerLicense" placeholder="PLSA 0000"></label>
   <label class="field">Телефон<input id="lawyerPhone" placeholder="вручную"></label>
   <label class="field">Почта<input id="lawyerEmail" placeholder="как в реестре лицензий"></label>
+  <label class="field">Лицензия <a class="reg" href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer" title="Реестр лицензий частных адвокатов">реестр ↗</a><input id="lawyerLicense" placeholder="PLSA 0000"></label>
   <label class="field full">Юридическая фирма (если состоите)<input id="lawyerFirm" placeholder="пусто — договор от своего имени"></label>
 </div>
 <p class="hint" id="firmHint" hidden>Состоите в фирме — договор заключается через неё и с её логотипом (ст. 7.2 Закона о деятельности Коллегии Адвокатов).</p>
@@ -20810,6 +20910,19 @@ body.pdfmode .pages .page{zoom:1}
 </div>
 <p class="hint">Лицензию и почту адвоката сверяйте с <a href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer">реестром лицензий частных адвокатов ↗</a>. Договор публикуется в теме «SA-GOV · Договоры Коллегии Адвокатов» (ст. 6.1 Закона о деятельности Коллегии Адвокатов). Заключать договор в КПЗ, ФТ или во время процессуальных действий нельзя (ст. 6.6).</p>
 <div class="btnrow"><button class="btn" id="clearClient">Очистить заказчика</button></div>
+</div>
+<div id="addPanel" hidden>
+<div class="lbl">Дополнение к договору</div>
+<p class="hint" id="addInfo"></p>
+<div class="grid">
+  <label class="field">№ дополнения<input id="addNo" inputmode="numeric"></label>
+  <label class="field">Дата<input id="addDate" type="date"></label>
+  <label class="field full">Содержание — по одному пункту в строке<textarea id="addText" placeholder="напр. Добавить услугу «Обращение в ОГП» стоимостью 20 000 $"></textarea></label>
+  <label class="field full">Ссылка на PDF дополнения (после загрузки)<input id="addLink" placeholder="загрузите PDF кнопкой ниже или вставьте ссылку"></label>
+</div>
+<div class="btnrow"><button class="btn primary" id="addUpload">☁ Загрузить PDF и вставить ссылку</button><button class="btn" id="addBack">← К договору</button></div>
+<div class="msg" id="addMsg"></div>
+</div>
 </aside>
 
 <section><div class="preview-head"><b>Предпросмотр</b><span id="pgInfo">A4</span></div>
@@ -20865,7 +20978,7 @@ body.pdfmode .pages .page{zoom:1}
     <p><b>5.1</b> Споры между Сторонами разрешаются путём переговоров; претензии излагаются любым доступным способом. Не урегулированный спор передаётся в суд штата Сан-Андреас.</p>
 <h2>6. Заключительные положения</h2>
     <p><b>6.1</b> Договор вступает в силу с момента подписания Сторонами и публикации на портале штата и действует <b data-v="days"></b> дней. Действие может быть продлено дополнительным соглашением.</p>
-    <p><b>6.2</b> Изменения вносятся по взаимному согласию Сторон дополнительным соглашением; приложения являются неотъемлемой частью Договора.</p>
+    <p><b>6.2</b> Изменения вносятся по взаимному согласию Сторон дополнительным соглашением; приложения являются неотъемлемой частью Договора. Дополнения к Договору допускаются в любое время в течение срока его действия, оформляются отдельными документами и нумеруются по порядку («Дополнение № 1», «Дополнение № 2» и далее); подписанное Дополнение является неотъемлемой частью Договора.</p>
     <p><b>6.3</b> Договор составлен в двух экземплярах, имеющих равную юридическую силу, по одному для каждой из Сторон.</p>
     <p>Я, <b data-v="signerName"></b>, <span data-show="org" hidden>действуя от имени организации «<b data-v="orgName"></b>», </span>ознакомившись с предметом Договора, стоимостью услуг, правами и обязанностями Сторон, даю согласие на оказание услуг и оплачиваю <b data-v="totalNow"></b>.</p>
     <h2>7. Реквизиты и подписи сторон</h2>
@@ -20879,9 +20992,9 @@ body.pdfmode .pages .page{zoom:1}
       <div class="party"><h3>Исполнитель</h3><div class="req">
         <span>Имя Фамилия</span><b data-v="lawyerName"></b>
         <span>Паспорт №</span><b data-v="lawyerId"></b>
-        <span>Лицензия</span><b data-v="lawyerLicense"></b>
         <span>Телефон</span><b data-v="lawyerPhone"></b>
-        <span>Почта</span><b data-v="lawyerEmail"></b></div></div>
+        <span>Почта</span><b data-v="lawyerEmail"></b>
+        <span>Лицензия</span><b data-v="lawyerLicense"></b></div></div>
     </div>
     <div class="signs" data-keep="prev">
       <div><div class="sig" data-v="signerName"></div><div class="sigline">Подпись Заказчика</div></div>
@@ -20890,6 +21003,8 @@ body.pdfmode .pages .page{zoom:1}
     </div>
 </div>
 </div></section></main>
+<div class="mybox" id="myBox" hidden><div class="mycard"><div class="myhead"><b>Мои договоры</b><span class="hint">хранятся в этом браузере; позже — в профиле</span><button class="btn" id="myNew">＋ Новый договор</button><button class="btn" id="myClose">✕</button></div><div id="myList"></div></div></div>
+<div id="addSrc" class="doc" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 <script>
 /* ===== графика договора: всё векторное, печатается чисто на любом масштабе ===== */
@@ -21067,6 +21182,7 @@ function money(v){ const n = num(v); return n == null ? '________ $' : String(n)
 
 /* ---------- состояние ---------- */
 let CT = 'ind';
+let MODE = 'contract', CUR = null, CUR_ADD = null;   // contract | add; CUR -- id сохранённого договора
 const cfg = (function(){
   const cur = LS.get(CFG_KEY, null); if(cur) return cur;
   // перенос из прежней версии: цены вызова и залога изменились (09.10.2026) — их прежние значения не берём
@@ -21135,15 +21251,16 @@ function render(){
     clientName: val('clientName'), clientPassport: val('clientPassport'), orgName: val('orgName'), repName: val('repName'),
     repPassport: val('repPassport'), repPosition: val('repPosition'),
     signerName: sg.name, signerPassport: sg.pass, signerPhone: sg.phone, signerEmail: sg.mail,
-    days: val('days'), hours: val('hours'), totalNow: totalNow()
+    days: val('days'), hours: val('hours'), totalNow: totalNow(), addNo: val('addNo'), addDate: dateFmt(val('addDate'))
   };
-  document.querySelectorAll('#flowSrc [data-v]').forEach(x=>{
+  document.querySelectorAll('#flowSrc [data-v], #addSrc [data-v]').forEach(x=>{
     const k = x.dataset.v, v = map[k] || '';
     const blank = x.classList.contains('sig') ? '' : (k === 'repPosition' ? 'должность' : '________________');
     x.textContent = v || blank; x.classList.toggle('empty', !v);
   });
   document.querySelectorAll('[data-v-wrap="firm"]').forEach(x=> x.hidden = !val('lawyerFirm'));
   document.querySelectorAll('[data-show]').forEach(x=> x.hidden = x.dataset.show !== CT);
+  fillAddPts();
   $('firmHint').hidden = !val('lawyerFirm');
   // предмет
   const scope = $('docScope'); scope.textContent = '';
@@ -21205,7 +21322,7 @@ function over(body){ return body.scrollHeight > body.clientHeight + 1; }
 function sticky(x){ return x && (x.tagName === 'H2' || x.tagName === 'H1' || /\b(ni|doc-sub)\b/.test(x.className || '')); }
 function layout(fs){
   const box = $('pages'); box.textContent = '';
-  const src = Array.from($('flowSrc').children).filter(x=> !x.hidden);
+  const src = Array.from($(MODE === 'add' ? 'addSrc' : 'flowSrc').children).filter(x=> !x.hidden);
   let n = 1, body = newPage(n);
   body.style.fontSize = fs + 'pt';
   const next = ()=>{ n++; body = newPage(n); body.style.fontSize = fs + 'pt'; return body; };
@@ -21248,7 +21365,7 @@ function paginate(){
     if(!best || pages.length < best.n || (pages.length === best.n && best.fill < .25 && fill > best.fill)) best = { fs, n: pages.length, fill };
   });
   const pages = layout(best.fs), no = val('cNo') || '____';
-  pages.forEach((p, i)=> p.querySelector('.pgno').textContent = 'Договор № ' + no + ' · стр. ' + (i + 1) + ' из ' + pages.length);
+  pages.forEach((p, i)=> p.querySelector('.pgno').textContent = (MODE === 'add' ? 'Дополнение № ' + (val('addNo') || '__') + ' к Договору № ' + no : 'Договор № ' + no) + ' · стр. ' + (i + 1) + ' из ' + pages.length);
   $('pgInfo').textContent = pages.length + ' ' + (pages.length === 1 ? 'лист' : pages.length < 5 ? 'листа' : 'листов') + ' · A4';
 }
 
@@ -21285,6 +21402,13 @@ function noHint(){
 /* ---------- обязательные поля: пока не заполнены — ничего не создаётся, не скачивается, не отправляется и не загружается ---------- */
 const URL_RE = /^https?:\/\/\S+\.\S+/i;
 function missing(){
+  if(MODE === 'add'){
+    const a = [];
+    if(!/\d/.test(val('addNo'))) a.push({ id: 'addNo', t: '№ дополнения' });
+    if(!val('addDate')) a.push({ id: 'addDate', t: 'Дата дополнения' });
+    if(!val('addText').split('\n').some(x=> x.trim())) a.push({ id: 'addText', t: 'Содержание дополнения — хотя бы один пункт' });
+    return a;
+  }
   const m = [];
   const need = (id, t, kind)=>{
     const v = val(id); let bad = !v;
@@ -21329,6 +21453,7 @@ function gate(){
     const ul = document.createElement('ul'); m.forEach(x=>{ const li = document.createElement('li'); li.textContent = x.t; ul.append(li); }); box.append(ul);
   } else { box.hidden = true; box.textContent = ''; }
   const links = URL_RE.test(val('pubCopy')) && URL_RE.test(val('pubProof'));
+  const au = $('addUpload'); if(au) au.disabled = m.length > 0;
   ['pdfBtn', 'print', 'uploadBtn', 'pubCopyBtn'].forEach(id=>{ const e = $(id); if(e) e.disabled = m.length > 0; });
   const pf = $('pubForum'); if(pf){ pf.disabled = m.length > 0 || !links; pf.title = m.length ? 'Сначала заполните обязательные поля' : (links ? '' : 'Нужны обе ссылки: ксерокопия договора и доказательства'); }
   return m;
@@ -21354,7 +21479,8 @@ function makePdf(){
     })), Promise.resolve()).then(()=> pdf.output('blob'));
   }).finally(()=>{ document.body.classList.remove('pdfmode'); paginate(); });
 }
-function pdfName(){ return 'dogovor-' + (val('cNo').replace(/[^\d]/g, '') || 'b-n') + '-' + (val('date') || 'date') + '.pdf'; }
+function pdfName(){
+  if(MODE === 'add') return 'dopolnenie-' + (val('addNo').replace(/[^\d]/g, '') || 'n') + '-k-dogovoru-' + (val('cNo').replace(/[^\d]/g, '') || 'b-n') + '-' + (val('addDate') || 'date') + '.pdf'; return 'dogovor-' + (val('cNo').replace(/[^\d]/g, '') || 'b-n') + '-' + (val('date') || 'date') + '.pdf'; }
 
 /* ---------- связь с Lex ---------- */
 function applyProfile(p, replace){
@@ -21382,10 +21508,126 @@ const UP_ERR = {
   network: 'Нет связи с облаком — проверьте интернет.', too_large: 'PDF больше 5 МБ.', lib: 'Не загрузились библиотеки PDF (cdn.jsdelivr.net) — проверьте интернет.'
 };
 
+
+/* ---------- сохранённые договоры и дополнения (локально; позже — в профиль) ---------- */
+const DOCS_KEY = 'lex_contracts_v1';
+const SAVE_IDS = ['lawyerName', 'lawyerId', 'lawyerLicense', 'lawyerPhone', 'lawyerEmail', 'lawyerFirm', 'clientName', 'clientPassport', 'clientPhone', 'clientEmail', 'orgName', 'repName', 'repPassport', 'repPosition', 'repPhone', 'repEmail', 'orgStaff', 'cNo', 'date', 'days', 'hours', 'pubCopy', 'pubProof'];
+const SAVE_CHK = ['cPolite', 'cCam', 'sigOn'];
+function docsLoad(){ const a = LS.get(DOCS_KEY, []); return Array.isArray(a) ? a : []; }
+function docsSave(a){ LS.put(DOCS_KEY, a); }
+function snapshot(){
+  const ids = {}; SAVE_IDS.forEach(i=> ids[i] = $(i).value);
+  const chk = {}; SAVE_CHK.forEach(i=> chk[i] = $(i).checked);
+  return { ids: ids, chk: chk, ct: CT, svc: JSON.parse(JSON.stringify(svcState)) };
+}
+function restoreSnap(d){
+  SAVE_IDS.forEach(i=>{ if(d.ids && d.ids[i] != null) $(i).value = d.ids[i]; });
+  SAVE_CHK.forEach(i=>{ if(d.chk && d.chk[i] != null) $(i).checked = !!d.chk[i]; });
+  CT = d.ct === 'org' ? 'org' : 'ind';
+  $('clientType').querySelectorAll('[data-ct]').forEach(x=> x.classList.toggle('on', x.dataset.ct === CT));
+  Object.keys(d.svc || {}).forEach(k=>{ if(svcState[k]) Object.assign(svcState[k], d.svc[k]); });
+  buildSvcForm(); pubDirty = false;
+}
+function clientLabel(){ return CT === 'org' ? (val('orgName') || '—') : (val('clientName') || '—'); }
+// сохранить текущее (договор или дополнение). quiet -- без сообщения; только если обязательные поля заполнены
+function saveCurrent(quiet){
+  if(missing().length){ if(!quiet) toast('Заполните обязательные поля — сохраняется только готовый документ'); return false; }
+  const all = docsLoad();
+  if(MODE === 'add'){
+    const rec = all.find(r=> r.id === CUR); if(!rec){ if(!quiet) toast('Сначала сохраните договор'); return false; }
+    rec.adds = rec.adds || [];
+    const n = +val('addNo').replace(/[^\d]/g, '');
+    const item = { n: n, date: val('addDate'), text: val('addText'), link: val('addLink'), saved: new Date().toISOString() };
+    const i = rec.adds.findIndex(a=> a.n === n); if(i >= 0) rec.adds[i] = item; else rec.adds.push(item);
+    rec.adds.sort((a, b)=> a.n - b.n);
+    docsSave(all); if(!quiet) toast('Дополнение сохранено'); return true;
+  }
+  const no = val('cNo');
+  let rec = all.find(r=> r.id === CUR) || all.find(r=> r.no && r.no === no);
+  if(!rec){ rec = { id: 'c' + Date.now().toString(36), adds: [] }; all.push(rec); }
+  CUR = rec.id;
+  Object.assign(rec, { no: no, date: val('date'), client: clientLabel(), saved: new Date().toISOString(), data: snapshot() });
+  docsSave(all); if(!quiet) toast('Договор сохранён'); return true;
+}
+function fillAddPts(){
+  const box = $('addPts'); if(!box) return;
+  box.textContent = '';
+  val('addText').split('\n').map(x=> x.trim()).filter(Boolean).forEach((t, i)=>{
+    const p = document.createElement('p'); const b = document.createElement('b'); b.textContent = (i + 1) + '. ';
+    p.append(b, document.createTextNode(t)); box.append(p);
+  });
+}
+function buildAddSrc(){
+  const f = $('flowSrc'), a = $('addSrc'); a.textContent = '';
+  a.append(f.querySelector('.head').cloneNode(true));
+  const mid = document.createElement('div'); mid.id = 'addMid';
+  mid.innerHTML = '<div class="meta"><span>Дополнение № <b data-v="addNo"></b> к Договору № <b data-v="no"></b></span><span>г. Лос-Сантос, <b data-v="addDate"></b></span></div>'
+    + '<h1 class="doc-title">ДОПОЛНЕНИЕ № <span data-v="addNo"></span></h1>'
+    + '<div class="doc-sub">к Договору на оказание юридических услуг № <span data-v="no"></span> от <span data-v="date"></span></div>';
+  Array.from(mid.children).forEach(x=> a.append(x));
+  const intro = document.createElement('p');
+  intro.innerHTML = '<b data-v="lawyerRole"></b> <b data-v="lawyerName"></b>, паспорт № <b data-v="lawyerId"></b>, лицензия <b data-v="lawyerLicense"></b> (Исполнитель), и <b data-v="signerName"></b>, паспорт № <b data-v="signerPassport"></b> (Заказчик), именуемые Стороны, на основании п. 6.2 Договора № <b data-v="no"></b> от <b data-v="date"></b> (далее — Договор) договорились о нижеследующем:';
+  a.append(intro);
+  const pts = document.createElement('div'); pts.id = 'addPts'; a.append(pts);
+  const tail = document.createElement('p');
+  tail.textContent = 'Остальные условия Договора остаются без изменений. Настоящее Дополнение является неотъемлемой частью Договора и вступает в силу с момента подписания Сторонами.';
+  a.append(tail);
+  const h = document.createElement('h2'); h.textContent = 'Реквизиты и подписи сторон'; a.append(h);
+  a.append(f.querySelector('.parties').cloneNode(true), f.querySelector('.signs').cloneNode(true));
+}
+function setMode(m){
+  MODE = m;
+  $('mainForm').hidden = m === 'add'; $('addPanel').hidden = m !== 'add';
+  ['pubForum'].forEach(i=>{ const e = $(i); if(e) e.hidden = m === 'add'; });
+  $('uploadBtn').hidden = m === 'add';
+  render();
+}
+function openDoc(id){
+  const rec = docsLoad().find(r=> r.id === id); if(!rec) return;
+  restoreSnap(rec.data); CUR = rec.id; setMode('contract'); $('myBox').hidden = true; toast('Договор открыт');
+}
+function startAdd(id, existingN){
+  const rec = docsLoad().find(r=> r.id === id); if(!rec) return;
+  restoreSnap(rec.data); CUR = rec.id;
+  const adds = rec.adds || [];
+  const ex = existingN ? adds.find(a=> a.n === existingN) : null;
+  const n = ex ? ex.n : (adds.reduce((m, a)=> Math.max(m, a.n || 0), 0) + 1);
+  $('addNo').value = String(n);
+  const now = new Date();
+  $('addDate').value = ex ? ex.date : new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  $('addText').value = ex ? ex.text : ''; $('addLink').value = ex ? (ex.link || '') : '';
+  $('addInfo').textContent = 'К договору № ' + rec.no + ' от ' + dateFmt(rec.date) + ' · ' + rec.client + (ex ? '' : ' · это будет Дополнение № ' + n) + '. Договор и все его данные подставлены; лист — одна страница.';
+  setMode('add'); $('myBox').hidden = true;
+}
+function renderMy(){
+  const box = $('myList'); box.textContent = '';
+  const all = docsLoad().slice().reverse();
+  if(!all.length){ const p = document.createElement('p'); p.className = 'hint'; p.textContent = 'Пока пусто. Договор сохраняется, когда вы нажимаете «💾 Сохранить», собираете PDF, печатаете, загружаете или публикуете.'; box.append(p); return; }
+  const btn = (t, f, cls)=>{ const b = document.createElement('button'); b.className = 'btn' + (cls ? ' ' + cls : ''); b.textContent = t; b.onclick = f; return b; };
+  all.forEach(r=>{
+    const row = document.createElement('div'); row.className = 'myrow';
+    const t = document.createElement('div'); t.className = 'mytitle';
+    const b1 = document.createElement('b'); b1.textContent = 'Договор № ' + (r.no || '—');
+    t.append(b1, document.createTextNode(' · ' + dateFmt(r.date) + ' · ' + r.client));
+    const acts = document.createElement('div'); acts.className = 'myacts';
+    acts.append(btn('Открыть', ()=> openDoc(r.id)), btn('＋ Дополнение', ()=> startAdd(r.id), 'primary'),
+      btn('✕', ()=>{ if(confirm('Удалить договор № ' + r.no + ' и его дополнения из этого браузера?')){ docsSave(docsLoad().filter(x=> x.id !== r.id)); if(CUR === r.id) CUR = null; renderMy(); } }));
+    row.append(t, acts);
+    (r.adds || []).forEach(a=>{
+      const ar = document.createElement('div'); ar.className = 'myadd';
+      const at = document.createElement('span'); at.textContent = 'Дополнение № ' + a.n + ' · ' + dateFmt(a.date) + (a.link ? ' · PDF загружен' : '');
+      const aa = document.createElement('span'); aa.className = 'myacts';
+      aa.append(btn('Открыть', ()=> startAdd(r.id, a.n)), btn('✕', ()=>{ const al = docsLoad(), rr = al.find(x=> x.id === r.id); if(rr){ rr.adds = (rr.adds || []).filter(x=> x.n !== a.n); docsSave(al); renderMy(); } }));
+      ar.append(at, aa); row.append(ar);
+    });
+    box.append(row);
+  });
+}
+
 /* ---------- кнопки ---------- */
 function wire(){
   $('brandIc').innerHTML = ART.icon();
-  buildSvcForm();
+  buildSvcForm(); buildAddSrc();
   const now = new Date(); $('date').value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
   if(cfg.lawyerFirm) $('lawyerFirm').value = cfg.lawyerFirm;
   if(cfg.days) $('days').value = cfg.days;
@@ -21405,12 +21647,30 @@ function wire(){
     const b = e.target.closest('[data-ct]'); if(!b) return;
     CT = b.dataset.ct; $('clientType').querySelectorAll('[data-ct]').forEach(x=> x.classList.toggle('on', x === b)); render();
   });
+  $('saveBtn').onclick = ()=> saveCurrent(false);
+  $('myBtn').onclick = ()=>{ renderMy(); $('myBox').hidden = false; };
+  $('myClose').onclick = ()=>{ $('myBox').hidden = true; };
+  $('myBox').addEventListener('click', e=>{ if(e.target === $('myBox')) $('myBox').hidden = true; });
+  $('myNew').onclick = ()=>{ CUR = null; setMode('contract'); $('clearClient').onclick(); $('cNo').value = ''; noHint(); $('myBox').hidden = true; render(); toast('Новый договор'); };
+  $('addBack').onclick = ()=>{ setMode('contract'); };
+  $('addUpload').onclick = ()=>{
+    if(gate().length){ $('addMsg').textContent = 'Заполните обязательные поля.'; return; }
+    const up = inLex && parent.LexContractUpload;
+    if(typeof up !== 'function'){ $('addMsg').className = 'msg err'; $('addMsg').textContent = UP_ERR.unavailable; return; }
+    saveCurrent(true);
+    const b = $('addUpload'); b.disabled = true; $('addMsg').className = 'msg'; $('addMsg').textContent = 'Собираю PDF…';
+    makePdf().then(blob=> blob.size > 5 * 1024 * 1024 ? { ok: false, error: 'too_large' } : up(blob, pdfName())).then(r=>{
+      if(r && r.ok){ $('addLink').value = r.url; saveCurrent(true); $('addMsg').className = 'msg ok'; $('addMsg').textContent = 'Готово: ссылка на PDF дополнения вставлена.'; }
+      else { $('addMsg').className = 'msg err'; $('addMsg').textContent = UP_ERR[r && r.error] || ('Не загрузилось (' + (r && r.error) + ').'); }
+    }).catch(()=>{ $('addMsg').className = 'msg err'; $('addMsg').textContent = UP_ERR.lib; }).finally(()=>{ b.disabled = false; });
+  };
   $('refresh').onclick = ()=> send('request-context', { refresh: true });
   $('close').onclick = ()=> inLex ? send('close') : window.close();
-  $('print').onclick = ()=>{ if(gate().length){ toast('Заполните обязательные поля'); return; } window.print(); };
+  $('print').onclick = ()=>{ if(gate().length){ toast('Заполните обязательные поля'); return; } saveCurrent(true); window.print(); };
   $('pdfBtn').onclick = ()=>{
     if(gate().length){ toast('Заполните обязательные поля'); return; }
     const b = $('pdfBtn'); b.disabled = true; b.textContent = 'Собираю…';
+    saveCurrent(true);
     makePdf().then(blob=>{
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = pdfName(); document.body.append(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 4000); toast('PDF скачан');
@@ -21420,13 +21680,14 @@ function wire(){
     if(gate().length){ msg('Заполните обязательные поля — пока ничего не загружаем.', 'err'); return; }
     const up = inLex && parent.LexContractUpload;
     if(typeof up !== 'function'){ msg(UP_ERR.unavailable, 'err'); return; }
+    saveCurrent(true);
     const b = $('uploadBtn'); b.disabled = true; msg('Собираю PDF…');
     makePdf().then(blob=>{
       if(blob.size > 5 * 1024 * 1024) return { ok: false, error: 'too_large' };
       msg('Загружаю в облако…');
       return up(blob, pdfName());
     }).then(r=>{
-      if(r && r.ok){ $('pubCopy').value = r.url; pubDirty = false; render(); msg('Готово: ссылка вставлена в п. 4. Она открывает PDF на любом устройстве.', 'ok'); }
+      if(r && r.ok){ $('pubCopy').value = r.url; pubDirty = false; render(); saveCurrent(true); msg('Готово: ссылка вставлена в п. 4. Она открывает PDF на любом устройстве.', 'ok'); }
       else msg(UP_ERR[r && r.error] || ('Не загрузилось (' + (r && r.error) + ').'), 'err');
     }).catch(()=> msg(UP_ERR.lib, 'err')).finally(()=>{ b.disabled = false; });
   };
@@ -21435,6 +21696,7 @@ function wire(){
   $('pubForum').onclick = ()=>{
     if(gate().length || !(URL_RE.test(val('pubCopy')) && URL_RE.test(val('pubProof')))){ toast('Нужны все обязательные поля и обе ссылки'); return; }
     const n = +(val('cNo').replace(/[^\d]/g, '')); if(n) LS.put(NO_KEY, Math.max(n, +(LS.get(NO_KEY, 0)) || 0));
+    saveCurrent(true);
     copy($('pubOut').value).then(ok=>{ toast(ok ? 'Скопировано — вставьте ответом в теме' : 'Скопируйте текст вручную'); });
     window.open(THREAD + 'latest', '_blank', 'noopener');
   };
