@@ -2974,11 +2974,44 @@
         <textarea id="f_ogp_demands" placeholder="напр. Признать задержание незаконным"></textarea>
         <span class="ogp-need" data-need="f_ogp_demands"></span>
       </label>
-      <div class="card-group-label">2. Подозреваемый (сотрудник)</div>
+      <div class="card-group-label">2. Подозреваемый (сотрудник)<button type="button" class="partner-btn" id="ogp_partner_add">＋ напарник</button></div>
+      <div class="empty-hint" style="margin-top:0;">Берётся из карточки дела; не заполнено в карточке — выберите здесь, оно запишется и в карточку.</div>
+      <label class="field">Имя и фамилия
+        <input type="text" id="f_ogp_suspect" placeholder="если известно">
+        <span class="ogp-need" data-need="f_ogp_suspect"></span>
+      </label>
       <div class="grid3">
-        <label class="field">Имя и фамилия
-          <input type="text" id="f_ogp_suspect" placeholder="если известно">
-          <span class="ogp-need" data-need="f_ogp_suspect"></span>
+        <label class="field">Структура 
+          <select id="ogp_m_struct"><option value="">—</option><option value="lspd">ЛСПД (LSPD)</option><option value="lssd">ЛССД (LSSD)</option><option value="fib">ФРБ (FIB)</option><option value="usss">USSS</option><option value="sang">Нацгвардия (SANG)</option><option value="fp">Федеральная тюрьма (FP)</option><option value="ogp">ОГП</option><option value="other">Другое / не указано</option></select>
+        </label>
+        <label class="field" id="ogp_m_dept_wrap">Отдел / должность 
+          <select id="ogp_m_dept"><option value="">—</option></select>
+        </label>
+        <label class="field" id="ogp_m_dept_txt_wrap" style="display:none;">Отдел  (вручную)
+          <input type="text" id="ogp_m_dept_other" data-derived="1" placeholder="напр. EMS...">
+        </label>
+        <label class="field">Номер жетона 
+          <input type="text" id="ogp_m_badge" data-derived="1" inputmode="numeric" maxlength="5" placeholder="5 цифр">
+        </label>
+      </div>
+      <div id="ogp_partner_wrap" style="display:none;">
+        <div class="card-group-label">Напарник<button type="button" class="partner-btn" id="ogp_partner_del">✕ убрать</button></div>
+        <div class="grid3">
+        <label class="field">Структура напарника
+          <select id="ogp_p_struct"><option value="">—</option><option value="lspd">ЛСПД (LSPD)</option><option value="lssd">ЛССД (LSSD)</option><option value="fib">ФРБ (FIB)</option><option value="usss">USSS</option><option value="sang">Нацгвардия (SANG)</option><option value="fp">Федеральная тюрьма (FP)</option><option value="ogp">ОГП</option><option value="other">Другое / не указано</option></select>
+        </label>
+        <label class="field" id="ogp_p_dept_wrap">Отдел / должность напарника
+          <select id="ogp_p_dept"><option value="">—</option></select>
+        </label>
+        <label class="field" id="ogp_p_dept_txt_wrap" style="display:none;">Отдел напарника (вручную)
+          <input type="text" id="ogp_p_dept_other" data-derived="1" placeholder="напр. EMS...">
+        </label>
+        <label class="field">Номер жетона напарника
+          <input type="text" id="ogp_p_badge" data-derived="1" inputmode="numeric" maxlength="5" placeholder="5 цифр">
+        </label>
+      </div>
+        <label class="field">Что конкретно делал напарник (отдельным абзацем в описательной части)
+          <textarea id="f_ogp_partner_desc" placeholder="напр. удерживал задержанного, проводил обыск"></textarea>
         </label>
       </div>
       <div class="empty-hint" id="ogp_suspect_hint" style="margin-top:0;"></div>
@@ -8535,6 +8568,7 @@ function ogpSoft(){
     if(need.length) S.push('Регламент, ст. 1.2: представителю нужны паспорт адвоката, договор и лицензия / удостоверение. Добавьте строкой «＋»: ' + need.join('; ') + '.');
   }
   if(L.ev.some(r=> ogpUrlOk(r.u) && !r.t.trim())) S.push('Видео длиннее 3 минут — укажите тайм-коды ключевых моментов в поле «тайм-коды».');
+  if(typeof partnerOn === 'function' && partnerOn() && !val('f_ogp_partner_desc')) S.push('Напарник добавлен — опишите, что он делал, иначе он только упомянут в фабуле.');
   try { S.push(ogpDeadlineText()); } catch(e){}
   return S;
 }
@@ -8563,6 +8597,12 @@ function buildOgpBBCode(){
     body.push('');
   }
   body.push(ogpNarrative());
+  if(typeof partnerOn === 'function' && partnerOn() && val('f_ogp_partner_desc')){
+    const pi = partnerInfo();
+    const who = pi ? [partnerPlaceText(pi), pi.docs].filter(Boolean).join(', ') : '';
+    body.push('');
+    body.push('Действия напарника' + (who ? ' (' + who + ')' : '') + ': ' + val('f_ogp_partner_desc'));
+  }
   const items = ogpViolationItems();
   if(items.length){
     body.push('');
@@ -8705,6 +8745,7 @@ function ogpRowsRead(){
 }
 function ogpModalSync(){
   ogpRowsRead();
+  ogpMirrorPull();
   const who = (document.getElementById('f_ogp_who').value) || 'client';
   const rep = who !== 'me';
   document.querySelectorAll('#ogp_who_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.who === who));
@@ -8777,6 +8818,60 @@ function ogpModalSync(){
       const row = dl.closest('.ogp-row'); if(row && row.parentNode) row.parentNode.removeChild(row);
       OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); return;
     }
+  });
+})();
+
+// ---- сотрудник и напарник: поля окна -- зеркало полей карточки (меняешь здесь -- меняется и там) ----
+const OGP_MIR = [['ogp_m_struct', 'f_struct'], ['ogp_m_dept', 'f_dept'], ['ogp_m_dept_other', 'f_dept_other'], ['ogp_m_badge', 'f_badge_num'],
+  ['ogp_p_struct', 'f_partner_struct'], ['ogp_p_dept', 'f_partner_dept'], ['ogp_p_dept_other', 'f_partner_dept_other'], ['ogp_p_badge', 'f_partner_badge_num']];
+function ogpMirrorPull(){
+  OGP_MIR.forEach(([mid, cid])=>{
+    const m = document.getElementById(mid), c = document.getElementById(cid); if(!m || !c) return;
+    if(m.tagName === 'SELECT'){
+      const sig = Array.from(c.options).map(o=> o.value + '|' + o.textContent).join('\n');
+      if(m.dataset.sig !== sig){
+        while(m.firstChild) m.removeChild(m.firstChild);
+        Array.from(c.options).forEach(o=>{ const n = document.createElement('option'); n.value = o.value; n.textContent = o.textContent; m.appendChild(n); });
+        m.dataset.sig = sig;
+      }
+      m.value = c.value;
+    } else if(document.activeElement !== m) m.value = c.value;
+  });
+  [['ogp_m_dept_wrap', 'dept_select_wrap'], ['ogp_m_dept_txt_wrap', 'dept_text_wrap'], ['ogp_p_dept_wrap', 'partner_dept_select_wrap'], ['ogp_p_dept_txt_wrap', 'partner_dept_text_wrap']].forEach(([mid, cid])=>{
+    const m = document.getElementById(mid), c = document.getElementById(cid); if(m && c) m.style.display = c.style.display;
+  });
+  const pw = document.getElementById('ogp_partner_wrap'), on = (typeof partnerOn === 'function') && partnerOn();
+  if(pw) pw.style.display = on ? '' : 'none';
+  const pa = document.getElementById('ogp_partner_add'); if(pa) pa.style.display = on ? 'none' : '';
+  if(window.syncAllPrettySelects) window.syncAllPrettySelects();
+}
+function ogpMirrorPush(m){
+  const pair = OGP_MIR.find(x=> x[0] === m.id); if(!pair) return false;
+  const c = document.getElementById(pair[1]); if(!c) return false;
+  c.value = m.value;
+  if(m.tagName === 'SELECT'){ c.dispatchEvent(new Event('change', { bubbles: true })); }
+  else {
+    if(m.value && c.style.display === 'none'){
+      const isP = pair[1] === 'f_partner_badge_num';
+      if(pair[1] === 'f_badge_num' || isP){
+        const keep = document.activeElement;
+        showIdField(isP ? 'partner_id_buttons' : 'init_id_buttons', pair[1], isP ? 'partner_badge_preview' : 'init_badge_preview', isP ? 'partner_badge_hint_wrap' : 'init_badge_hint_wrap', isP ? 'btnPartnerBadge' : 'btnInitBadge');
+        if(keep && keep.focus) keep.focus();
+      }
+    }
+    c.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  if(typeof updateBadgePreviews === 'function') updateBadgePreviews();
+  return true;
+}
+(function wireOgpMirror(){
+  const ov = document.getElementById('ogp-overlay'); if(!ov) return;
+  // capture: сначала пишем в карточку, потом общий обработчик окна пересобирает текст
+  const h = e=>{ if(e.target && (/^ogp_[mp]_/).test(e.target.id || '')) ogpMirrorPush(e.target); };
+  ov.addEventListener('input', h, true); ov.addEventListener('change', h, true);
+  ov.addEventListener('click', e=>{
+    if(e.target.closest('#ogp_partner_add')){ setPartnerVisible(true); OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); }
+    else if(e.target.closest('#ogp_partner_del')){ setPartnerVisible(false); OGP_EDITED = false; ogpModalSync(); if(window.CaseStore) CaseStore.save(); }
   });
 })();
 
@@ -20589,11 +20684,11 @@ button,input,select,textarea{font:inherit}
 .doc .ni{text-indent:0}
 .doc ul{margin:1mm 0 2.5mm;padding-left:9mm}
 .doc li{margin:0 0 1mm}
-.price{width:100%;border-collapse:collapse;margin:2mm 0 3mm;font-size:10pt;text-align:left}
+.price{width:100%;table-layout:fixed;border-collapse:collapse;margin:2mm 0 3mm;font-size:10pt;text-align:left}
 .price th{background:#1f3460;color:#fff;font:600 8.6pt Arial,Helvetica,sans-serif;letter-spacing:.04em;padding:2mm 2.4mm;text-align:left}
 .price td{border-bottom:.6px solid #c9b47a;padding:1.8mm 2.4mm;vertical-align:top}
 .price tr:nth-child(even) td{background:#f6f1e3}
-.price td.sum{white-space:nowrap;font-weight:700;text-align:right}
+.price td.sum{font-weight:700;text-align:right}
 .price td.nt{font-size:9pt;color:#444}
 .pbody{position:absolute;left:18mm;right:18mm;top:15mm;bottom:19mm;overflow:hidden}
 .pbody>:first-child{margin-top:0}
@@ -20733,7 +20828,7 @@ body.pdfmode .pages .page{zoom:1}
     <p id="docStaffP" hidden><b>1.3</b> Услуги по Договору оказываются также работникам Заказчика в рамках их деятельности в организации (ст. 6.4 Закона «О деятельности Коллегии Адвокатов»)<span id="docStaff"></span>.</p>
     <p><b data-n="lawP">1.3</b> Услуги оказываются в соответствии с законодательством штата Сан-Андреас и Законом «О деятельности Коллегии Адвокатов». Защита при задержании и выпуск под залог — по вызову Заказчика (ст. 6.2, 6.2.1 того же Закона).</p>
 <h2>2. Стоимость услуг и порядок оплаты</h2>
-    <table class="price"><thead><tr><th style="width:44%">Услуга</th><th style="width:20%;text-align:right">Стоимость</th><th>Условия</th></tr></thead><tbody id="docPrice"></tbody></table>
+    <table class="price"><thead><tr><th style="width:30%">Услуга</th><th style="width:29%;text-align:right">Стоимость</th><th style="width:41%">Условия</th></tr></thead><tbody id="docPrice"></tbody></table>
     <p><b>2.1</b> При подписании Договора Заказчик оплачивает <b data-v="totalNow"></b>.</p>
     <p><b>2.2</b> Государственные пошлины (за обращение в Офис Генерального Прокурора, по гражданскому иску в суд и иные) не входят в стоимость услуг и оплачиваются Заказчиком отдельно до подачи соответствующего документа.</p>
     <p><b>2.3</b> Вознаграждение за выигранное дело выплачивается после вступления решения в силу; при проигрыше дела дополнительное вознаграждение не взимается.</p>
@@ -20963,9 +21058,9 @@ const SERVICES = [
   { id:'court', name:'Защита интересов Заказчика в суде', scope:'защита интересов Заказчика в суде',
     a:100000, b:100000, fields:[['a','$ за дело'], ['b','$ премия от']], price:s=> money(s.a), note:s=> 'за дело; при выигрыше — премия от ' + money(s.b) + ' по договорённости, в зависимости от дела; при проигрыше доплаты нет' },
   { id:'detain', name:'Защита при задержании по вызову (КПЗ, ФТ, процессуальные действия)', scope:'защита при задержании и процессуальных действиях — выезд по вызову',
-    a:10000, b:10000, c:100000, fields:[['a','$ вызов'], ['b','$ дело от'], ['c','$ дело до']], price:s=> 'вызов ' + money(s.a) + ' + по делу ' + money(s.b) + ' – ' + money(s.c), note:()=> 'вызов оплачивается при выезде; сумма по делу — в зависимости от сложности, возможны исключения' },
+    a:10000, b:10000, c:100000, fields:[['a','$ вызов'], ['b','$ дело от'], ['c','$ дело до']], price:s=> 'вызов ' + money(s.a) + '\nпо делу ' + money(s.b) + '\u2013' + money(s.c), note:()=> 'вызов оплачивается при выезде; сумма по делу — в зависимости от сложности, возможны исключения' },
   { id:'bail', name:'Выпуск под залог по вызову', scope:'выпуск под залог из Камер Предварительного Заключения по вызову',
-    a:5000, fields:[['a','$ вызов']], price:s=> 'вызов ' + money(s.a) + ' + залог', note:()=> 'вызов оплачивается при выезде; залог — по действующему законодательству штата, вносится Заказчиком и в стоимость услуг не входит' }
+    a:5000, fields:[['a','$ вызов']], price:s=> 'вызов ' + money(s.a) + '\n+ залог', note:()=> 'вызов оплачивается при выезде; залог — по действующему законодательству штата, вносится Заказчиком и в стоимость услуг не входит' }
 ];
 function num(v){ const d = String(v == null ? '' : v).replace(/[^\d]/g, ''); return d ? +d : null; }
 function money(v){ const n = num(v); return n == null ? '________ $' : String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') + '\u00a0$'; }
@@ -21068,7 +21163,7 @@ function render(){
     if(!st.on) return;
     const tr = document.createElement('tr');
     const td1 = document.createElement('td'); td1.textContent = s.name;
-    const td2 = document.createElement('td'); td2.className = 'sum'; td2.textContent = s.price(st);
+    const td2 = document.createElement('td'); td2.className = 'sum'; s.price(st).split('\n').forEach((ln, i)=>{ if(i) td2.appendChild(document.createElement('br')); td2.appendChild(document.createTextNode(ln)); });
     const td3 = document.createElement('td'); td3.className = 'nt'; td3.textContent = s.note(st);
     tr.append(td1, td2, td3); tb.append(tr);
   });
