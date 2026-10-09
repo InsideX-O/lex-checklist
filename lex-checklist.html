@@ -20888,6 +20888,9 @@ body.pdfmode .pages .page{zoom:1}
 .pubdesc b{color:var(--accent)}
 .pubdesc+.hint{margin-top:12px}
 .seg button{padding:8px 10px}
+.docopt{max-width:210mm;margin:0 auto 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.docopt>span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.docopt .seg{flex:1;margin:0;min-width:240px}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><b>Договор на оказание юридических услуг</b></div>
@@ -20956,8 +20959,6 @@ body.pdfmode .pages .page{zoom:1}
 <label class="chk" style="margin-top:5px"><input type="checkbox" id="cCam"><span><b>Бодикамера</b> — запись всё время правонарушения и задержания (по желанию)</span></label>
 <label class="chk" style="margin-top:10px"><input type="checkbox" id="sigOn" checked><span>Подписи сторон рукописным шрифтом</span></label>
 
-<div class="lbl">Оформление листа (PDF)</div>
-<div class="seg" id="docTheme"><button type="button" class="on" data-dt="blue">Классика (синяя)</button><button type="button" data-dt="light">Светлая, как в Lex</button></div>
 <div class="lbl">5. Публикация на портале штата</div>
 <div class="grid">
   <label class="field full">4. Ксерокопия договора — ссылка<input id="pubCopy" placeholder="загрузите PDF кнопкой ниже или вставьте ссылку"></label>
@@ -20992,7 +20993,8 @@ body.pdfmode .pages .page{zoom:1}
 </div>
 </aside>
 
-<section><div class="preview-head"><b>Предпросмотр</b><span id="pgInfo">A4</span></div>
+<section><div class="docopt"><span>Оформление PDF</span><div class="seg" id="docTheme"><button type="button" class="on" data-dt="blue">Классика (синяя)</button><button type="button" data-dt="light">Светлая, как в Lex</button></div></div>
+<div class="preview-head"><b>Предпросмотр</b><span id="pgInfo">A4</span></div>
 <div class="pages" id="pages"></div>
 <div id="flowSrc" class="doc" hidden>
 <div class="head"><div data-art="flag"></div><div><div class="t1">GOVERNMENT OF SAN ANDREAS · BAR ASSOCIATION</div><div class="t2">КОЛЛЕГИЯ АДВОКАТОВ ШТАТА САН-АНДРЕАС</div><div class="t3" data-v="headFirm"></div></div><div data-art="seal"></div></div>
