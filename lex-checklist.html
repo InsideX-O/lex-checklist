@@ -20877,13 +20877,13 @@ body.pdfmode .pages .page{zoom:1}
   <div class="tools"><span class="state" id="status" hidden></span>
     <div class="trow">
       <button class="btn" id="myBtn" title="Сохранённые договоры и дополнения к ним">Мои договоры</button>
+      <button class="btn" id="newBtn" title="Начать новый договор">＋ Новый</button>
       <button class="btn" id="saveBtn" title="Сохранить договор в этом браузере">💾 Сохранить</button>
-      <button class="btn" id="refresh" title="Подгрузить из профиля Lex заново">↓ Из профиля</button>
     </div>
     <div class="trow">
+      <button class="btn" id="refresh" title="Подгрузить из профиля Lex заново">↓ Из профиля</button>
       <button class="btn" id="pdfBtn" title="Скачать договор файлом PDF">⬇ PDF</button>
       <button class="btn" id="uploadBtn" title="Собрать PDF и загрузить в облако Lex — ссылка вставится в п. 4 публикации">☁ Загрузить</button>
-      <button class="btn" id="print" title="Печать или «Сохранить как PDF» средствами браузера">Печать</button>
     </div>
   </div>
 </header>
@@ -21504,7 +21504,7 @@ function gate(){
   } else { box.hidden = true; box.textContent = ''; }
   const links = URL_RE.test(val('pubCopy')) && URL_RE.test(val('pubProof'));
   const au = $('addUpload'); if(au) au.disabled = m.length > 0;
-  ['pdfBtn', 'print', 'uploadBtn', 'pubCopyBtn'].forEach(id=>{ const e = $(id); if(e) e.disabled = m.length > 0; });
+  ['pdfBtn', 'uploadBtn', 'pubCopyBtn'].forEach(id=>{ const e = $(id); if(e) e.disabled = m.length > 0; });
   const pf = $('pubForum'); if(pf){ pf.disabled = m.length > 0 || !links; pf.title = m.length ? 'Сначала заполните обязательные поля' : (links ? '' : 'Нужны обе ссылки: ксерокопия договора и доказательства'); }
   return m;
 }
@@ -21710,6 +21710,7 @@ function wire(){
   $('myBtn').onclick = ()=>{ renderMy(); $('myBox').hidden = false; };
   $('myClose').onclick = ()=>{ $('myBox').hidden = true; };
   $('myBox').addEventListener('click', e=>{ if(e.target === $('myBox')) $('myBox').hidden = true; });
+  $('newBtn').onclick = ()=> $('myNew').onclick();
   $('myNew').onclick = ()=>{ CUR = null; setMode('contract'); $('clearClient').onclick(); $('cNo').value = ''; noHint(); $('myBox').hidden = true; render(); toast('Новый договор'); };
   $('addBack').onclick = ()=>{ setMode('contract'); };
   $('addUpload').onclick = ()=>{
@@ -21726,7 +21727,6 @@ function wire(){
   $('refresh').onclick = ()=> send('request-context', { refresh: true });
   $('docTheme').addEventListener('click', e=>{ const b = e.target.closest('[data-dt]'); if(b) setDocTheme(b.dataset.dt); });
   $('close').onclick = ()=> inLex ? send('close') : window.close();
-  $('print').onclick = ()=>{ if(gate().length){ toast('Заполните обязательные поля'); return; } saveCurrent(true); window.print(); };
   $('pdfBtn').onclick = ()=>{
     if(gate().length){ toast('Заполните обязательные поля'); return; }
     const b = $('pdfBtn'); b.disabled = true; b.textContent = 'Собираю…';
