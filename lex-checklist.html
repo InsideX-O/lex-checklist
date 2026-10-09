@@ -20891,6 +20891,7 @@ body.pdfmode .pages .page{zoom:1}
 .docopt{max-width:210mm;margin:0 auto 10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .docopt>span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .docopt .seg{flex:1;margin:0;min-width:240px}
+.noverify{display:flex;gap:6px;margin-top:8px}.noverify input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 9px;outline:none}.noverify input:focus{border-color:var(--accent)}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><b>Договор на оказание юридических услуг</b></div>
@@ -21463,8 +21464,17 @@ function renderPub(force){ if(pubDirty && !force) return; $('pubOut').value = pu
 function noHint(){
   const last = Math.max(+(LS.get(NO_KEY, 0)) || 0, KNOWN_LAST.no);
   const h = $('noHint'); h.textContent = '';
-  h.append(document.createTextNode('Последний известный №' + last + (last === KNOWN_LAST.no ? ' (' + KNOWN_LAST.date + ')' : '') + ' — сверьте с темой: '));
-  const a = document.createElement('a'); a.href = THREAD + 'latest'; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'последнее сообщение ↗'; h.append(a);
+  h.append(document.createTextNode('В базе последний №' + last + '. Форум сам не читается: откройте тему, найдите номер последнего договора и впишите его — следующий подставится сам. '));
+  const a = document.createElement('a'); a.href = THREAD + 'latest'; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'открыть тему ↗'; h.append(a);
+  const row = document.createElement('div'); row.className = 'noverify';
+  const inp = document.createElement('input'); inp.inputMode = 'numeric'; inp.placeholder = '№ последнего в теме'; inp.setAttribute('aria-label', '№ последнего договора в теме');
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'btn'; b.textContent = 'Сверить';
+  b.onclick = ()=>{
+    const n = +(inp.value.replace(/[^\d]/g, ''));
+    if(!n){ toast('Впишите номер последнего договора из темы'); return; }
+    LS.put(NO_KEY, n); $('cNo').value = String(n + 1); noHint(); render(); toast('Следующий номер: ' + (n + 1));
+  };
+  row.append(inp, b); h.append(row);
   if(!val('cNo')) $('cNo').value = String(last + 1);
 }
 
