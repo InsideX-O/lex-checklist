@@ -1705,7 +1705,7 @@
   .ogp-row .ogp-rn{ grid-column:1 / -1; }
   .ogp-row .ogp-rn:empty{ display:none; }
   .ogp-row input{ min-width:0; }
-  .ogp-row .ogp-del{ padding:4px 9px; }
+  .ogp-row .ogp-del{ padding:5px 0; white-space:nowrap; text-align:center; }
   .ogp-add{ margin:6px 0 8px; }
   .ogp-miss{ margin:8px 0 2px; padding:8px 10px; border:1px solid rgba(var(--warn-rgb),.5); border-radius:8px; background:rgba(var(--warn-rgb),.08); font-size:12.5px; }
   .ogp-miss b{ color:var(--warn); }
@@ -1714,7 +1714,7 @@
   .ogp-soft{ margin:6px 0 0; font-size:12px; color:var(--muted); }
   .ogp-soft p{ margin:2px 0; }
   #ogp-modal .btnrow button:disabled{ opacity:.45; cursor:not-allowed; }
-  @media (max-width:640px){ .ogp-row{ grid-template-columns:minmax(0,1fr) auto; } .ogp-row .ogp-cap{ grid-column:1 / -1; } .ogp-row .ogp-tc{ grid-column:1 / -1; } }
+  @media (max-width:640px){ .ogp-row{ grid-template-columns:minmax(0,1fr) 34px; } .ogp-row .ogp-capw, .ogp-row .ogp-capx, .ogp-row .ogp-tc, .ogp-row .ogp-rn{ grid-column:1 / -1; } .ogp-row .ogp-del{ grid-column:2; } }
   .ogp-capw{ min-width:0; }
   .ogp-row .ogp-capx, .ogp-row .ogp-tc{ grid-column:1 / 3; }
   .ogp-row .ogp-capx[hidden]{ display:none; }
@@ -1724,21 +1724,28 @@
   #ogp_saved{ margin-top:12px; }
   #ogp_saved summary{ cursor:pointer; color:var(--accent); font-weight:700; font-size:12.5px; }
   /* оформление окна -- как у окна договора: золотые заголовки блоков, поля и кнопки того же вида */
-  #ogp-modal{ width:min(860px,100%) !important; }
-  #ogp-modal .law-modal-head{ background:var(--panel); border-bottom:1px solid var(--border); }
+  #ogp-overlay{ padding:0; align-items:stretch; }
+  #ogp-modal{ width:100% !important; max-width:none; max-height:none; height:100%; border-radius:0; border:0; }
+  #ogp-body{ padding:8px max(12px, calc((100% - 860px) / 2)) 16px; }
+  #dt_overlay{ z-index:240; }
+  .ogp-datebtn{ display:inline-block; width:auto; align-self:flex-start; }
+  #ogp-modal .law-modal-head{ background:var(--panel); border-bottom:1px solid var(--border); padding:6px 10px; align-items:center; }
   #ogp-modal .law-modal-titles h3{ color:var(--accent); font-size:15px; }
-  #ogp-modal .law-modal-titles h3::before{ content:'⚖'; display:inline-grid; place-items:center; width:30px; height:30px; margin-right:9px; border:1.5px solid var(--accent); border-radius:50%; font-size:15px; vertical-align:middle; }
+  #ogp-modal .law-modal-titles h3::before{ content:'⚖'; display:inline-grid; place-items:center; width:24px; height:24px; margin-right:8px; border:1.5px solid var(--accent); border-radius:50%; font-size:13px; vertical-align:middle; }
   #ogp-body .card-group-label{ margin:16px 0 6px; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); font-weight:700; display:flex; align-items:center; gap:8px; }
   #ogp-body .field{ font-size:11.5px; color:var(--muted); }
   #ogp-body .field input[type=text], #ogp-body .field textarea{ background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:7px 9px; color:var(--text); outline:none; }
   #ogp-body .field input[type=text]:focus, #ogp-body .field textarea:focus{ border-color:var(--accent); }
   #ogp-body .basis-btns{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px; }
-  #ogp-body .basis-btns .basis-btn{ flex:1; border-radius:999px; font-weight:600; font-size:12px; padding:5px 10px; }
+  #ogp-body .basis-btns .basis-btn{ flex:1 1 auto; min-width:0; border-radius:999px; font-weight:600; font-size:12px; line-height:1.25; padding:5px 10px; text-align:center; background:transparent; }
   #ogp-body .basis-btns .basis-btn.active{ border-color:var(--accent); color:var(--accent); background:rgba(var(--accent-rgb),.12); }
   #ogp-body .btnrow{ display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
   #ogp-body .btnrow button, #ogp-body .ogp-add, #ogp-body .ogp-del, #ogp-body .ogp-sva button{ background:transparent; border:1px solid var(--border); border-radius:7px; color:var(--text); cursor:pointer; font-weight:600; font-size:12.5px; padding:6px 10px; }
   #ogp-body .btnrow button:hover, #ogp-body .ogp-add:hover, #ogp-body .ogp-sva button:hover{ background:rgba(var(--accent-rgb),.10); }
   #ogp-body .btnrow button.primary{ background:var(--accent); border-color:var(--accent); color:var(--on-accent, #1a1305); }
+  #ogp-body .ogp-prof{ display:flex; align-items:center; gap:6px; flex-wrap:nowrap; white-space:nowrap; margin-bottom:2px; }
+  #ogp-body .ogp-prof b{ color:var(--text); overflow:hidden; text-overflow:ellipsis; }
+  #ogp-body .ogp-prof button{ margin-left:auto; flex:none; padding:3px 9px; font-size:12px; }
   #ogp_out{ background:var(--bg); border:1px solid var(--border); border-radius:7px; color:var(--text); }
 </style>
 </head>
@@ -2956,15 +2963,15 @@
   </div>
 </div>
 <div class="law-modal-overlay" id="ogp-overlay">
-  <div class="law-modal" id="ogp-modal" style="width:min(760px, 100%);">
+  <div class="law-modal" id="ogp-modal">
     <div class="law-modal-head">
-      <div class="law-modal-titles"><h3 style="margin:0;">Обращение в ОГП</h3><div class="law-modal-sub">по официальной ФОРМЕ и Регламенту ОГП · ничего не отправляется, только собирается текст</div></div>
+      <div class="law-modal-titles"><h3 style="margin:0;">Обращение в ОГП</h3></div>
       <button class="law-modal-close" id="ogp-close" type="button" aria-label="Закрыть">✕</button>
     </div>
     <div class="law-modal-body" id="ogp-body" style="white-space:normal;">
       <div class="ogp-prof" id="ogp_prof_line"></div>
       <div class="card-group-label" style="margin-top:6px;">1. Заявитель</div>
-      <div class="basis-btns" id="ogp_who_seg"><button type="button" class="basis-btn" data-who="client">Подзащитный — я представитель</button><button type="button" class="basis-btn" data-who="me">Я сам</button></div>
+      <div class="basis-btns" id="ogp_who_seg"><button type="button" class="basis-btn" data-who="client">Я представитель</button><button type="button" class="basis-btn" data-who="me">Я сам</button></div>
       <input type="hidden" id="f_ogp_who" value="client">
       <div class="grid3">
         <label class="field">Имя и фамилия
@@ -2982,7 +2989,7 @@
       </div>
       <div class="ogp-need" data-need="profile"></div>
       <div class="card-group-label">Кто потерпевший</div>
-      <div class="basis-btns" id="ogp_vic_seg"><button type="button" class="basis-btn" data-vic="app" id="ogp_vic_app">Заявитель</button><button type="button" class="basis-btn" data-vic="other">Другой человек</button><button type="button" class="basis-btn" data-vic="none">Потерпевшего нет — сообщаю о нарушении</button></div>
+      <div class="basis-btns" id="ogp_vic_seg"><button type="button" class="basis-btn" data-vic="app" id="ogp_vic_app">Заявитель</button><button type="button" class="basis-btn" data-vic="other">Другой человек</button><button type="button" class="basis-btn" data-vic="none">Потерпевшего нет</button></div>
       <input type="hidden" id="f_ogp_vic" value="">
       <input type="checkbox" id="f_ogp_victim" hidden data-derived="1">
       <div class="grid2" id="ogp_vic_other_wrap" style="display:none;">
@@ -3064,10 +3071,11 @@
         <input type="text" id="f_ogp_fee" placeholder="https://…">
         <span class="ogp-need" data-need="f_ogp_fee"></span>
       </label>
-      <label class="field">Дата подачи (пусто — сегодня)
-        <input type="text" id="f_ogp_date" placeholder="ДД.ММ.ГГГГ">
+      <div class="field">Дата подачи
+        <button type="button" class="hl-start-btn ogp-datebtn" id="ogp_date_btn">—</button>
+        <input type="hidden" id="f_ogp_date">
         <span class="ogp-need" data-need="f_ogp_date"></span>
-      </label>
+      </div>
       <input type="hidden" id="f_ogp_lists" value="">
       
       <div class="card-group-label">4. Текст</div>
@@ -8781,6 +8789,27 @@ function ogpRowsRead(){
   });
   ogpListsSave(L);
 }
+function ogpTodayStr(){ const t = new Date(); return String(t.getDate()).padStart(2,'0') + '.' + String(t.getMonth()+1).padStart(2,'0') + '.' + t.getFullYear(); }
+function ogpDateRender(){
+  const b = document.getElementById('ogp_date_btn'); if(!b) return;
+  const v = val('f_ogp_date');
+  b.textContent = v ? v : ogpTodayStr() + ' · сегодня';
+}
+(function wireOgpDate(){
+  document.addEventListener('click', e=>{
+    const b = e.target.closest('#ogp_date_btn'); if(!b) return;
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(val('f_ogp_date') || ogpTodayStr());
+    const iso = m ? (m[3] + '-' + m[2] + '-' + m[1] + 'T12:00') : '';
+    if(typeof window.lexPickDate !== 'function') return;
+    window.lexPickDate(iso, dt=>{
+      const p = n=> String(n).padStart(2,'0');
+      const h = document.getElementById('f_ogp_date');
+      h.value = p(dt.getDate()) + '.' + p(dt.getMonth()+1) + '.' + dt.getFullYear();
+      h.dispatchEvent(new Event('input', {bubbles:true}));
+      ogpDateRender(); ogpModalSync();
+    });
+  });
+})();
 function ogpModalSync(){
   ogpRowsRead();
   ogpMirrorPull();
@@ -8790,8 +8819,9 @@ function ogpModalSync(){
   document.querySelectorAll('#ogp_kind_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.kind === OGP_KIND));
   const p = lexProfile();
   const line = document.getElementById('ogp_prof_line');
-  if(line) line.innerHTML = (p.name ? 'Профиль: <b>' + lawEscapeHtml(p.name) + '</b>' + (p.role ? ', ' + lawEscapeHtml(p.role) : '') + (p.id ? ', ID ' + lawEscapeHtml(p.id) : '') : 'Профиль не заполнен — имя, ID, почта и паспорт будут подставляться сами')
+  if(line) line.innerHTML = (p.name ? 'Профиль <b>' + lawEscapeHtml(p.name) + '</b>' + (p.id ? ', ID ' + lawEscapeHtml(p.id) : '') : 'Профиль не заполнен — имя, ID, почта и паспорт будут подставляться сами')
     + '<button type="button" class="hl-ref-btn" id="ogp_prof_edit">' + (p.name ? '✎ изменить' : '👤 заполнить') + '</button>';
+  ogpDateRender();
   const vic = ogpVic();
   document.querySelectorAll('#ogp_vic_seg .basis-btn').forEach(b=> b.classList.toggle('active', b.dataset.vic === vic));
   const va = document.getElementById('ogp_vic_app'); if(va) va.textContent = rep ? 'Заявитель (клиент)' : 'Я';
@@ -13629,7 +13659,10 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
     if(unit === 'm') dt.setMinutes(dt.getMinutes() + step);
     fill(dt);
   }
+  let PICK = null;
+  window.lexPickDate = function(iso, cb){ PICK = cb; overlay.querySelector('h3').textContent = 'Дата подачи'; fill(fromISO(iso) || new Date()); overlay.classList.add('open'); };
   function commit(dt){
+    if(PICK){ const f = PICK; PICK = null; f(dt); return; }
     hidden.value = toISO(dt);
     START_MS = null; saveStart();
     renderStartBtn();
@@ -13640,7 +13673,7 @@ document.getElementById('f_emergency_mode').addEventListener('change', ()=>{
     fill(fromISO(hidden.value) || new Date());
     overlay.classList.add('open');
   }
-  function close(){ overlay.classList.remove('open'); }
+  function close(){ PICK = null; overlay.querySelector('h3').textContent = 'Начало задержания'; overlay.classList.remove('open'); }
 
   faceBtn.addEventListener('click', open);
   document.getElementById('dt_close').addEventListener('click', close);
@@ -20709,19 +20742,22 @@ document.addEventListener('keydown', (e)=>{
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 button,input,select,textarea{font:inherit}
-.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;background:var(--panel);border-bottom:1px solid var(--border)}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}
-.brand .ic{width:34px;height:34px;flex:0 0 34px}
-.brand b{display:block;font-size:15px;color:var(--accent)}
-.brand small{color:var(--muted);font-size:11px}
-.actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.top{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:4px 10px;padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:8px;min-width:0}
+.brand .ic{width:24px;height:24px;flex:0 0 24px}
+.brand b{font-size:14px;line-height:1.2;color:var(--accent)}
+.top .x{grid-column:3;grid-row:1;background:transparent;border:0;color:var(--muted);font-size:19px;line-height:1;padding:2px 6px;border-radius:5px;cursor:pointer}
+.top .x:hover{color:var(--text);background:var(--panel2)}
+.tools{grid-column:2;grid-row:1;display:grid;gap:4px}
+.trow{display:flex;gap:5px}
+.trow .btn{flex:1 1 0;white-space:nowrap;padding:4px 8px;font-size:12px}
 .state{font-size:11px;color:var(--muted)}.state.ok{color:var(--ok)}
 .btn{background:transparent;border:1px solid var(--border);border-radius:7px;color:var(--text);padding:6px 10px;cursor:pointer;font-weight:600;font-size:12.5px}
 .btn:hover{background:rgba(var(--accent-rgb),.10)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .btn:disabled{opacity:.5;cursor:default}
 .layout{max-width:1600px;margin:auto;padding:14px;display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:14px;align-items:start}
-.form{position:sticky;top:64px;max-height:calc(100vh - 78px);overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.form{position:sticky;top:76px;max-height:calc(100vh - 90px);overflow:auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
 .sub{font-size:11.5px;color:var(--muted);margin:0 0 6px}
 .lbl{margin:14px 0 6px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
@@ -20793,6 +20829,9 @@ button,input,select,textarea{font:inherit}
 .nosig .sig{visibility:hidden}
 
 @media(max-width:900px){
+  .top{grid-template-columns:1fr auto}
+  .top .x{grid-column:2}
+  .tools{grid-column:1/-1;grid-row:2}
   .layout{grid-template-columns:1fr}
   .form{position:relative;top:auto;max-height:none}
   .pages{justify-items:start;overflow-x:auto;padding-bottom:6px}
@@ -20830,14 +20869,20 @@ body.pdfmode .pages .page{zoom:1}
 .field input[readonly]{opacity:.8}
 </style></head><body>
 <header class="top">
-  <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><div><b>Договор на оказание юридических услуг</b><small>Lex · частный адвокат · публикация на портале штата</small></div></div>
-  <div class="actions"><span class="state" id="status">Ожидаю Lex</span>
-    <button class="btn" id="myBtn" title="Сохранённые договоры и дополнения к ним">Мои договоры</button>
-    <button class="btn" id="saveBtn" title="Сохранить договор в этом браузере">💾 Сохранить</button>
-    <button class="btn" id="refresh" title="Подставить данные из профиля Lex заново">↻ Профиль</button>
-    <button class="btn" id="pdfBtn" title="Скачать договор файлом PDF">⬇ PDF</button>
-    <button class="btn" id="print" title="Печать или «Сохранить как PDF» средствами браузера">Печать</button>
-    <button class="btn" id="close">Закрыть</button></div>
+  <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><b>Договор на оказание юридических услуг</b></div>
+  <button class="x" id="close" type="button" aria-label="Закрыть" title="Закрыть">✕</button>
+  <div class="tools"><span class="state" id="status" hidden></span>
+    <div class="trow">
+      <button class="btn" id="myBtn" title="Сохранённые договоры и дополнения к ним">Мои договоры</button>
+      <button class="btn" id="saveBtn" title="Сохранить договор в этом браузере">💾 Сохранить</button>
+      <button class="btn" id="refresh" title="Подгрузить из профиля Lex заново">↓ Из профиля</button>
+    </div>
+    <div class="trow">
+      <button class="btn" id="pdfBtn" title="Скачать договор файлом PDF">⬇ PDF</button>
+      <button class="btn" id="uploadBtn" title="Собрать PDF и загрузить в облако Lex — ссылка вставится в п. 4 публикации">☁ Загрузить</button>
+      <button class="btn" id="print" title="Печать или «Сохранить как PDF» средствами браузера">Печать</button>
+    </div>
+  </div>
 </header>
 <main class="layout"><aside class="form">
 <p class="sub">Поля → договор справа обновляется сразу. Внизу — готовый текст публикации для темы «Договоры Коллегии Адвокатов».</p>
@@ -20900,7 +20945,6 @@ body.pdfmode .pages .page{zoom:1}
   <label class="field full">4. Ксерокопия договора — ссылка<input id="pubCopy" placeholder="загрузите PDF кнопкой ниже или вставьте ссылку"></label>
   <label class="field full">5. Доказательства составления и подписей — ссылка<input id="pubProof" placeholder="видео / альбом imgur со скриншотами подписания"></label>
 </div>
-<div class="btnrow"><button class="btn primary" id="uploadBtn" title="Собрать PDF и загрузить в облако Lex — ссылка откроется на любом устройстве">☁ Загрузить PDF и вставить ссылку</button></div>
 <div class="msg" id="upMsg"></div>
 <textarea class="out" id="pubOut" spellcheck="false"></textarea>
 <div class="btnrow">
@@ -21499,7 +21543,7 @@ window.addEventListener('message', e=>{
 });
 
 let tt; function toast(s){ const t = $('toast'); t.textContent = s; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(()=> t.classList.remove('show'), 2600); }
-function msg(text, kind){ const m = $('upMsg'); m.className = 'msg' + (kind ? ' ' + kind : ''); m.textContent = text || ''; }
+function msg(text, kind){ const m = $('upMsg'); m.className = 'msg' + (kind ? ' ' + kind : ''); m.textContent = text || ''; if(text) toast(text); }
 function copy(text){ return navigator.clipboard ? navigator.clipboard.writeText(text).then(()=> true, ()=> false) : Promise.resolve(false); }
 const UP_ERR = {
   unavailable: 'Загрузка работает на сайте lex-checklist.pages.dev после входа через Discord. Здесь — «⬇ PDF» и ссылка вручную.',
