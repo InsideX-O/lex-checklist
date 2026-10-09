@@ -20876,6 +20876,18 @@ body.pdfmode .pages .page{zoom:1}
 .pubbtns .btn{flex:1 1 0;white-space:nowrap}
 .pubdesc{margin:8px 0 4px;padding-left:18px;font-size:11.5px;color:var(--muted)}
 .pubdesc b{color:var(--text)}
+
+/* читаемость формы: разделы разведены линиями, подсказки без курсива */
+.form .lbl{margin:22px 0 8px;padding-top:14px;border-top:1px solid var(--border)}
+.form .lbl:first-of-type,.form .miss+#mainForm .lbl:first-child{margin-top:8px;padding-top:0;border-top:0}
+.hint{font-style:normal;font-size:11.5px;line-height:1.45;margin:6px 0 0}
+.pubbtns{margin-top:12px}
+.pubbtns .btn{padding:9px 6px;font-size:13px}
+.pubdesc{list-style:none;margin:12px 0 0;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);font-size:12.5px;line-height:1.4;color:var(--text);display:grid;gap:7px}
+.pubdesc li{display:block}
+.pubdesc b{color:var(--accent)}
+.pubdesc+.hint{margin-top:12px}
+.seg button{padding:8px 10px}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><b>Договор на оказание юридических услуг</b></div>
@@ -20958,13 +20970,13 @@ body.pdfmode .pages .page{zoom:1}
   <button class="btn primary" id="pubForum">Создать тему ↗</button>
 </div>
 <div class="msg" id="upMsg"></div>
-<ol class="pubdesc">
-  <li><b>Загрузить</b> — собирает PDF и вставляет ссылку в п. 4.</li>
-  <li><b>PDF</b> — скачивает договор файлом.</li>
-  <li><b>Создать тему</b> — копирует текст и открывает форум, вставьте ответом.</li>
-</ol>
+<ul class="pubdesc">
+  <li><b>☁ Загрузить</b> — собирает PDF и вставляет ссылку в п. 4.</li>
+  <li><b>⬇ PDF</b> — скачивает договор файлом.</li>
+  <li><b>Создать тему ↗</b> — копирует текст и открывает форум, вставьте ответом.</li>
+</ul>
 <p class="hint">Публикация — в теме «SA-GOV · Договоры Коллегии Адвокатов» (ст. 6.1 Закона о деятельности Коллегии Адвокатов). Лицензию и почту сверяйте с <a href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer">реестром ↗</a>. Заключать договор в КПЗ, ФТ или при процессуальных действиях нельзя (ст. 6.6).</p>
-<div class="btnrow"><button class="btn" id="clearClient">Очистить заказчика</button></div>
+<button class="btn" id="clearClient" hidden>Очистить заказчика</button>
 </div>
 <div id="addPanel" hidden>
 <div class="lbl">Дополнение к договору</div>
