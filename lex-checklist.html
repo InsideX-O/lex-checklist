@@ -573,6 +573,8 @@
   .wf-res.bad{ color:var(--bad); } .wf-res.ok{ color:var(--ok); }
   .wf-res.warn{ color:var(--warn); }
   .wf-q input.wf-amt{ width:130px; max-width:100%; display:inline-block; }
+  .wf-q select.wf-sel{ width:auto; max-width:100%; min-width:0; flex:0 1 auto; padding:4px 8px; font-size:12px; }
+  @media (max-width:600px){ .wf-mirror select.wf-sel{ flex:1 1 100%; } }
   .wf-amt.fine-bad{ border-color:var(--bad); box-shadow:0 0 0 1px var(--bad); color:var(--bad); }
   .wf-amt.fine-warn{ border-color:var(--warn); }
   .fine-info{ margin:4px 0 0; font-size:12px; }
@@ -2557,7 +2559,7 @@
     <div class="sticky-group">
       <div class="card hl-card" id="hl_card">
         <div class="hl-topbar">
-          <div class="mob-title">Карточка дела · Alex Backwoods</div>
+          <div class="mob-title">Карточка дела · Alex Underwood</div>
           <button type="button" class="theme-toggle" id="theme_toggle" role="switch" aria-checked="false" aria-label="Тема: тёмная / светлая" title="Переключить тему">
             <span class="tt-knob" aria-hidden="true"></span>
             <span class="tt-ico tt-moon" aria-hidden="true">🌙</span>
@@ -2634,7 +2636,7 @@
 </div>
 
 <div class="footer-note">
-  Карточка дела · Alex Backwoods. <span id="case_store_note">Дело держится до «Новое дело», перезагрузки страницы или закрытия вкладки. Сохранить — «Скачать .txt» или «Печать».</span>
+  Карточка дела · Alex Underwood. <span id="case_store_note">Дело держится до «Новое дело», перезагрузки страницы или закрытия вкладки. Сохранить — «Скачать .txt» или «Печать».</span>
   <span class="footer-legal"><a href="https://lex-checklist.pages.dev/terms.html">Условия использования</a> · <a href="https://lex-checklist.pages.dev/privacy.html">Политика конфиденциальности</a></span>
 </div>
 
@@ -3143,7 +3145,7 @@
       <div id="pv_edit_box" hidden>
         <div class="card-group-label" id="pv_edit_title" style="margin-top:0;">Редактирование профиля</div>
         <div class="grid2">
-          <label class="field">Имя и фамилия (персонаж)<input type="text" id="p_name" placeholder="Alex Backwoods" data-profile="name"></label>
+          <label class="field">Имя и фамилия (персонаж)<input type="text" id="p_name" placeholder="Alex Underwood" data-profile="name"></label>
           <label class="field">№ ID-карты (паспорт)<input type="text" id="p_id" placeholder="80429" data-profile="id"></label>
           <label class="field">Должность<select id="p_role" data-profile="role"><option value="">—</option><option value="гос. адвокат">Государственный адвокат</option><option value="частный адвокат">Частный адвокат</option><option value="прокурор">Прокурор</option><option value="другое">Другое</option></select></label>
           <label class="field">№ лицензии <a class="pv-reg" href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer" title="Реестр лицензий частных адвокатов">реестр ↗</a><input type="text" id="p_license" placeholder="PLSA 0000" data-profile="license"></label>
@@ -3465,14 +3467,14 @@
       <button class="law-modal-close" id="support-intro-close" type="button" aria-label="Закрыть">✕</button>
     </div>
     <div class="law-modal-body">
-      <p class="support-lead">Личный инструмент Alex Backwoods для работы с госструктурами: адвокату или прокурору — собрать информацию по делу и сформировать отчёт. Если сэкономил время — можно угостить автора, необязательно, но приятно. Нашли неточность в законе, ошибку в чек-листе или знаете, как сделать удобнее, — тоже жду, лучше сразу статьёй ниже.</p>
+      <p class="support-lead">Личный инструмент Alex Underwood для работы с госструктурами: адвокату или прокурору — собрать информацию по делу и сформировать отчёт. Если сэкономил время — можно угостить автора, необязательно, но приятно. Нашли неточность в законе, ошибку в чек-листе или знаете, как сделать удобнее, — тоже жду, лучше сразу статьёй ниже.</p>
       <div class="support-links">
         <a href="https://dalink.to/insidex_o" target="_blank" rel="noopener">💳 DonationAlerts</a>
         <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=ordentamplier@gmail.com&currency_code=USD" target="_blank" rel="noopener">📧 Отправить через PayPal</a>
         <a href="https://lnk.bio/InsideX" target="_blank" rel="noopener">🔗 Соцсети, Telegram, Discord, донаты — lnk.bio/InsideX</a>
       </div>
       <div class="support-gta">
-        <div class="support-gta-title">GTA5 RP · Redwood · Alex Backwoods</div>
+        <div class="support-gta-title">GTA5 RP · Redwood · Alex Underwood</div>
         <div class="support-gta-row">Перевод виртуалки на паспорт: <button type="button" class="support-copy-chip" id="support-copy-passport">80429 ⧉</button></div>
         <div class="support-gta-row">Регистрация по рефералке (бонусы при старте): <a href="https://gta5rp.com/ref/freeman" target="_blank" rel="noopener" class="support-gta-link">gta5rp.com/ref/freeman ↗</a> <button type="button" class="support-copy-chip" id="support-copy-ref">FREEMAN ⧉</button></div>
       </div>
@@ -3582,11 +3584,11 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '2.3';
-const APP_DATE = '2026-10-08';
+const APP_VERSION = '2.4';
+const APP_DATE = '2026-10-12';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
-const APP_BUILD = '2026-10-08';
+const APP_BUILD = '2026-10-12';
 const DB_NAME = 'redwood';
 const DB_VERSION = 'redwood-1.5';
 const DB_DATE = '2026-10-06';
@@ -3599,6 +3601,22 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '2.4': {
+    title: 'Карточка 2.4 · место у статьи, прокурор, залог, статистика по UTC',
+    added: [
+      "Место задержания и режим ЧП / ВП — прямо у вопроса статьи (ст. 12.7 УАК, статьи с режимом ЧП / ВП): зона и место выбираются под статьёй, объекты статьи — первыми в списке; это то же поле, что вверху карточки — выбор в одном месте сразу виден в другом",
+      "Прокурор: в «Наказание — выбери по каждой статье» — «Освободить (ст. 5.1 УАК)» при примирении; вариант предвыбран по данным дела (впервые, примирился, потерпевший установлен, статья подходит), ручной выбор не перебивается",
+      "Договор: «Мои договоры», «Новый договор», «Сохранить»; «Из профиля» у исполнителя; публикация (загрузить, PDF, тема на форуме); цвет PDF — синий или как светлая тема",
+      "Обращение в ОГП — на весь экран, дата подачи — через выбор даты карточки",
+      "Статистика: дни считаются по UTC (сутки с 00:00 UTC, в Праге летом — с 02:00), у каждого дела сохраняется длительность. Это нужно для будущего триала: в зачёт пойдут дела от 10 минут. Честно: дела и минуты присылает сама карточка, сервер их не проверяет"
+    ],
+    fixed: [
+      "Вопрос статьи «выберите место задержания» стоял у статьи, а ответ — в поле «Место» вверху: теперь ответ рядом с вопросом",
+      "Окно «Проверка залога»: список статей — под своим полем, выбранные статьи — внутри поля как теги, крестик работает",
+      "Заключительное слово: «статей 4.1–4.3» → «статей 4.1, 4.2, 4.3»",
+      "Договор: галочки по умолчанию снимаются, номер договора сверяется вручную"
+    ],
+  },
   '2.3': {
     title: 'Карточка 2.3 · облако, документы, подписки',
     added: [
@@ -3790,6 +3808,10 @@ const APP_NEWS = {
 // Ключ -- дата правок (APP_BUILD). sel -- элемент; up -- подняться к ближайшему
 // предку (например, к <label> галки). Порядок показа -- по месту в карточке сверху вниз.
 const APP_HINTS = {
+  '2026-10-12': [
+    { id:'wf-place-mirror', sel:'#warn_first_rows', t:'Место — у вопроса статьи',
+      x:'Статья спрашивает место задержания или режим ЧП / ВП — выбирайте прямо здесь, под статьёй: объекты статьи стоят первыми. Это то же поле, что «Место» вверху карточки, выбор виден в обоих местах.' }
+  ],
   '2026-10-06': [
     { id:'upd-base-line', sel:'#update_version', t:'Какая база действует',
       x:'Здесь всегда видно, какая база законов работает сейчас: номер, дата, встроенная в карточку или загружена обновлением. Вышла только база — уведомление «Обновить» сразу открывает подтверждение со списком изменений.' },
@@ -10420,6 +10442,42 @@ function chipArticleCmp(a, b){
 // Строки «условия вменения» под статьями обвинения: форма статьи (если форм
 // несколько), предупреждение, прежнее привлечение, документ, процедура штрафа.
 // Какие вопросы задавать -- решают данные статьи (artLogic), код общий.
+// Вопрос статьи, ответ на который -- в поле наверху (решение InsideX 12.10.2026, вариант А):
+// место и режим ЧП / ВП выбираются прямо у вопроса статьи; это то же поле, что вверху
+// карточки (#f_zone, #f_place, #f_emergency_mode) -- выбор в одном месте сразу виден в другом.
+function wfOptsFrom(sel, skipEmpty){
+  if(!sel) return '';
+  const o = x=> (skipEmpty && !x.value) ? '' : '<option value="' + lawEscapeHtml(x.value) + '"' + (x.value === sel.value ? ' selected' : '') + '>' + lawEscapeHtml(x.textContent) + '</option>';
+  return Array.from(sel.children).map(ch=> ch.tagName === 'OPTGROUP' ? '<optgroup label="' + lawEscapeHtml(ch.label) + '">' + Array.from(ch.children).map(o).join('') + '</optgroup>' : o(ch)).join('');
+}
+function wfPlaceZoneOf(id){ return Object.keys(PLACES).find(z=> (PLACES[z] || []).some(x=> x[0] === id)) || ''; }
+function wfPlaceLabel(id){ const z = wfPlaceZoneOf(id); const r = z ? PLACES[z].find(x=> x[0] === id) : null; return r ? r[1] : id; }
+function wfPlaceMirrorHtml(article){
+  const zs = document.getElementById('f_zone'), ps = document.getElementById('f_place');
+  const info = artPlaceInfo(article);
+  const objs = info.objs.filter(wfPlaceZoneOf);
+  const cur = (ps || {}).value || '';
+  const objGrp = objs.length ? '<optgroup label="Объекты ст. ' + lawEscapeHtml(article) + ' УАК (' + lawEscapeHtml(info.ref) + ')">' + objs.map(id=> '<option value="obj:' + lawEscapeHtml(id) + '">' + lawEscapeHtml(wfPlaceLabel(id)) + '</option>').join('') + '</optgroup>' : '';
+  return '<select class="wf-sel" data-wzone aria-label="Зона">' + wfOptsFrom(zs) + '</select>'
+    + '<select class="wf-sel" data-wplace aria-label="Конкретное место">' + (cur ? '' : '<option value="" selected>— выберите место —</option>') + objGrp + wfOptsFrom(ps, true) + '</select>';
+}
+function wfEmergMirrorHtml(){ return '<select class="wf-sel" data-wemerg aria-label="Режим ЧП / ВП">' + wfOptsFrom(document.getElementById('f_emergency_mode')) + '</select>'; }
+function wfSetField(id, v){ const el = document.getElementById(id); if(!el || el.value === v) return; el.value = v; el.dispatchEvent(new Event('change', { bubbles:true })); }
+document.addEventListener('change', (e)=>{
+  const t = e.target;
+  if(!t || !t.matches || !t.matches('.wf-sel')) return;
+  const v = t.value;
+  if(t.hasAttribute('data-wzone')) wfSetField('f_zone', v);
+  else if(t.hasAttribute('data-wemerg')) wfSetField('f_emergency_mode', v);
+  else if(t.hasAttribute('data-wplace')){
+    if(!v) return;
+    const id = v.indexOf('obj:') === 0 ? v.slice(4) : v;
+    const z = wfPlaceZoneOf(id);
+    if(z && z !== (document.getElementById('f_zone') || {}).value) wfSetField('f_zone', z);
+    wfSetField('f_place', id);
+  }
+  if(typeof refreshFlags === 'function') refreshFlags();
+});
 function renderWarnFirstRows(){
   const box = document.getElementById('warn_first_rows');
   if(!box) return;
@@ -10473,7 +10531,9 @@ function renderWarnFirstRows(){
       + (c.prior176 === 'yes' ? '<div class="wf-res warn">Обвинение может переквалифицировать на ст. 17.6 УАК (злостное неповиновение, 3 года СИЗО ФТ) — прежнее привлечение по ст. 25.5 УАК, срок значения не имеет</div>' : ''));
     if(needs.indexOf('act16') >= 0) ACT16_ELEMENTS.forEach(e=> parts.push('<div class="wf-q">' + name + ' — ' + lawEscapeHtml(e[1]) + '? ' + bt('data-cq', id, 'yes', c[e[0]], 'да').replace('data-cq=', 'data-cqk="' + e[0] + '" data-cq=') + bt('data-cq', id, 'no', c[e[0]], 'нет').replace('data-cq=', 'data-cqk="' + e[0] + '" data-cq=') + '</div>'));
     if(needs.indexOf('lost') >= 0) parts.push('<div class="wf-q">' + name + ' — было упущение задержанного / преследуемого / арестованного? ' + bt('data-cq', id, 'yes', c.lost, 'да').replace('data-cq=', 'data-cqk="lost" data-cq=') + bt('data-cq', id, 'no', c.lost, 'нет').replace('data-cq=', 'data-cqk="lost" data-cq=') + '</div>');
+    if(needs.indexOf('place') >= 0) parts.push('<div class="wf-q wf-mirror">' + name + ' — место задержания: ' + wfPlaceMirrorHtml(String(c.article)) + '</div>');
     if(needs.indexOf('place') >= 0){ const pc = placeCheckFor(String(c.article)); parts.push('<div class="wf-res ' + (pc === 'ok' ? 'ok' : pc === 'bad' ? 'bad' : 'warn') + '">' + name + ' — ' + (pc === 'ok' ? 'место — объект статьи' : pc === 'bad' ? 'место не объект статьи (' + artPlaceInfo(c.article).names + ' — ' + artPlaceInfo(c.article).ref + ')' : pc === 'other' ? 'место вне списка — проверить по ' + artPlaceInfo(c.article).ref.replace('Комментарий', 'Комментарию') + ' к УАК' : 'выберите место задержания') + '</div>'); }
+    if(needs.indexOf('emerg') >= 0) parts.push('<div class="wf-q wf-mirror">' + name + ' — режим: ' + wfEmergMirrorHtml() + '</div>');
     if(needs.indexOf('conds') >= 0) L.conds.forEach(cd=>{ const k = chipCondKey(cd); parts.push('<div class="wf-q">' + name + ' — ' + lawEscapeHtml(cd.q) + ' ' + bt('data-cq', id, 'yes', c[k], 'да').replace('data-cq=', 'data-cqk="' + k + '" data-cq=') + bt('data-cq', id, 'no', c[k], 'нет').replace('data-cq=', 'data-cqk="' + k + '" data-cq=') + '</div>'); });
     if(needs.indexOf('act') >= 0) parts.push('<div class="wf-q">' + name + ' — постановление / ордер / указ вступили в силу и предъявлены? ' + bt('data-cq', id, 'yes', c.act, 'да').replace('data-cq=', 'data-cqk="act" data-cq=') + bt('data-cq', id, 'no', c.act, 'нет').replace('data-cq=', 'data-cqk="act" data-cq=') + '</div>');
     if(needs.indexOf('fine') >= 0 && typeof renderFineRows === 'function') parts.push(renderFineRows(c));
@@ -10707,7 +10767,7 @@ function chipConditionsMissing(c){
   if(needs.indexOf('warn') >= 0 && !c.warned && !chipJointExceptionOn(c)) M.push({ msg:'ответьте, объявлялось ли предупреждение / требование', anchor:a });
   if(needs.indexOf('act16') >= 0) ACT16_ELEMENTS.forEach(e=>{ if(!c[e[0]]) M.push({ msg: e[1] + '?', anchor:a }); });
   if(needs.indexOf('lost') >= 0 && !c.lost) M.push({ msg:'было ли упущение задержанного / преследуемого / арестованного', anchor:a });
-  if(needs.indexOf('place') >= 0 && !placeCheckFor(String(c.article))) M.push({ msg:'выберите место задержания — объект по ст. ' + c.article + ' УАК или нет', anchor: document.getElementById('f_place') || a });
+  if(needs.indexOf('place') >= 0 && !placeCheckFor(String(c.article))) M.push({ msg:'выберите место задержания — объект по ст. ' + c.article + ' УАК или нет', anchor:a });
   if(needs.indexOf('prior') >= 0 && !c.prior) M.push({ msg:'подтверждено ли прежнее привлечение по ст. ' + L.priorArt + ' УАК (запись в DataBase)', anchor:a });
   if(needs.indexOf('act') >= 0 && !c.act) M.push({ msg:'вступил ли в силу и предъявлен ли документ (постановление / ордер / указ)', anchor:a });
   if(needs.indexOf('conds') >= 0) L.conds.forEach(cd=>{ if(!c[chipCondKey(cd)]) M.push({ msg: cd.q, anchor:a }); });
@@ -15596,13 +15656,17 @@ window.LexHints = (function(){
 // статьи, структуры, время, обращения в ОГП. Анонимная -- только с согласия:
 // события (какие кнопки, какие поля заполнены) копятся в очереди в браузере;
 // раз в сутки сводка за прошедший день уходит Ае через Worker (lex-cloud-ui). Тексты не пишутся никогда.
+// Правка 12.10.2026 (триал, цикл 28 дней): день -- по UTC (как на сервере); у дня --
+// длительность каждого дела в минутах (mins) и отметка входа (lex_stats_visits).
 window.LexStats = (function(){
-  const CK = 'lex_stats_consent', DK = 'lex_stats_days', QK = 'lex_stats_q', CUR = 'lex_stats_cur', IDK = 'lex_anon_id', DEV = 'lex_stats_device';
+  const CK = 'lex_stats_consent', DK = 'lex_stats_days', QK = 'lex_stats_q', CUR = 'lex_stats_cur', IDK = 'lex_anon_id', DEV = 'lex_stats_device', VK = 'lex_stats_visits';
+  const QUAL_MIN = 10; // дело засчитывается в цикл триала от 10 минут
   const get = (k, d)=>{ try { const v = JSON.parse(localStorage.getItem(k) || 'null'); return v == null ? d : v; } catch(e){ return d; } };
   const put = (k, v)=>{ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
   const pad = n=> String(n).padStart(2, '0');
-  const dayKey = d=>{ d = d || new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+  const dayKey = d=>{ d = d || new Date(); return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()); };
   const consent = ()=> get(CK, { asked:false, on:false });
+  function markVisit(){ const V = get(VK, {}); const k = dayKey(); if(V[k]) return; V[k] = 1; const ks = Object.keys(V).sort(); while(ks.length > 120) delete V[ks.shift()]; put(VK, V); }
   function device(){
     const ua = navigator.userAgent || '';
     const os = /Android/i.test(ua) ? 'Android' : /iPhone|iPad|iPod/i.test(ua) ? 'iOS' : /Windows/i.test(ua) ? 'Windows' : /Mac OS/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : 'другая';
@@ -15631,13 +15695,20 @@ window.LexStats = (function(){
     const g = id=> (document.getElementById(id) || {}).value || '';
     const chips = (typeof chargeChipsSafe === 'function') ? chargeChipsSafe() : [];
     const secs = (typeof START_MS !== 'undefined' && START_MS) ? Math.max(0, Math.round((Date.now() - START_MS) / 1000)) : 0;
-    return { out: g('f_outcome'), arts: chips.map(c=> c.article + ' ' + lawShortCode(c.law)), struct: g('f_struct'), role: (typeof FW_ROLE !== 'undefined' && FW_ROLE) || '', secs: Math.min(secs, 6 * 3600) };
+    const s = Math.min(secs, 6 * 3600);
+    return { out: g('f_outcome'), arts: chips.map(c=> c.article + ' ' + lawShortCode(c.law)), struct: g('f_struct'), role: (typeof FW_ROLE !== 'undefined' && FW_ROLE) || '', secs: s, mins: Math.round(s / 60) };
   }
   function apply(day, c, sign){
     const D = get(DK, {});
-    const x = D[day] || (D[day] = { cases:0, ogp:0, out:{}, arts:{}, structs:{}, roles:{}, secs:0 });
+    const x = D[day] || (D[day] = { cases:0, ogp:0, out:{}, arts:{}, structs:{}, roles:{}, secs:0, mins:[] });
+    if(!Array.isArray(x.mins)) x.mins = [];
     const add = (o, k, n)=>{ if(!k) return; o[k] = (o[k] || 0) + n; if(o[k] <= 0) delete o[k]; };
-    if(c.fw){ x.cases += sign; add(x.out, c.out || 'none', sign); c.arts.forEach(a=> add(x.arts, a, sign)); add(x.structs, c.struct, sign); add(x.roles, c.role, sign); x.secs += sign * (c.secs || 0); }
+    if(c.fw){
+      x.cases += sign; add(x.out, c.out || 'none', sign); c.arts.forEach(a=> add(x.arts, a, sign)); add(x.structs, c.struct, sign); add(x.roles, c.role, sign); x.secs += sign * (c.secs || 0);
+      const m = c.mins != null ? c.mins : Math.round((c.secs || 0) / 60);
+      if(sign > 0){ if(x.mins.length < 200) x.mins.push(m); }
+      else { const i = x.mins.indexOf(m); if(i >= 0) x.mins.splice(i, 1); }
+    }
     if(c.ogp) x.ogp += sign;
     if(x.cases < 0) x.cases = 0; if(x.ogp < 0) x.ogp = 0; if(x.secs < 0) x.secs = 0;
     if(!x.cases && !x.ogp) delete D[day];
@@ -15660,7 +15731,7 @@ window.LexStats = (function(){
   function range(per, dayStr){
     const D = get(DK, {});
     const keys = Object.keys(D).sort();
-    const end = dayStr ? new Date(dayStr + 'T12:00:00') : new Date();
+    const end = dayStr ? new Date(dayStr + 'T12:00:00Z') : new Date();
     const from = per === 'day' ? dayKey(end) : per === 'week' ? dayKey(new Date(end.getTime() - 6 * 864e5)) : per === 'month' ? dayKey(new Date(end.getTime() - 29 * 864e5)) : '0000';
     const to = dayKey(end);
     const T = { cases:0, ogp:0, out:{}, arts:{}, structs:{}, roles:{}, secs:0, days:0 };
@@ -15696,7 +15767,7 @@ window.LexStats = (function(){
       if(Object.keys(T.structs).length) H += '<div class="card-group-label">Структуры</div><div class="stats-list">' + top(T.structs, STRUCT_LABEL, 6) + '</div>';
       if(Object.keys(T.roles).length) H += '<div class="card-group-label">Роль</div><div class="stats-list">' + top(T.roles, { adv:'Адвокат', prok:'Прокурор' }, 2) + '</div>';
     }
-    H += '<div class="empty-hint" style="margin-top:8px;">Без входа статистика хранится только в этом браузере: очистка данных сайта или другой браузер — её не будет. Тренировка в окне «Тест» не считается.</div>';
+    H += '<div class="empty-hint" style="margin-top:8px;">Дни — по UTC (сутки начинаются в 00:00 UTC, в Праге летом это 02:00). Без входа статистика хранится только в этом браузере: очистка данных сайта или другой браузер — её не будет. Тренировка в окне «Тест» не считается.</div>';
     if(!lawSameHtml(out, H)) out.innerHTML = H;
   }
   function open(){ const ov = document.getElementById('stats-overlay'); if(!ov) return; render(); ov.classList.add('open'); }
@@ -15737,8 +15808,16 @@ window.LexStats = (function(){
       else track('field', { id: t.id, filled: !!String(t.value || '').trim() });
     }, true);
     track('open', 1);
+    markVisit();
   })();
-  return { track, record, open, render, askIfNeeded, setConsent, consent, queue: ()=> get(QK, []), days: ()=> get(DK, {}), device };
+  // день для цикла триала: вход, засчитанные дела (от 10 минут), минуты каждого дела
+  function trialDay(day){
+    day = day || dayKey();
+    const x = get(DK, {})[day] || {};
+    const mins = Array.isArray(x.mins) ? x.mins.slice() : [];
+    return { day, visited: !!get(VK, {})[day], qualified: mins.filter(m=> m >= QUAL_MIN).length, mins };
+  }
+  return { track, record, open, render, askIfNeeded, setConsent, consent, queue: ()=> get(QK, []), days: ()=> get(DK, {}), visits: ()=> get(VK, {}), trialDay, dayKey, QUAL_MIN, device };
 })();
 
 // ===== Обучение по карточке (правка 30.09.2026; видео -- 🔴 позже) =====
@@ -22264,7 +22343,8 @@ wire();
      ===================================================================== */
   const SENT_KEY = 'lex_stats_sent';
   const pad = n=> String(n).padStart(2, '0');
-  const dayKey = d=> d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  // день -- по UTC, как на сервере (цикл триала, правка 12.10.2026)
+  const dayKey = d=> d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate());
   function anonId(){
     let id = lsGet('lex_anon_id', '');
     if(!/^[A-Za-z0-9_-]{8,64}$/.test(id)){ id = Math.random().toString(36).slice(2) + Date.now().toString(36); lsPut('lex_anon_id', id); }
@@ -22274,20 +22354,23 @@ wire();
   function statsPayload(day, kind){
     const S = window.LexStats; if(!S) return null;
     const D = (S.days() || {})[day] || { cases:0, ogp:0, out:{}, arts:{}, structs:{}, roles:{}, secs:0 };
-    const from = new Date(day + 'T00:00:00').getTime(), to = from + 864e5;
+    const from = Date.parse(day + 'T00:00:00Z'), to = from + 864e5;
     const clicks = {}, fields = {};
     (S.queue() || []).forEach(ev=>{
       if(!ev || ev.t < from || ev.t >= to) return;
       if(ev.e === 'click') clicks[String(ev.v).slice(0, 50)] = (clicks[String(ev.v).slice(0, 50)] || 0) + 1;
       if(ev.e === 'field' && ev.v && ev.v.id) fields[String(ev.v.id).slice(0, 50)] = (fields[String(ev.v.id).slice(0, 50)] || 0) + 1;
     });
-    const counters = { cases: D.cases | 0, ogp: D.ogp | 0, secs: D.secs | 0, events: 0 };
+    const T = S.trialDay ? S.trialDay(day) : { visited:false, qualified:0, mins:[] };
+    const counters = { cases: D.cases | 0, ogp: D.ogp | 0, secs: D.secs | 0, events: 0, visited: T.visited ? 1 : 0, qualified_cases: T.qualified | 0 };
     Object.keys(clicks).forEach(k=> counters.events += clicks[k]);
     if(!counters.cases && !counters.ogp && !counters.events) return null;
     const dev = S.device ? S.device() : {};
     return {
       v: 1, kind, app: String((typeof APP_VERSION !== 'undefined' ? APP_VERSION : '') + ' ' + (typeof APP_BUILD !== 'undefined' ? APP_BUILD : '')).trim().slice(0, 20),
       db: String(typeof DB_VERSION !== 'undefined' ? DB_VERSION : '').slice(0, 30), period: day, anonId: anonId(), counters,
+      // длительность каждого дела за день, минуты (для цикла триала; засчитывается от 10 минут)
+      cases: (T.mins || []).slice(0, 200).map(m=> ({ min: Math.max(0, Math.min(360, m | 0)) })),
       top: { arts: topList(D.arts), outcomes: topList(D.out), structs: topList(D.structs), roles: topList(D.roles), buttons: topList(clicks, 30), fields: topList(fields, 30),
         env: [[String(dev.device || '?'), 1], [String(dev.os || '?'), 1], [String(dev.browser || '?'), 1], [String(dev.screen || '?'), 1]] }
     };
