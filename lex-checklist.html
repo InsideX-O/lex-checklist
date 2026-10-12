@@ -1021,7 +1021,13 @@
   @media (min-width:560px){ .bail-search{ grid-template-columns:1fr 1fr; } }
   .bail-search .field{ display:block; margin:0; font-size:12px; color:var(--muted); min-width:0; }
   .bail-search .law-search-input{ margin:4px 0 8px; }
-  .bail-dd-holder .chip-dropdown.open{ margin:0 0 10px; }
+  .bail-search .chip-dropdown.open{ margin:0 0 10px; }
+  .bail-box{ display:flex; flex-wrap:wrap; align-items:center; gap:4px; margin:4px 0 8px; padding:4px 6px; border:1px solid var(--border); border-radius:8px; background:var(--panel); cursor:text; }
+  .bail-box:focus-within{ border-color:var(--accent); }
+  .bail-box .chip-list{ display:contents; }
+  .bail-box .chip-list > .chip{ width:auto; max-width:100%; }
+  .bail-box .law-search-input, .bail-box .law-search-input:focus{ outline:0 !important; }
+  .bail-box .law-search-input{ flex:1 1 110px; min-width:90px; margin:0; border:0; outline:0; background:transparent; padding:4px 2px; box-shadow:none; }
   .bail-calc .field{ display:block; margin:6px 0; font-size:12.5px; }
   .bail-calc input[type=text], .bail-calc input[type=number], .bail-calc select{ width:100%; box-sizing:border-box; }
   .bail-say{ margin-top:8px; padding:8px 10px; border-left:3px solid var(--accent); background:rgba(var(--accent-rgb),.10); border-radius:6px; font-size:12.5px; white-space:normal; }
@@ -1693,6 +1699,18 @@
   .lex-contract-frame{ display:block; width:100%; height:100%; border:0; background:var(--bg); }
   @media (max-width:700px){ .lex-contract-overlay{ padding:0; } .lex-contract-shell{ width:100vw; height:var(--vvh,100dvh); border-radius:0; } }
   @media print{ .lex-contract-overlay{ display:none !important; } }
+</style>
+<style>
+  .ai-line{ font-size:13px; margin:3px 0; } .ai-line.muted{ color:var(--muted); }
+  .ai-bar{ height:7px; border-radius:99px; background:var(--panel); border:1px solid var(--border); overflow:hidden; margin:3px 0 6px; }
+  .ai-bar i{ display:block; height:100%; background:var(--accent); border-radius:99px; }
+  .sub-state{ font-size:12px; color:var(--muted); margin:2px 0 4px; } .sub-state.on{ color:var(--ok); font-weight:600; }
+  .ai-answer{ margin-top:10px; padding:10px 12px; border:1px solid var(--border); border-radius:9px; background:var(--panel2); font-size:13.5px; line-height:1.55; white-space:pre-wrap; min-height:0; }
+  .ai-answer:empty{ display:none; }
+  #ai_q{ min-height:90px; }
+  #ai_open_btn.is-blocked{ opacity:.55; }
+  #ai-overlay{ z-index:230; }
+  .lim-row[hidden]{ display:none; }
 </style>
 <style>
   /* ===== Обращение в ОГП: списки со ссылками, подсказки «Нужно…» ===== */
@@ -2512,6 +2530,7 @@
           <option value="warn">Оснований для освобождения нет — предупреждение (ст. 19.4 УАК)</option>
           <option value="fine">Оснований для освобождения нет — штраф по санкции статьи</option>
           <option value="fine52">Оснований для освобождения нет — штраф со смягчающими (ст. 5.2, 5.2.1 УАК)</option>
+          <option value="free51">Оснований для освобождения нет — освобождение от ответственности (ст. 5.1 УАК, примирение)</option>
           <option value="none" id="outcome_opt_none">Оснований для освобождения нет — линия защиты в суде</option>
         </select>
       </label>
@@ -2585,6 +2604,7 @@
           <button type="button" class="hl-act" id="tst_open_btn" title="Случайное тестовое дело — проверить, как работает карточка">🎲 Тест</button>
           <button type="button" class="hl-act" id="profile_open_btn" title="Мои данные для обращений: имя, ID, почта, паспорт">👤 Профиль</button>
           <button type="button" class="hl-act" id="docs_open_btn" title="Сводка по делу, обращение в ОГП, договор">📄 Документы</button>
+          <button type="button" class="hl-act" id="ai_open_btn" title="Вопрос ИИ-помощнику по делу">🤖 Помощь ИИ</button>
           <button type="button" class="hl-act lex-discord" id="lex_discord_btn" hidden>Войти через Discord</button>
         </div>
       </div>
@@ -3166,27 +3186,25 @@
         <div class="sub-note" id="sub_note"><b>Тестовый режим.</b> Чек-лист работает бесплатно, без подписок. Подписка и донат — по желанию, чтобы поддержать развитие. Автоматическая проверка подписок и ИИ-помощник подключатся позже.</div>
         <div class="sub-card s-boosty">
           <div class="sub-h">🟦 Lex Sub — Boosty</div><div class="sub-p">300 ₽ / месяц</div>
-          <div class="sub-w">Что даёт:</div>
-          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Patreon и бустом сервера</li></ul>
-          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/fkn_inside/purchase/3279519?ssource=DIRECT&amp;share=subscription_link" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+          <div class="sub-w">Увеличивает лимит ИИ-помощника. Суммируется с другими подписками.</div>
+          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/fkn_inside/purchase/3279522" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-patreon">
           <div class="sub-h">🟪 Lex Sub — Patreon</div><div class="sub-p">от 75 CZK / месяц · 3 уровня на выбор</div>
-          <div class="sub-w">Что даёт:</div>
-          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Boosty и бустом сервера</li></ul>
-          <div class="btnrow"><a class="sub-btn primary" href="https://www.patreon.com/c/insidex/membership" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+          <div class="sub-w">Увеличивает лимит ИИ-помощника. Суммируется с другими подписками.</div>
+          <div class="btnrow"><a class="sub-btn primary" href="https://www.patreon.com/c/insidex/membership" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button><button type="button" id="sub_patreon_link" hidden>Подключить Patreon</button></div>
         </div>
         <div class="sub-card s-boost">
           <div class="sub-h">🟧 PATRON HUB — Буст сервера</div><div class="sub-p">Требуется 2+ буста серверу</div>
-          <div class="sub-w">Что даёт:</div>
-          <ul><li>+5 вопросов ИИ-помощнику в день</li><li>Суммируется с Boosty и Patreon</li></ul>
+          <div class="sub-w">Увеличивает лимит ИИ-помощника. Суммируется с другими подписками.</div>
           <div class="btnrow"><a class="sub-btn primary" href="https://discord.com/invite/Ykczusb" target="_blank" rel="noopener noreferrer">Как бустить</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-limits">
-          <div class="sub-h">ВАШИ ЛИМИТЫ СЕЙЧАС</div>
+          <div class="sub-h">ВАШИ ЛИМИТЫ ИИ</div>
           <div class="lim-row"><span>Тариф</span><b id="lim_tier">Free</b></div>
-          <div class="lim-row"><span>Вопросов ИИ в день</span><b id="lim_ai">1</b></div>
-          <div class="lim-row"><span>Триал</span><b id="lim_trial">не активирован</b></div>
+          <div class="lim-row" hidden><span>Вопросов ИИ в день</span><b id="lim_ai">1</b></div>
+          <div class="lim-row" hidden><span>Триал</span><b id="lim_trial">не активирован</b></div>
+          <div id="lim_ai_box"></div>
           <div class="btnrow"><button type="button" id="sub_trial" title="Откроет приглашение на Discord-сервер: роль Lex на 7 дней выдаётся автоматически (после запуска бота)">Триал 7 дней — вступить на сервер</button></div>
         </div>
         <div class="support-form-status" id="sub_status"></div>
@@ -3238,6 +3256,24 @@
   </div>
 </div>
 
+<div class="law-modal-overlay" id="ai-overlay">
+  <div class="law-modal" id="ai-modal" style="width:min(640px, 100%);">
+    <div class="law-modal-head">
+      <div class="law-modal-titles"><h3 style="margin:0;">Помощь ИИ</h3><div class="law-modal-sub">вопрос по делу · ответ ориентировочный, проверяйте по закону</div></div>
+      <button class="law-modal-close" id="ai-close" type="button" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="law-modal-body" style="white-space:normal;">
+      <label class="field">Ваш вопрос
+        <textarea id="ai_q" maxlength="2000" placeholder="Например: можно ли обыскать клиента до Миранды?"></textarea>
+      </label>
+      <label class="chk" style="margin-top:6px;"><input type="checkbox" id="ai_ctx" checked><span class="lbl">Приложить данные карточки дела</span></label>
+      <div class="btnrow"><button type="button" class="primary" id="ai_send">Спросить</button></div>
+      <div class="support-form-status" id="ai_status"></div>
+      <div class="ai-answer" id="ai_answer"></div>
+      <div class="ai-lim" id="ai_lim_hint"></div>
+    </div>
+  </div>
+</div>
 <div class="lex-tour" id="lex_tour" role="dialog" aria-live="polite" style="display:none;">
   <div class="lex-tour-head"><b id="lex_tour_t"></b><span id="lex_tour_n"></span></div>
   <div class="lex-tour-x" id="lex_tour_x"></div>
@@ -3281,18 +3317,17 @@
       <div class="bail-search" id="bail_search">
         <div class="field">Статьи — за что сейчас
           <div class="chip-input-wrap" id="bail_now">
-            <div class="chip-input-row"><input type="text" class="law-search-input chip-text-input" id="bail_now_input" placeholder="номер или слово — админ. УАК / ДК, КПЗ" autocomplete="off"></div>
-            <div class="chip-list" id="bail_now_list"></div>
+            <div class="bail-box"><div class="chip-list" id="bail_now_list"></div><input type="text" class="law-search-input chip-text-input" id="bail_now_input" placeholder="номер или слово — админ. УАК / ДК, КПЗ" autocomplete="off"></div>
+            <div class="chip-dropdown" id="bail_now_dd"></div>
           </div>
         </div>
         <div class="field">Статьи за последние сутки (DataBase)
           <div class="chip-input-wrap" id="bail_day">
-            <div class="chip-input-row"><input type="text" class="law-search-input chip-text-input" id="bail_day_input" placeholder="номер или слово — админ. УАК / ДК, КПЗ" autocomplete="off"></div>
-            <div class="chip-list" id="bail_day_list"></div>
+            <div class="bail-box"><div class="chip-list" id="bail_day_list"></div><input type="text" class="law-search-input chip-text-input" id="bail_day_input" placeholder="номер или слово — админ. УАК / ДК, КПЗ" autocomplete="off"></div>
+            <div class="chip-dropdown" id="bail_day_dd"></div>
           </div>
         </div>
       </div>
-      <div class="bail-dd-holder"><div class="chip-dropdown" id="bail_now_dd"></div><div class="chip-dropdown" id="bail_day_dd"></div></div>
       <div class="bail-calc" id="bail_calc">
         <div class="field">
           <div class="bail-days-head">Назначено суток
@@ -7362,7 +7397,7 @@ function computeOutcome(){
       if(ks.includes('jail')) return 'none';
       if(ks.includes('fine52')) return 'fine52';
       if(ks.includes('fine')) return 'fine';
-      return 'warn';
+      return ks.includes('warn') ? 'warn' : 'free51';
     }
   }
   const chips = chargeChipsSafe().filter(c=> chipHasSanction(c) && chipCompState(c) === 'ok');
@@ -7978,6 +8013,8 @@ function outcomeMismatch(){
     return 'решение — освобождение по п.' + v + ' ст. 1.8 ПК, фактически не отпущен(а)';
   if(v === 'fine' && on('co_jailed') && !on('co_fined') && !punChips().some(c=>{ const sn = artSanction(LAW_DB[c.idx]); return sn && sn.jail; }))
     return 'санкция вменённых статей лишения свободы не предусматривает, фактически лишение свободы';
+  if(v === 'free51' && (on('co_jailed') || on('co_fined')) && !on('co_released'))
+    return 'решение — освобождение по ст. 5.1 УАК, фактически ' + (on('co_jailed') ? 'лишение свободы' : 'штраф');
   if(v === 'warn' && (on('co_jailed') || on('co_fined')) && !on('co_released'))
     return 'решение — предупреждение, фактически ' + (on('co_jailed') ? 'лишение свободы' : 'штраф');
   if(v === 'fine52' && on('co_jailed') && !on('co_fined'))
@@ -7998,6 +8035,7 @@ function outcomeMismatchClaim(){
   }
   if(v === 'fine52') return 'Задержанный согласился на замену лишения свободы штрафом в порядке ст. 5.2 и 5.2.1 УАК, однако был лишён свободы.';
   if(v === 'fine') return 'Санкция вменённых статей наказания в виде лишения свободы не предусматривает, однако задержанный был лишён свободы.';
+  if(v === 'free51') return 'Подлежало освобождение от ответственности по ст. 5.1 УАК (впервые, примирение с потерпевшим, заглаживание вреда), однако задержанный ' + fact + '.';
   if(v === 'warn') return 'По делу подлежало назначению предупреждение (ст. 19.4 УАК), однако задержанный ' + fact + '.';
   return 'Расхождение: ' + mm + '.';
 }
@@ -9698,6 +9736,7 @@ function bailRender(){
   document.getElementById('bail-check-close').addEventListener('click', ()=>{
     chipCloseDropdown('bail_now'); chipCloseDropdown('bail_day'); ov.classList.remove('open');
   });
+  document.querySelectorAll('.bail-box').forEach(b=> b.addEventListener('click', e=>{ if(e.target === b){ const i = b.querySelector('input'); if(i) i.focus(); } }));
   ov.addEventListener('click', (e)=>{ if(e.target === ov){ chipCloseDropdown('bail_now'); chipCloseDropdown('bail_day'); ov.classList.remove('open'); } });
   // Из дела: статьи обвинения -- «за что сейчас», повторённые (рецидив) -- «за сутки».
   document.getElementById('bail_from_case').addEventListener('click', ()=>{
@@ -14125,10 +14164,10 @@ function fwMeasureOptions(rec, c){
       : /судимост/i.test(s52.why) ? ' ввиду судимости по тяжкой либо особо тяжкой статье'
       : /тяжк/i.test(s52.why) ? ' по категории тяжести статьи' : '');
     opts.push({ k:'jail', short:'наказание по нижней границе санкции',
-      ask: both ? 'Санкция предусматривает штраф наряду с лишением свободы, а не вместо него, — прошу назначить наказание по нижней границе санкции в порядке статей 4.1–4.3 Уголовно-административного кодекса.'
+      ask: both ? 'Санкция предусматривает штраф наряду с лишением свободы, а не вместо него, — прошу назначить наказание по нижней границе санкции в порядке статей 4.1, 4.2, 4.3 Уголовно-административного кодекса.'
         : (!fineAlt && !s52.ok && !fwIsAdmin(rec)
-          ? 'Замена наказания штрафом по статье 5.2 Уголовно-административного кодекса недоступна' + reason + ', поэтому прошу назначить наказание по нижней границе санкции в порядке статей 4.1–4.3 того же Кодекса.'
-          : 'Прошу назначить наказание по нижней границе санкции в порядке статей 4.1–4.3 Уголовно-административного кодекса.') });
+          ? 'Замена наказания штрафом по статье 5.2 Уголовно-административного кодекса недоступна' + reason + ', поэтому прошу назначить наказание по нижней границе санкции в порядке статей 4.1, 4.2, 4.3 того же Кодекса.'
+          : 'Прошу назначить наказание по нижней границе санкции в порядке статей 4.1, 4.2, 4.3 Уголовно-административного кодекса.') });
   }
   return { opts: opts, note: note };
 }
@@ -14180,6 +14219,7 @@ function punJailRange(s){
 // сама санкция), штраф санкции, штраф на замену по ст. 5.2 УАК, лишение свободы.
 function punOptions(rec){
   const s = artSanction(rec) || {}, o = [];
+  if(fwArt51Applies(rec)) o.push({ k:'free51', t:'Освободить (ст. 5.1)', r:'примирение, впервые' });
   if(s.warn) o.push({ k:'warn', t:'Предупреждение', r:'в санкции статьи' });
   else if(fwArt194Applicable(rec)) o.push({ k:'warn', t:'Предупреждение', r:'ст. 19.4 УАК' });
   if(artSanctionHasFine(rec) && !(s.combo === 'and' && s.jail)) o.push({ k:'fine', t:'Штраф', r: punFineRange(s) || 'в пределах санкции' });
@@ -14199,10 +14239,15 @@ function renderProkPun(){
   if(!on){ box.innerHTML = ''; return; }
   const focusId = document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.punv : null;
   box.innerHTML = '<div class="card-group-label" style="margin:4px 0 6px;">Наказание — выбери по каждой статье</div>' + chips.map(c=>{
-    const rec = LAW_DB[c.idx], opts = punOptions(rec), pun = c.pun || {};
+    const rec = LAW_DB[c.idx], opts = punOptions(rec);
+    // ст. 5.1 УАК: предвыбор по данным карточки (впервые + примирился + потерпевший известен);
+    // если условия пропали -- выбор снимается, ручной выбор не перебивается
+    if(c.pun && c.pun.k === 'free51' && !opts.some(o=> o.k === 'free51')) c.pun = null;
+    if(!c.pun && !c.punTouched && opts.some(o=> o.k === 'free51')) c.pun = { k:'free51', v:'' };
+    const pun = c.pun || {};
     const btns = opts.map(o=> '<button type="button" class="basis-btn' + (pun.k === o.k ? ' active' : '') + '" data-pun="' + c.idx + '" data-k="' + o.k + '" title="' + lawEscapeHtml(o.r) + '">' + o.t + '</button>').join('');
     const cur = opts.find(o=> o.k === pun.k);
-    const inp = cur && cur.k !== 'warn'
+    const inp = cur && cur.k !== 'warn' && cur.k !== 'free51'
       ? '<input type="text" inputmode="numeric" class="pun-val" data-punv="' + c.idx + '" value="' + lawEscapeHtml(pun.v || '') + '" placeholder="' + (cur.k === 'jail' ? (rec.attrs && rec.attrs.jail && rec.attrs.jail.unit === 'y' ? 'лет' : 'суток') : 'сумма $') + ' — ' + lawEscapeHtml(cur.r) + '">' : '';
     return '<div class="pun-row"><div class="pun-art">' + lawEscapeHtml(c.article) + ' ' + lawEscapeHtml(lawShortCode(c.law)) + (cur ? ' <span class="pun-range">' + lawEscapeHtml(cur.r) + '</span>' : '') + '</div><div class="pun-btns">' + btns + '</div>' + inp + '</div>';
   }).join('');
@@ -14213,6 +14258,7 @@ document.addEventListener('click', (e)=>{
   if(!b) return;
   const c = chargeChipsSafe().find(x=> x.idx === +b.dataset.pun);
   if(!c) return;
+  c.punTouched = true;
   c.pun = (c.pun && c.pun.k === b.dataset.k) ? null : { k: b.dataset.k, v: '' };
   renderProkPun();
   if(typeof updateFwGate === 'function') updateFwGate();
@@ -14230,6 +14276,7 @@ function punRebuild(){
 }
 function punSentence(c, rec){
   const pun = c.pun, s = artSanction(rec) || {}, v = pun.v;
+  if(pun.k === 'free51') return 'Освобождаю от ответственности по статье 5.1 Уголовно-административного кодекса: деяние совершено впервые, лицо примирилось с потерпевшим и загладило причинённый вред.';
   if(pun.k === 'warn') return s.warn ? 'Назначаю устное предупреждение в пределах санкции статьи.' : 'Назначаю предупреждение в порядке статьи 19.4 Уголовно-административного кодекса.';
   if(pun.k === 'fine') return 'Назначаю штраф в размере ' + (v ? fmtMoney(v.replace(/\D/g, '')) : '[сумма, ' + punFineRange(s) + ']') + '.';
   if(pun.k === 'fine52') return 'С согласия задержанного лишение свободы заменяется штрафом в порядке статей 5.2 и 5.2.1 Уголовно-административного кодекса в размере ' + (v ? fmtMoney(v.replace(/\D/g, '')) : '[сумма]') + '.';
@@ -14328,7 +14375,7 @@ function buildProsecutorWord(){
       L.splice(1, 0, '⨯ НЕ ГОТОВО: ст. ' + rec.article + ' ' + lawShortCode(rec.law) + ' — выберите наказание кнопками над заключением.');
     }
     const a = artAttrs(rec) || {};
-    if(chosen && c.pun.k !== 'warn' && a.extraMandatory && a.extraMandatory.length) parts.push('Дополнительно — ' + a.extraMandatory.join('; ') + '.');
+    if(chosen && c.pun.k !== 'warn' && c.pun.k !== 'free51' && a.extraMandatory && a.extraMandatory.length) parts.push('Дополнительно — ' + a.extraMandatory.join('; ') + '.');
     if(chosen && c.pun.k === 'jail' && a.govBan && a.govBan.years && artIsCrime(rec)) parts.push('При назначении лишения свободы — запрет на работу в государственных органах: ' + (a.govBan.life ? 'бессрочно' : a.govBan.years + ' ' + (a.govBan.years === 1 ? 'год' : a.govBan.years < 5 ? 'года' : 'лет')) + ' (статья 5.5 того же Кодекса).');
     if(recidArts.some(x=> x.article === String(rec.article) && x.crime)) parts.push('Деяние совершено повторно в пределах срока статьи 4.11 того же Кодекса.');
     P.push(parts.join(' '));
@@ -16536,7 +16583,7 @@ document.addEventListener('keydown', (e)=>{
       window.RELEASE_POINTS = saved;
       const ks = chips.map(c=> c.pun.k);
       if(ks.includes('jail')) ids = ['co_jailed']; else if(ks.includes('fine') || ks.includes('fine52')) ids = ['co_fined']; else ids = ['co_released'];
-      note = (pts.length ? 'Прокурор отклонил основания ст. 1.8 ПК и назначил: ' : 'Прокурор назначил: ') + chips.map(c=> 'ст. ' + c.article + ' — ' + ({ warn:'предупреждение', fine:'штраф', fine52:'штраф по ст. 5.2', jail:'лишение свободы' })[c.pun.k] + (c.pun.v ? ' ' + (c.pun.k === 'jail' ? c.pun.v + ' сут./лет' : '$' + c.pun.v) : '')).join('; ') + '.';
+      note = (pts.length ? 'Прокурор отклонил основания ст. 1.8 ПК и назначил: ' : 'Прокурор назначил: ') + chips.map(c=> 'ст. ' + c.article + ' — ' + ({ warn:'предупреждение', fine:'штраф', fine52:'штраф по ст. 5.2', jail:'лишение свободы', free51:'освобождение по ст. 5.1' })[c.pun.k] + (c.pun.v ? ' ' + (c.pun.k === 'jail' ? c.pun.v + ' сут./лет' : '$' + c.pun.v) : '')).join('; ') + '.';
       if(!chips.length){ note = 'Статей с доказанным составом нет — прокурор отпустил.'; ids = ['co_released']; }
     }
     setRole(role);
@@ -22468,8 +22515,6 @@ wire();
         syncProfiles(u, true).then(()=>{ renderProfileView(); pvStatus('Профиль обновлён из облака.', 'ok'); });
       });
     });
-    // пока бота и таблицы подписок нет -- кнопки активны, но честно предупреждают (см. Lex_Баги.md, «Подписки»)
-    document.querySelectorAll('#lex_subs .sub-check').forEach(b=> b.addEventListener('click', ()=> subStatus('Автоматической проверки подписок пока нет. Чек-лист работает бесплатно, без подписок, в тестовом режиме — подписка и донат по желанию.')));
     $('sub_trial').addEventListener('click', ()=>{
       try { window.open(TRIAL_URL, '_blank', 'noopener,noreferrer'); } catch(e){}
       subStatus('Открыл приглашение на сервер. Роль Lex на 7 дней будет выдаваться автоматически, когда заработает бот; сейчас чек-лист и так бесплатный (тестовый режим).');
@@ -22486,6 +22531,201 @@ wire();
     setInterval(sendDaily, 3600 * 1000);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true }); else start();
+})();
+</script>
+<script>
+/* ===== Подписки Lex, лимиты ИИ, «Помощь ИИ» ===== */
+(function(){
+  'use strict';
+  const SB_URL = 'https://acokvcbfxrzfrgppvvzq.supabase.co', SB_ANON = 'sb_publishable_hlPdJC0PpBVte2Uas1zYQg_YVVeTx7B';
+  const BOT = 'https://lex-bot.insidex.workers.dev';
+  const SB_KEY = 'sb-acokvcbfxrzfrgppvvzq-auth-token';
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+  const online = () => location.protocol === 'https:' && window.LexAuth && window.LexAuth.available && window.LexAuth.available();
+  function toast(text, tone){ try { if(typeof lexToast === 'function') lexToast(esc(text), tone || 'info', 4500); } catch(e){} }
+  function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+  function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+  function session(){
+    let s = null; try { s = JSON.parse(localStorage.getItem(SB_KEY) || 'null'); } catch(e){}
+    if(s && s.currentSession) s = s.currentSession;
+    return s && s.access_token ? s : null;
+  }
+  const signedIn = () => !!session();
+  const NA = 'Недоступно в этом режиме';
+
+  /* ---------- запросы к Supabase ---------- */
+  function sb(path, opts){
+    const s = session(); if(!s) return Promise.resolve({ ok:false, error:'not_authenticated' });
+    return fetch(SB_URL + '/rest/v1/' + path, Object.assign({ headers: { Authorization: 'Bearer ' + s.access_token, apikey: SB_ANON, 'Content-Type': 'application/json', Accept: 'application/json' } }, opts || {}))
+      .then(r => r.json().catch(() => null).then(j => r.ok ? { ok:true, data:j } : { ok:false, error: r.status === 401 ? 'not_authenticated' : 'limits_unavailable' }), () => ({ ok:false, error:'network' }));
+  }
+  let LIM = null, SUB = null;
+  function loadLimits(){
+    if(!online() || !signedIn()){ LIM = null; renderLimits(); return Promise.resolve(null); }
+    return sb('rpc/get_ai_limits', { method:'POST', body:'{}' }).then(r => {
+      LIM = (r.ok && r.data && r.data.ok !== false) ? r.data : null;
+      renderLimits(); resetNotice(); updateAiBtn();
+      return LIM;
+    });
+  }
+  function loadSubs(){
+    if(!online() || !signedIn()) return Promise.resolve(null);
+    return sb('subscriptions?select=*&limit=1').then(r => {
+      SUB = r.ok && r.data && r.data[0] ? r.data[0] : null;
+      renderSubs(); return SUB;
+    });
+  }
+
+  /* ---------- блок «Ваши лимиты ИИ» ---------- */
+  function bar(pct){
+    const w = el('div', 'ai-bar'), i = el('i'); i.style.width = Math.max(0, Math.min(100, pct || 0)) + '%'; w.appendChild(i); return w;
+  }
+  function el(tag, cls, text){ const e = document.createElement(tag); if(cls) e.className = cls; if(text != null) e.textContent = text; return e; }
+  function renderLimits(){
+    const box = $('lim_ai_box'); if(!box) return;
+    box.textContent = '';
+    const d = LIM;
+    if(!d){
+      box.appendChild(el('div', 'ai-line', online() ? (signedIn() ? 'Лимиты пока недоступны.' : 'Войдите через Discord — здесь появятся ваши лимиты ИИ.') : 'Лимиты ИИ доступны при подключении к интернету.'));
+      return;
+    }
+    if(d.mode === 'free'){
+      box.appendChild(el('div', 'ai-line', 'Запросов ИИ на сегодня: ' + (d.requests_used_today || 0) + ' из ' + (d.requests_cap || 0) + '.'));
+      box.appendChild(el('div', 'ai-line muted', 'Обновляется ежедневно.'));
+      return;
+    }
+    const dp = +d.daily_pct_used || 0, pp = +d.period_pct_used || 0;
+    box.appendChild(el('div', 'ai-line', 'Использовано ' + dp + '% дневной квоты.'));
+    box.appendChild(bar(dp));
+    box.appendChild(el('div', 'ai-line', d.mode === 'trial' ? 'Период: осталось ' + (d.days_left || 0) + ' дн. (из 7).' : 'Период: осталось ' + (d.days_left || 0) + ' дн.'));
+    box.appendChild(el('div', 'ai-line', 'Общий лимит использован на ' + pp + '%.'));
+    if(d.mode === 'sub') box.appendChild(bar(pp));
+  }
+  function limitBlocked(){
+    const d = LIM; if(!d) return '';
+    if(d.mode === 'free') return (d.requests_available_today === 0) ? 'Лимит на сегодня исчерпан. Обновление — завтра' : '';
+    return ((+d.daily_pct_used || 0) >= 100) ? 'Дневная квота исчерпана. Обновление — завтра' : '';
+  }
+
+  /* ---------- флаги подписок ---------- */
+  function renderSubs(){
+    const map = { 's-boosty': 'boosty_active', 's-patreon': 'patreon_active', 's-boost': 'boost_active' };
+    Object.keys(map).forEach(c => {
+      const card = document.querySelector('#lex_subs .' + c); if(!card) return;
+      let st = card.querySelector('.sub-state');
+      if(!st){ st = el('div', 'sub-state'); const p = card.querySelector('.sub-p'); if(p) p.after(st); }
+      st.textContent = SUB ? (SUB[map[c]] ? '✓ Подписка активна' : 'Не активна') : '';
+      st.className = 'sub-state' + (SUB && SUB[map[c]] ? ' on' : '');
+    });
+    const pl = $('sub_patreon_link');
+    if(pl) pl.hidden = !(signedIn() && window.LexWho && window.LexWho.id && !(SUB && SUB.patreon_user_id));
+  }
+
+  /* ---------- сброс лимита: тосты ---------- */
+  function today(){ const d = new Date(), p = n => String(n).padStart(2, '0'); return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()); }
+  let noticed = false;
+  function resetNotice(){
+    const d = LIM; if(!d || noticed) return; noticed = true;
+    if(d.mode === 'free' || d.mode === 'trial'){
+      const t = today();
+      if(lsGet('lex_ai_last_seen_day') !== t){ if(lsGet('lex_ai_last_seen_day')) toast('Лимит ИИ обновлён', 'ok'); lsSet('lex_ai_last_seen_day', t); }
+    } else if(d.mode === 'sub'){
+      const prev = parseFloat(lsGet('lex_ai_last_seen_period_pct')), cur = +d.period_pct_used || 0;
+      if(!isNaN(prev) && cur - prev >= 5 && (+d.daily_pct_used || 0) === 0) toast('Накоплено с прошлых дней. Ваш дневной лимит выше обычного.', 'ok');
+      lsSet('lex_ai_last_seen_period_pct', String(cur));
+    }
+  }
+
+  /* ---------- окно «Помощь ИИ» ---------- */
+  function aiOpen(){
+    if(!online()){ toast('Помощь ИИ доступна только при подключении к интернету', 'warn'); return; }
+    if(!signedIn()){ toast('Войдите через Discord', 'warn'); return; }
+    const ov = $('ai-overlay'); if(!ov) return;
+    ov.classList.add('open');
+    const q = $('ai_q'); if(q) q.focus();
+    loadLimits();
+  }
+  function aiClose(){ const ov = $('ai-overlay'); if(ov) ov.classList.remove('open'); }
+  function updateAiBtn(){
+    const b = $('ai_open_btn'), send = $('ai_send'); const why = limitBlocked();
+    if(b){ b.title = why || 'Вопрос ИИ-помощнику по делу'; b.classList.toggle('is-blocked', !!why); }
+    if(send){ send.disabled = !!why || send.dataset.busy === '1'; send.title = why; }
+    const st = $('ai_status'); if(st && why && !st.dataset.keep) st.textContent = why;
+  }
+  const ERR = {
+    not_authenticated: 'Войдите через Discord',
+    ai_busy: 'Сервер занят, попробуйте через минуту',
+    ai_auth: 'Помощник временно недоступен',
+    ai_failed: 'Помощник временно недоступен',
+    limits_unavailable: 'Не удалось проверить лимиты',
+    network: 'Нет связи с сервером. Проверьте интернет'
+  };
+  function caseContext(){
+    try {
+      let t = ($('summary_out') && $('summary_out').value) || '';
+      if(!t && typeof generateSummary === 'function') t = generateSummary() || '';
+      return String(t).slice(0, 6000);
+    } catch(e){ return ''; }
+  }
+  function aiSend(){
+    const q = $('ai_q'), st = $('ai_status'), out = $('ai_answer'), send = $('ai_send');
+    const prompt = (q.value || '').trim();
+    if(!prompt){ st.textContent = 'Напишите вопрос.'; return; }
+    const why = limitBlocked(); if(why){ st.textContent = why; return; }
+    const s = session(); if(!s){ st.textContent = ERR.not_authenticated; return; }
+    send.dataset.busy = '1'; send.disabled = true; st.dataset.keep = '1'; st.className = 'support-form-status'; st.textContent = 'Думаю…'; out.textContent = '';
+    const body = { type:'question', prompt: prompt };
+    if($('ai_ctx').checked){ const c = caseContext(); if(c) body.context = c; }
+    fetch(BOT + '/ai/help', { method:'POST', headers: { Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(r => r.json().catch(() => null))
+      .then(d => {
+        if(d && d.ok && typeof d.answer === 'string'){ out.textContent = d.answer; st.textContent = ''; st.className = 'support-form-status ok'; }
+        else if(d && d.error === 'limit_reached'){ st.className = 'support-form-status err'; st.textContent = d.message ? String(d.message) : 'Лимит исчерпан. Обновление — завтра'; }
+        else { st.className = 'support-form-status err'; st.textContent = ERR[d && d.error] || 'Помощник временно недоступен'; }
+      })
+      .catch(() => { st.className = 'support-form-status err'; st.textContent = ERR.network; })
+      .finally(() => { send.dataset.busy = ''; delete st.dataset.keep; loadLimits(); });
+  }
+
+  /* ---------- возврат от Patreon ---------- */
+  function patreonReturn(){
+    let u; try { u = new URL(location.href); } catch(e){ return; }
+    const ok = u.searchParams.get('patreon_linked'), er = u.searchParams.get('patreon_error');
+    if(ok === null && er === null) return;
+    if(ok === 'success') toast('Patreon привязан', 'ok'); else if(er !== null) toast('Не удалось привязать Patreon', 'warn');
+    u.searchParams.delete('patreon_linked'); u.searchParams.delete('patreon_error');
+    try { history.replaceState(null, '', u.pathname + (u.search || '') + (u.hash || '')); } catch(e){}
+    loadSubs().then(loadLimits);
+  }
+
+  /* ---------- кнопки ---------- */
+  function wire(){
+    document.querySelectorAll('#lex_subs .sub-check').forEach(b => b.addEventListener('click', () => {
+      if(!online()){ toast(NA, 'warn'); return; }
+      if(!signedIn()){ toast('Войдите через Discord', 'warn'); return; }
+      b.disabled = true;
+      Promise.all([loadSubs(), loadLimits()]).then(() => toast('Статус обновлён', 'ok')).finally(() => { b.disabled = false; });
+    }));
+    document.querySelectorAll('#lex_subs a.sub-btn').forEach(a => a.addEventListener('click', e => { if(!online()){ e.preventDefault(); toast(NA, 'warn'); } }));
+    const pl = $('sub_patreon_link');
+    if(pl) pl.addEventListener('click', () => {
+      if(!online()){ toast(NA, 'warn'); return; }
+      const id = window.LexWho && window.LexWho.id; if(!id){ toast('Войдите через Discord', 'warn'); return; }
+      window.open(BOT + '/patreon/oauth-start?discord_id=' + encodeURIComponent(id), '_blank', 'noopener,noreferrer');
+    });
+    const ob = $('ai_open_btn'); if(ob) ob.addEventListener('click', aiOpen);
+    const cl = $('ai-close'); if(cl) cl.addEventListener('click', aiClose);
+    const ov = $('ai-overlay'); if(ov) ov.addEventListener('click', e => { if(e.target === ov) aiClose(); });
+    const sd = $('ai_send'); if(sd) sd.addEventListener('click', aiSend);
+    const q = $('ai_q'); if(q) q.addEventListener('keydown', e => { if(e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); aiSend(); } });
+    const pb = $('profile_open_btn'); if(pb) pb.addEventListener('click', () => { loadLimits(); loadSubs(); });
+    window.addEventListener('lex-auth-change', () => { noticed = false; setTimeout(() => { loadLimits(); loadSubs(); }, 600); });
+    renderLimits(); renderSubs();
+    patreonReturn();
+    if(online()) setTimeout(() => { loadLimits(); loadSubs(); }, 2500);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire, { once:true }); else wire();
 })();
 </script>
 </body>
