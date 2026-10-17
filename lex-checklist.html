@@ -23598,7 +23598,7 @@ wire();
     REP = { source };
     $('aierr_issue').value = String(issue.text || '') + (issue.norm ? '\nНорма: ' + issue.norm : '');
     $('aierr_comment').value = '';
-    $('aierr_case').value = scrub(caseContext()).slice(0, 3500);
+    $('aierr_case').value = scrub(caseContext());
     $('aierr_status').textContent = ''; $('aierr_send').disabled = false;
     ov.classList.add('open');
   }
@@ -23607,18 +23607,22 @@ wire();
     const say = (t, k) => { st.className = 'support-form-status' + (k ? ' ' + k : ''); st.textContent = t; };
     if(!window.LexApi || typeof LexApi.send !== 'function' || !LexApi.available()){ say('Отправка работает на сайте lex-checklist.pages.dev.', 'err'); return; }
     const ver = (typeof APP_VERSION !== 'undefined' ? APP_VERSION : '') + (typeof DB_VERSION !== 'undefined' ? ' · ' + DB_VERSION : '');
+    // лимиты Worker lex-api: поле ≤ 1024 символа, описание ≤ 4096, embed ≤ 6000 — данные дела уходят файлом .txt
+    const clip = (t, n) => { t = String(t || ''); return t.length > n ? t.slice(0, n - 1) + '…' : t; };
     const embed = {
       title: '⚠ Ошибка карточки (по мнению ИИ)', color: 0xE5534B,
-      description: scrub($('aierr_issue').value).slice(0, 1500),
+      description: clip(scrub($('aierr_issue').value), 1800) || '—',
       fields: [
         { name: 'Где найдено', value: REP && REP.source === 'ogp' ? 'Обращение в ОГП' : 'Проверить дело (заключительное слово)' },
-        { name: 'Комментарий', value: ($('aierr_comment').value || '—').slice(0, 1000) },
-        { name: 'Данные дела', value: '```\n' + scrub($('aierr_case').value).slice(0, 3000) + '\n```' }
+        { name: '💬 Комментарий', value: clip($('aierr_comment').value.trim() || '—', 1000) },
+        { name: 'Версия', value: clip(ver || '—', 100) },
+        { name: '🗂 Данные дела', value: 'во вложении — delo-ai-report.txt' }
       ],
-      footer: { text: 'Lex ' + ver }
+      timestamp: new Date().toISOString()
     };
+    const file = { name: 'delo-ai-report.txt', blob: new Blob([scrub($('aierr_case').value)], { type: 'text/plain' }) };
     b.disabled = true; say('Отправка…', 'ai-wait');
-    Promise.resolve(LexApi.send('suggest', embed, [])).then(r => {
+    Promise.resolve(LexApi.send('suggest', embed, [file])).then(r => {
       if(r && r.ok){ say('Отправлено. Спасибо — после проверки ошибка попадёт в общую правку.', 'ok'); setTimeout(() => { const o = $('aierr-overlay'); if(o) o.classList.remove('open'); }, 1600); }
       else { say((typeof lexSendErrText === 'function') ? lexSendErrText(r && r.error) : 'Не отправилось.', 'err'); b.disabled = false; }
     }, () => { say('Не отправилось.', 'err'); b.disabled = false; });
