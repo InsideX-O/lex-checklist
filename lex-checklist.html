@@ -148,6 +148,9 @@
   #whatsnew_overlay .appconfirm{ max-width:460px; }
   #whatsnew_overlay .wn-body{ max-height:min(60vh, 520px); overflow:auto; margin:4px 0 14px; font-size:13.5px; line-height:1.5; }
   #whatsnew_overlay .wn-sec{ margin:0 0 10px; }
+  #whatsnew_overlay .wn-ver{ border:1px solid var(--line, #333); border-radius:8px; padding:6px 10px; margin:0 0 8px; }
+  #whatsnew_overlay .wn-ver > summary{ cursor:pointer; padding:4px 0; }
+  #whatsnew_overlay .wn-ver[open] > summary{ margin-bottom:6px; }
   #whatsnew_overlay .wn-sec b{ display:block; margin-bottom:4px; color:var(--warn); }
   #whatsnew_overlay ul{ margin:0; padding-left:18px; }
   #whatsnew_overlay li{ margin:2px 0; }
@@ -2849,7 +2852,7 @@
   <div class="appconfirm" role="dialog" aria-modal="true" aria-labelledby="wn_title">
     <h3 id="wn_title">Что нового</h3>
     <div class="wn-body" id="wn_body"></div>
-    <div class="ac-btns"><button type="button" id="wn_hints" style="display:none;">Показать подсказки ещё раз</button><button type="button" id="wn_tour">🎓 Обучение</button><button type="button" class="ac-ok ac-go" id="wn_ok">Понятно</button></div>
+    <div class="ac-btns"><button type="button" id="wn_hints" style="display:none;">Показать подсказки ещё раз</button><button type="button" id="wn_hist">📜 История версий</button><button type="button" id="wn_tour">🎓 Обучение</button><button type="button" class="ac-ok ac-go" id="wn_ok">Понятно</button></div>
   </div>
 </div>
 
@@ -3798,7 +3801,7 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '26.10.2.10';
+const APP_VERSION = '26.10.2.11';
 const APP_DATE = '2026-10-17';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
@@ -3815,6 +3818,46 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '26.10.2.11': {
+    title: 'Карточка 26.10.2.11 от 17.10.2026 · сводное обновление за 16–17 октября',
+    rollup: true,
+    groups: [
+      { h: 'ИИ-помощник', items: [
+        "«🤖 Помощь ИИ» у часового лимита: «По делу» — ответ с учётом карточки, «Отдельный вопрос» — консультация по законам без дела",
+        "«🤖 Проверить дело» у заключительного слова: ИИ проверяет решение, ст. 1.8 ПК, меру по каждой статье, смягчающие и отягчающие. Всё верно — «✓», есть ошибка — список и исправленное слово (применить / вернуть)",
+        "«⚠ Ошибка карточки» показывается только с дословной цитатой закона; такую находку можно отправить в «Улучшить чек-лист» со своим комментарием",
+        "Обращение в ОГП: «🤖 Помощь ИИ — составить обращение» — ИИ проверяет карточку, пишет описательную часть (раздел II) целиком и требования потерпевшего; нормы в тексте — ссылки на законы на форуме. Разметка бланка не трогается, «↩ Вернуть текст карточки» — отменить",
+        "ИИ отвечает по той же базе законов, что и карточка, плюс стоп-лист и правила коллегии"
+      ]},
+      { h: 'Профиль и вход', items: [
+        "Одна кнопка «👤 Профиль · войти через Discord» вместо двух; без входа профиль не открывается, карточка работает как обычно",
+        "Шапка профиля: аватар, логин Discord, Discord ID и почта; имя персонажа и должность — как раньше",
+        "Окно профиля — вкладки «Профиль / Подписки / Документы / Лимиты и триал», одна высота, вкладки не прыгают",
+        "У номера лицензии — срок из реестра адвокатов: действует до…, недействительна, аннулирована",
+        "Подпись из имени и фамилии: 5 вариантов или своя картинка PNG / JPG"
+      ]},
+      { h: 'Подписки, триал, лимиты', items: [
+        "Триал Lex на 7 дней (условие — согласие на анонимную статистику); после него цикл 28 дней на новый триал, прогресс виден в профиле",
+        "Лимиты ИИ — во вкладке «Лимиты и триал»: Free — запросы на сегодня, триал и подписка — процент дневной квоты и периода, Premium — без ограничений",
+        "Уровень доступа приходит только с сервера — правка файла карточки его не меняет"
+      ]},
+      { h: 'Документы', items: [
+        "Документы (сводка, обращение в ОГП, договор) — вкладка в профиле. Закрыли документ — возврат к выбору документов, а не в карточку",
+        "Введённое в обращение и договор сохраняется, пока не нажмёте «Новое обращение» / «＋ Новый договор», даже после перезагрузки",
+        "Описательная часть — одно общее поле в карточке и в обращении в ОГП; подсказка про диктовку голосом",
+        "Обращение в ОГП — окно как у договора: поля слева, предпросмотр «Как на форуме» / «Код»; подпись под бланком картинкой",
+        "«Мои договоры» и сохранённые обращения — в облаке, видны на любом устройстве"
+      ]},
+      { h: 'Карточка', items: [
+        "Новое обучение: нужное место мигает, пока его не нажмёте, объяснение — под ним; пройдены все блоки карточки. После первого входа — знакомство с профилем",
+        "Тип сотрудника и тип задержанного — каждый в своём блоке",
+        "«Мои места»: место, вписанное вручную, запоминается в своей зоне",
+        "Сводка дела: новый блок «ОТМЕЧЕНО В КАРТОЧКЕ» (все галочки и выбранные пункты) и строка «Светофор состава» по каждой статье",
+        "«📜 История версий» в окне «Что нового» — все версии карточки и что в них менялось",
+        "Новая нумерация версий: ГГ.ММ.П.N — год, месяц, половина месяца, номер выпуска"
+      ]}
+    ]
+  },
   '26.10.2.10': {
     title: 'Карточка 26.10.2.10 от 17.10.2026 · ИИ-помощник включён',
     added: [
@@ -15732,8 +15775,11 @@ function updBuildPack(){
   // ещё не пользовались) окна не даёт.
   const SEEN_KEY = 'lex_seen';
   function newsSince(map, seenVer, cmp, curVer){
-    return Object.keys(map).filter(v=> cmp(v, curVer) <= 0 && (!seenVer || cmp(v, seenVer) > 0))
+    const L = Object.keys(map).filter(v=> cmp(v, curVer) <= 0 && (!seenVer || cmp(v, seenVer) > 0))
       .sort((a, b)=> cmp(b, a)).map(v=> ({ v, items: map[v] }));
+    // сводный выпуск (rollup) уже описывает всё, что было до него, — старые записи не повторяем
+    const r = L.findIndex(x=> x.items && x.items.rollup);
+    return r >= 0 ? L.slice(0, r + 1) : L;
   }
   function builtinNews(){
     let seen = null, used = false;
@@ -15781,6 +15827,7 @@ function updBuildPack(){
   function appNewsSections(v, items){
     const out = [];
     if(Array.isArray(items)){ out.push({ h: 'Карточка ' + v, items }); return out; }
+    if(Array.isArray(items.groups)) items.groups.forEach(g=>{ if(g && g.items && g.items.length) out.push({ h: g.h, items: g.items }); });
     if(items.patch) Object.keys(items.patch).sort().reverse().forEach(b=>{
       const pt = items.patch[b];
       if(pt.added && pt.added.length) out.push({ h: 'Карточка ' + v + ' от ' + fmtBuild(b) + ' — Новое', items: pt.added });
@@ -15790,6 +15837,31 @@ function updBuildPack(){
     if(items.fixed && items.fixed.length) out.push({ h: 'Карточка ' + v + ' — Исправлено', items: items.fixed });
     return out;
   }
+  // История версий: все записи APP_NEWS, новые сверху, каждая сворачивается.
+  function showVersionHistory(){
+    const body = document.getElementById('wn_body'); if(!body) return;
+    document.getElementById('wn_title').textContent = 'История версий карточки';
+    const vs = Object.keys(APP_NEWS).sort((a, b)=> updCmpVersion(b, a));
+    body.innerHTML = vs.map((v, i)=>{
+      const it = APP_NEWS[v];
+      const t = (it && it.title) || ('Карточка ' + v);
+      const secs = appNewsSections(v, it);
+      return '<details class="wn-ver"' + (i === 0 ? ' open' : '') + '><summary><b>' + lawEscapeHtml(t) + (v === APP_VERSION ? ' — текущая' : '') + '</b></summary>'
+        + secs.map(sec=> '<div class="wn-sec"><b>' + lawEscapeHtml(sec.h.replace(/^Карточка \S+ — /, '')) + '</b><ul>' + sec.items.map(x=> '<li>' + lawEscapeHtml(x) + '</li>').join('') + '</ul></div>').join('')
+        + '</details>';
+    }).join('');
+    body.scrollTop = 0;
+    const ov = document.getElementById('whatsnew_overlay');
+    if(ov && !ov.classList.contains('open')){
+      ov.classList.add('open');
+      const ok = document.getElementById('wn_ok');
+      const done = ()=>{ ov.classList.remove('open'); ok.removeEventListener('click', done); };
+      ok.addEventListener('click', done);
+    }
+  }
+  const wnHist = document.getElementById('wn_hist');
+  if(wnHist) wnHist.addEventListener('click', showVersionHistory);
+  window.lexVersionHistory = showVersionHistory;
   // Кнопка «Что нового» внизу: в любой момент показать изменения текущей версии.
   const wnBtn = document.getElementById('whatsnew_btn');
   if(wnBtn) wnBtn.addEventListener('click', ()=>{
@@ -23420,6 +23492,11 @@ wire();
       box.appendChild(el('div', 'ai-line muted', 'Обновляется ежедневно.'));
       return;
     }
+    if(d.mode === 'premium'){
+      box.appendChild(el('div', 'ai-line', 'Запросы ИИ — без ограничений.'));
+      box.appendChild(el('div', 'ai-line muted', d.ends_at ? 'Premium до ' + new Date(d.ends_at).toLocaleDateString('ru-RU') + '.' : 'Premium бессрочно, квоты не считаются.'));
+      return;
+    }
     const dp = +d.daily_pct_used || 0, pp = +d.period_pct_used || 0;
     box.appendChild(el('div', 'ai-line', 'Использовано ' + dp + '% дневной квоты.'));
     box.appendChild(bar(dp));
@@ -23554,11 +23631,14 @@ wire();
     const list = (Array.isArray(issues) ? issues : []).filter(x => x && (x.text || x.norm) && !NOISE.test(String(x.text || '')));
     box.hidden = !list.length; if(!list.length) return;
     list.forEach(it => {
+      // «ошибка карточки» только с дословной цитатой нормы; без неё — обычное замечание (case_check)
+      if(source === 'case' && it.kind === 'card' && !String(it.quote || '').trim()) it = Object.assign({}, it, { kind:'note' });
       const k = KIND[it.kind] || KIND.note;
       const d = el('div', 'ai-issue ' + k[1]);
       d.appendChild(el('b', '', k[0]));
       d.appendChild(el('div', '', String(it.text || '')));
       if(it.norm) d.appendChild(el('div', 'ai-norm', 'Норма: ' + String(it.norm)));
+      if(it.quote) d.appendChild(el('div', 'ai-norm', '«' + String(it.quote).replace(/^[«"]|[»"]$/g, '') + '»'));
       if(it.kind === 'card'){
         const b = el('button', 'ai-rep-btn', '📨 Отправить отчёт в «Улучшить чек-лист»'); b.type = 'button';
         b.addEventListener('click', () => openReport(it, source));
