@@ -8210,6 +8210,48 @@ function summaryNormGist(idx, maxLen){
   return t;
 }
 
+// Все отметки карточки одним списком: галочки, выбранные пункты, переключатели.
+// Скрытые блоки (не относящиеся к делу) пропускаются; свободный текст — в «Заметках».
+function lexCardMarks(){
+  const root = document.querySelector('main'); if(!root) return [];
+  const out = [], seen = new Set();
+  const hiddenUp = el=>{ for(let p = el; p && p !== root; p = p.parentElement){ if(p.hidden || (p.style && p.style.display === 'none')) return true; } return false; };
+  const clean = t=> String(t || '').replace(/[▼▾]/g, '').replace(/\s+/g, ' ').replace(/\s*i\s*$/, '').trim();
+  const STRIP = 'select, input, textarea, button, div, small, .note, .info-body, .say-btn, .info-btn, [data-derived]';
+  const labelOf = el=>{
+    const lab = el.closest('label');
+    if(lab){ const c = lab.cloneNode(true); c.querySelectorAll(STRIP).forEach(n=> n.remove()); const t = clean(c.textContent); if(t) return t; }
+    const ps = el.previousElementSibling;
+    if(ps && !ps.matches('.basis-btns, .info-body')){ const c = ps.cloneNode(true); c.querySelectorAll(STRIP).forEach(n=> n.remove()); const t = clean(c.textContent); if(t && t.length < 80) return t; }
+    let p = el; for(let k = 0; k < 6 && p; k++){ let q = p.previousElementSibling; while(q){ if(q.classList && (q.classList.contains('card-group-label') || /^H[23]$/.test(q.tagName))){ const c = q.cloneNode(true); c.querySelectorAll('button').forEach(n=> n.remove()); return clean(c.textContent); } q = q.previousElementSibling; } p = p.parentElement; }
+    return '';
+  };
+  const SKIP = /^(f_start|f_ogp_|n_|final_word_out|f_charge_articles_input|tst_)/;
+  root.querySelectorAll('input[type=checkbox]:checked, input[type=radio]:checked').forEach(el=>{
+    if(el.dataset.derived || hiddenUp(el) || SKIP.test(el.id || '')) return;
+    const span = el.parentElement && el.parentElement.querySelector('.lbl');
+    let t = '';
+    if(span){ const c = span.cloneNode(true); c.querySelectorAll('.note, .info-body, button').forEach(n=> n.remove()); t = clean(c.textContent); } else t = labelOf(el); if(t && !seen.has(t)){ seen.add(t); out.push('✔ ' + t.slice(0, 220)); }
+  });
+  root.querySelectorAll('select').forEach(el=>{
+    if(hiddenUp(el) || SKIP.test(el.id || '') || !el.value) return;
+    const o = el.options[el.selectedIndex]; if(!o) return;
+    const t = labelOf(el); const v = clean(o.textContent);
+    if(v && v !== '—') out.push((t ? t + ': ' : '') + v.slice(0, 160));
+  });
+  root.querySelectorAll('.basis-btns').forEach(g=>{
+    if(hiddenUp(g) || g.id === 'fw_role_seg') return;
+    const act = Array.from(g.querySelectorAll('.basis-btn.active')).map(b=> clean(b.textContent)).filter(Boolean);
+    if(!act.length) return;
+    const t = labelOf(g); out.push((t ? t + ': ' : '') + act.join(', ').slice(0, 200));
+  });
+  root.querySelectorAll('input[type=text], input[type=number], textarea').forEach(el=>{
+    if(hiddenUp(el) || SKIP.test(el.id || '') || el.dataset.derived || !el.value.trim()) return;
+    if(el.closest('.chip-field, .chip-field-wide')) return;
+    const t = labelOf(el); out.push((t ? t + ': ' : '') + clean(el.value).slice(0, 200));
+  });
+  return out.filter((x, i)=> out.indexOf(x) === i);
+}
 function generateSummary(){
   // Режим ОГП -- то же дело, но развёрнутое как жалоба на сотрудника.
   if(typeof ogpModeOn === 'function' && ogpModeOn()) return buildOgpSummary();
@@ -8364,6 +8406,10 @@ function generateSummary(){
   lines.push('Описательная часть: ' + (val('n_video')||'—'));
   if(val('n_proceedings')) lines.push('Ранее записанное: ' + val('n_proceedings'));
   lines.push('');
+
+  // все отметки карточки — и те, что не дали флага (17.10.2026): сводку читают ИИ и коллегия
+  const marks = (typeof lexCardMarks === 'function') ? lexCardMarks() : [];
+  if(marks.length){ lines.push('=== ОТМЕЧЕНО В КАРТОЧКЕ ==='); marks.forEach(x=> lines.push('- ' + x)); lines.push(''); }
 
   lines.push('=== ИТОГ ===');
   lines.push('Решение: ' + selText('f_outcome'));
