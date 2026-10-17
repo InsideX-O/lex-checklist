@@ -214,10 +214,16 @@
     $('list_msg').hidden = false; $('list_msg').textContent = 'Загрузка…';
     return api('/admin/users?' + qs).then(r=>{
       if(r && r._http === 403){ gate('Нет доступа', 'Эта страница только для администраторов Lex.', false); $('b_logout').hidden = false; return; }
-      if(!r || !r.ok){ $('list_msg').textContent = errText(r && r.error); return; }
+      
+      // Показываем приложение в любом случае, чтобы не было вечной загрузки
       $('gate').hidden = true; $('app').hidden = false; $('b_reload').hidden = false; $('b_logout').hidden = false;
+
+      if(!r || !r.ok){ 
+          $('list_msg').textContent = 'Ошибка сервера: ' + errText(r && r.error); 
+          return; 
+      }
+      
       const raw = Array.isArray(r.items) ? r.items : [];
-      // запасной фильтр и поиск на странице — если сервер вернул всех, отбираем здесь
       S.items = raw.filter(it=> matchFilter(it, S.filter) && matchQ(it, S.q));
       S.total = (typeof r.total === 'number' && S.items.length === raw.length) ? r.total : null;
       renderRows();
