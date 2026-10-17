@@ -3741,7 +3741,7 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '26.10.2.6';
+const APP_VERSION = '26.10.2.7';
 const APP_DATE = '2026-10-17';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
@@ -3758,6 +3758,12 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '26.10.2.7': {
+    title: 'Карточка 26.10.2.7 от 17.10.2026 · логин Discord',
+    fixed: [
+      "В шапке профиля показывается логин Discord (как в админке), а не отображаемое имя"
+    ]
+  },
   '26.10.2.6': {
     title: 'Карточка 26.10.2.6 от 17.10.2026 · Discord в профиле',
     added: [
@@ -22885,13 +22891,12 @@ wire();
     const m = (u && u.user_metadata) || {}, w = window.LexWho || {};
     const av = String(m.avatar_url || m.picture || '');
     const out = {
-      name: (m.custom_claims && m.custom_claims.global_name) || m.full_name || m.name || w.name || '',
+      name: m.user_name || m.preferred_username || m.username || m.name || m.full_name || w.name || '',
       id: w.id || m.provider_id || m.sub || '',
       email: (u && u.email) || m.email || '',
       avatar: /^https:\/\/cdn\.discordapp\.com\//.test(av) ? av : ''
     };
-    const login = m.user_name || m.preferred_username || '';
-    if(login && out.name && login.toLowerCase() !== out.name.toLowerCase()) out.name += ' (@' + login + ')';
+    out.name = out.name.replace(/#0$/, '');
     return (out.name || out.id || out.email) ? out : null;
   }
   function renderProfileView(){
