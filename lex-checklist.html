@@ -1654,6 +1654,9 @@
   .pv-row>span{ width:96px; flex:0 0 96px; color:var(--muted); font-size:12px; }
   .pv-row>b{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
   .pv-row>b.pv-empty{ color:var(--muted); font-weight:400; }
+  .pv-lic{ flex:none; font-size:12px; font-weight:700; color:var(--muted); white-space:nowrap; }
+  .pv-lic.ok{ color:var(--ok); } .pv-lic.bad{ color:var(--bad); } .pv-lic.warn{ color:var(--warn); }
+  .pv-row>b:has(+ .pv-lic){ flex:0 1 auto; }
   .pv-row a, .pv-reg{ color:var(--accent); font-size:12px; text-decoration:none; white-space:nowrap; }
   .field .pv-reg{ margin-left:4px; }
   .pv-stats{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:6px; margin-top:10px; }
@@ -3698,7 +3701,7 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '26.10.2.1';
+const APP_VERSION = '26.10.2.2';
 const APP_DATE = '2026-10-17';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
@@ -3715,6 +3718,12 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '26.10.2.2': {
+    title: 'Карточка 26.10.2.2 от 17.10.2026 · срок лицензии из реестра',
+    added: [
+      "Профиль: у номера лицензии — срок из реестра лицензий адвокатов: «до ДД.ММ.ГГГГ» зелёным, «недействительна» / «аннулирована» красным, «нет в реестре» жёлтым; если реестр не ответил — «не проверено». Проверка раз в 30 минут"
+    ]
+  },
   '26.10.2.1': {
     title: 'Карточка 26.10.2.1 от 17.10.2026 · окно обращения в ОГП как у договора',
     added: [
@@ -22771,6 +22780,35 @@ wire();
     if(href){ const a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.textContent = 'реестр ↗'; a.className = 'pv-reg'; r.appendChild(a); }
     return r;
   }
+  // Срок лицензии из реестра (17.10.2026): Worker lex-registry читает публичную таблицу
+  // реестра и отдаёт строку по номеру. Кэш ответа в браузере — 30 минут.
+  const LICENSE_API = 'https://lex-registry.insidex.workers.dev/license?n=';
+  const LIC_KEY = 'lex_lic_cache';
+  function licNorm(s){ const m = String(s || '').toUpperCase().match(/([PF]LSA)\s*[-_ ]?\s*(\d{1,4})/); return m ? m[1] + ' ' + m[2].padStart(4, '0') : ''; }
+  function licCheck(no){
+    no = licNorm(no); if(!no) return Promise.resolve(null);
+    let c = null; try { c = JSON.parse(localStorage.getItem(LIC_KEY) || 'null'); } catch(e){}
+    if(c && c.no === no && Date.now() - c.at < 30 * 60000) return Promise.resolve(c.r);
+    const ctl = ('AbortController' in window) ? new AbortController() : null;
+    const tm = setTimeout(()=>{ if(ctl) ctl.abort(); }, 8000);
+    return fetch(LICENSE_API + encodeURIComponent(no), ctl ? { signal: ctl.signal } : {})
+      .then(r=> r.json()).then(r=>{ clearTimeout(tm); if(r && r.ok){ try { localStorage.setItem(LIC_KEY, JSON.stringify({ no, at: Date.now(), r })); } catch(e){} return r; } return null; })
+      .catch(()=>{ clearTimeout(tm); return (c && c.no === no) ? c.r : null; });
+  }
+  function licDecorate(rowEl, license, profName){
+    const no = licNorm(license); if(!no) return;
+    const sp = el('span', 'pv-lic', 'проверяю…'); const b = rowEl.querySelector('b'); if(b) b.after(sp); else rowEl.appendChild(sp);
+    licCheck(no).then(r=>{
+      if(!r){ sp.className = 'pv-lic'; sp.textContent = 'не проверено'; sp.title = 'Реестр не ответил — проверьте по ссылке «реестр ↗»'; return; }
+      if(!r.found){ sp.className = 'pv-lic warn'; sp.textContent = 'нет в реестре'; return; }
+      const d = r.to ? r.to.split('-').reverse().join('.') : '';
+      if(r.status === 'valid'){ sp.className = 'pv-lic ok'; sp.textContent = 'до ' + d; }
+      else { sp.className = 'pv-lic bad'; sp.textContent = r.status === 'annulled' ? 'аннулирована' : 'недействительна'; }
+      sp.title = 'Реестр: ' + r.number + ' · ' + (r.name || '—') + (r.kind ? ' · ' + r.kind : '') + (d ? ' · до ' + d : '');
+      const pn = String(profName || '').trim().toLowerCase();
+      if(pn && r.name && r.name.trim().toLowerCase() !== pn){ sp.textContent += ' · в реестре: ' + r.name; }
+    });
+  }
   function renderProfileView(){
     const p = (typeof lexProfile === 'function') ? lexProfile() : {};
     const name = (p.name || '').trim();
@@ -22780,7 +22818,7 @@ wire();
     $('pv_role').textContent = [roleTxt, window.LexWho && window.LexWho.name ? 'Discord: ' + window.LexWho.name : '', !name && !signedIn ? 'профиль хранится в облаке — войдите через Discord' : ''].filter(Boolean).join(' · ');
     const g = $('pv_grid'); g.textContent = '';
     g.appendChild(row('ID-карта', p.id));
-    g.appendChild(row('Лицензия', p.license, REGISTRY));
+    const licRow = row('Лицензия', p.license, REGISTRY); g.appendChild(licRow); licDecorate(licRow, p.license, p.name);
     g.appendChild(row('Почта', (typeof lexMailFull === 'function') ? lexMailFull(p.mail) : p.mail));
     g.appendChild(row('Телефон', p.phone));
     const pr = row('Паспорт', ''); const pb = pr.querySelector('b');
