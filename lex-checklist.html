@@ -3709,7 +3709,7 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '26.10.2.3';
+const APP_VERSION = '26.10.2.4';
 const APP_DATE = '2026-10-17';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
@@ -3726,6 +3726,12 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '26.10.2.4': {
+    title: 'Карточка 26.10.2.4 от 17.10.2026 · уровень доступа — с сервера',
+    fixed: [
+      "Уровень доступа (Free / Триал / Подписка / Premium) в профиле теперь приходит только с сервера, вместе с лимитами ИИ. В самой карточке больше нет ни одного Discord ID"
+    ]
+  },
   '26.10.2.3': {
     title: 'Карточка 26.10.2.3 от 17.10.2026 · триал Lex',
     added: [
@@ -22268,11 +22274,11 @@ wire();
      Уровень доступа (заглушка до маршрута /me на Worker)
      ===================================================================== */
   window.LexTier = {
-    // владелец Lex -- Premium бессрочно (до маршрута /me на Worker проверка здесь, по Discord ID)
-    OWNER_IDS: ['605094330222379199'],
-    current(){ const w = window.LexWho; return (w && this.OWNER_IDS.indexOf(String(w.id)) !== -1) ? 'premium' : 'free'; },
-    forever(){ const w = window.LexWho; return !!(w && this.OWNER_IDS.indexOf(String(w.id)) !== -1); },
-    label: t=> ({ free:'Free', participant:'Участник', premium:'Premium' })[t] || 'Free',
+    // Уровень — только с сервера (get_ai_limits, piece_ai.js → window.LexAiLimits), 17.10.2026.
+    // В карточке нет ни одного ID: подмена в скачанном файле меняет лишь надпись, лимиты считает сервер.
+    current(){ const m = (window.LexAiLimits || {}).mode; return ({ premium:'premium', sub:'sub', trial:'trial' })[m] || 'free'; },
+    forever(){ const d = window.LexAiLimits || {}; return d.mode === 'premium' && !d.ends_at; },
+    label: t=> ({ free:'Free', trial:'Триал', sub:'Подписка', premium:'Premium' })[t] || 'Free',
     // оплата и тарифы -- заглушка
     upgrade(){ return Promise.resolve({ ok:false, error:'not_ready' }); },
     // составление документов ИИ -- заглушка (Premium)
@@ -22847,7 +22853,7 @@ wire();
       });
     }
     const tier = window.LexTier.current(), forever = window.LexTier.forever();
-    const tb = $('pv_tier'); tb.textContent = window.LexTier.label(tier) + (forever ? ' ∞' : ''); tb.className = 'cl-tier t-' + tier; tb.title = forever ? 'Premium навсегда (владелец Lex)' : 'Уровень доступа';
+    const tb = $('pv_tier'); tb.textContent = window.LexTier.label(tier) + (forever ? ' ∞' : ''); tb.className = 'cl-tier t-' + tier; tb.title = forever ? 'Premium бессрочно' : 'Уровень доступа';
     $('lim_tier').textContent = forever ? 'Premium — бессрочно' : window.LexTier.label(tier);
     $('lim_ai').textContent = tier === 'premium' ? 'без ограничений' : '1';
     $('lim_trial').textContent = forever ? 'не нужен' : 'не активирован';
@@ -22893,6 +22899,7 @@ wire();
     });
     // кнопка «Триал» — piece_trial.js (LexTrial), 17.10.2026
     window.addEventListener('lex-auth-change', ()=>{ const ov = $('profile-overlay'); if(ov && ov.classList.contains('open')) renderProfileView(); });
+    window.addEventListener('lex-limits', ()=>{ const ov = $('profile-overlay'); if(ov && ov.classList.contains('open')) renderProfileView(); });
     renderProfileView();
   }
 
@@ -22935,9 +22942,10 @@ wire();
   }
   let LIM = null, SUB = null;
   function loadLimits(){
-    if(!online() || !signedIn()){ LIM = null; renderLimits(); return Promise.resolve(null); }
+    if(!online() || !signedIn()){ LIM = null; window.LexAiLimits = null; renderLimits(); return Promise.resolve(null); }
     return sb('rpc/get_ai_limits', { method:'POST', body:'{}' }).then(r => {
       LIM = (r.ok && r.data && r.data.ok !== false) ? r.data : null;
+      window.LexAiLimits = LIM; try { window.dispatchEvent(new Event('lex-limits')); } catch(e){}
       renderLimits(); resetNotice(); updateAiBtn();
       return LIM;
     });
