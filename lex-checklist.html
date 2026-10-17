@@ -1637,6 +1637,7 @@
   .mila-text{ white-space:pre-wrap; word-break:break-word; }
   .aya-bar{ margin-top:12px; border-top:1px solid var(--border); padding-top:10px; }
   .hl-actions #lex_discord_btn{ grid-column:span 3; }
+  .n-proc-old:has(> textarea:placeholder-shown){ display:none; }
   /* обучение v2 */
   .tour-ring{ position:fixed; z-index:1000; pointer-events:none; border-radius:10px; border:2px solid var(--accent); animation:tourPulse 1.1s ease-in-out infinite; transition:left .15s, top .15s, width .15s, height .15s; }
   .tour-ring.done{ animation:none; box-shadow:0 0 0 3px rgba(var(--accent-rgb),.25); }
@@ -1760,6 +1761,8 @@
 </style>
 <style>
   .ai-line{ font-size:13px; margin:3px 0; } .ai-line.muted{ color:var(--muted); }
+  .support-form-status.ai-wait::before{ content:''; display:inline-block; width:12px; height:12px; margin-right:7px; vertical-align:-2px; border:2px solid rgba(var(--accent-rgb),.3); border-top-color:var(--accent); border-radius:50%; animation:aiSpin .8s linear infinite; }
+  @keyframes aiSpin{ to{ transform:rotate(360deg); } }
   .ai-line.ok{ color:var(--ok); font-weight:600; }
   #trial-overlay .trial-p{ margin:0 0 8px; font-size:13px; line-height:1.5; }
   #trial-overlay .trial-msg{ min-height:18px; margin:8px 0 2px; font-size:12.5px; }
@@ -2617,12 +2620,12 @@
     <div class="card">
       <h2 class="lbl-row">5. Свободные заметки <button type="button" class="info-btn" data-info="inf_notes" aria-label="Пояснение" title="Пояснение">i</button></h2>
       <div class="info-body" id="inf_notes">Сюда — всё, что раньше было отдельными галочками (Миранда, звонок/беседа, обыск, тайминги, видео, залог и т.п.): что было, а чего не было, своими словами.</div>
-      <label class="field"><span class="lbl-row">Что видно на видео <button type="button" class="info-btn" data-info="inf_nvideo" aria-label="Пояснение" title="Пояснение">i</button></span>
-        <textarea id="n_video" placeholder="Хронология по таймкодам, что именно зафиксировано..."></textarea>
+      <label class="field"><span class="lbl-row">Описательная часть — что произошло (общая с обращением в ОГП) <button type="button" class="info-btn" data-info="inf_nvideo" aria-label="Пояснение" title="Пояснение">i</button></span>
+        <textarea id="n_video" style="min-height:140px;" placeholder="Своими словами, по порядку: что видно на видео (с таймкодами), что говорили и делали сотрудники и задержанный во время процессуальных действий. Этот же текст — описательная часть обращения в ОГП."></textarea>
       </label>
       <div class="info-body" id="inf_nvideo">Сразу проверить звуковую дорожку: нет звука вообще либо звук есть, но неразборчив (шум, помехи, слишком тихо) — по доказательственной функции равнозначно отсутствию звука, п. 5 ст. 7.2 Процессуального кодекса — такая запись недопустимое доказательство.</div>
-      <label class="field">Во время процессуальных действий — со слов сотрудника, со слов задержанного (конфиденциальная беседа), тайминги, обыск, залог, Миранда и т.д. — что происходило и говорилось
-        <textarea id="n_proceedings"></textarea>
+      <label class="field n-proc-old">Ранее записанное (старое поле — перенесите в описательную часть)
+        <textarea id="n_proceedings" placeholder=" "></textarea>
       </label>
     </div>
 
@@ -3208,20 +3211,13 @@
       </div>
       <div class="empty-hint" id="ogp_suspect_hint" style="margin-top:0;"></div>
       <div class="ogp-need" data-need="card"></div>
-      <div class="card-group-label">Что произошло — своими словами</div>
-      <div class="empty-hint" style="margin-top:0;">Это те же поля, что «Свободные заметки» в карточке дела: пишете здесь — обновляется и там, и в описательной части бланка. Удобно голосом: надиктуйте в ChatGPT (значок микрофона в поле ввода, бесплатно), скопируйте текст и вставьте сюда.</div>
-      <label class="field">Что видно на видео (по таймкодам)
-        <textarea id="ogp_s_video" placeholder="напр. 00:15 — сотрудник подходит без представления; 00:40 — надевает наручники, Миранду не зачитывает…"></textarea>
+      <div class="card-group-label">Описательная часть — что произошло</div>
+      <div class="empty-hint" style="margin-top:0;">Одно общее поле с карточкой дела: пишете здесь — текст появляется в карточке («Описательная часть»), и наоборот. Своими словами, по порядку: что видно на видео (с таймкодами), что говорили и делали сотрудник и задержанный. Удобно голосом: надиктуйте в ChatGPT (значок микрофона в поле ввода, бесплатно), скопируйте и вставьте сюда. Нарушения из карточки бланк допишет сам.</div>
+      <label class="field">Что произошло
+        <textarea id="ogp_s_video" style="min-height:150px;" placeholder="напр. 17.10, около 14:20, площадь Легиона. 00:15 — сотрудник ЛСПД подошёл без представления, сразу надел наручники; Миранду не зачитал; адвоката вызвали только через 15 минут…"></textarea>
       </label>
-      <label class="field">Во время процессуальных действий — со слов сотрудника, со слов задержанного
-        <textarea id="ogp_s_proc" placeholder="что говорили, в каком порядке, что требовали"></textarea>
-      </label>
-      <div class="btnrow ogp-ai-row"><button type="button" class="ogp-ai-btn" id="ogp_ai_btn" title="ИИ составит описательную часть по делу и вашему описанию">🤖 Помощь ИИ — составить описательную часть</button></div>
+      <div class="btnrow ogp-ai-row"><button type="button" class="ogp-ai-btn" id="ogp_ai_btn" title="ИИ перепишет текст в описательную часть по форме ОГП">🤖 Помощь ИИ — составить описательную часть</button><button type="button" id="ogp_ai_undo" hidden>↩ Вернуть мой текст</button></div>
       <div class="support-form-status" id="ogp_ai_status"></div>
-      <label class="field" id="ogp_ai_wrap" hidden>Описательная часть от ИИ — проверьте и поправьте; в бланк идёт вместо заметок
-        <textarea id="f_ogp_ai_text" style="min-height:160px;"></textarea>
-        <span class="btnrow" style="margin-top:4px;"><button type="button" id="ogp_ai_clear">Убрать текст ИИ</button></span>
-      </label>
       <div class="card-group-label">3. Материалы (ссылки)</div>
       <div class="empty-hint" style="margin-top:0;">Ссылка в бланке прячется под подписью (гиперссылка). Каждая ссылка — http(s)://…</div>
       <label class="field">Копия паспорта заявителя — ссылка
@@ -3780,7 +3776,7 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '26.10.2.8';
+const APP_VERSION = '26.10.2.10';
 const APP_DATE = '2026-10-17';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
@@ -3797,6 +3793,24 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '26.10.2.10': {
+    title: 'Карточка 26.10.2.10 от 17.10.2026 · ИИ-помощник включён',
+    added: [
+      "🤖 Помощь ИИ заработала: вопрос по делу — ответ по законам штата, с учётом данных карточки",
+      "В обращении в ОГП ИИ переписывает описательную часть по форме ОГП; «↩ Вернуть мой текст» — отменить"
+    ]
+  },
+  '26.10.2.9': {
+    title: 'Карточка 26.10.2.9 от 17.10.2026 · одна описательная часть, документы',
+    added: [
+      "Описательная часть — одно общее поле в карточке и в обращении в ОГП: пишете в одном месте — текст сразу и там, и там",
+      "Помощь ИИ в обращении в ОГП переписывает это же поле по форме ОГП; «↩ Вернуть мой текст» — отменить"
+    ],
+    fixed: [
+      "Закрыли сводку, обращение в ОГП или договор (крестик, Esc) — возврат к выбору документов, а не в карточку",
+      "Договор: введённое сохраняется черновиком до «＋ Новый договор», даже после перезагрузки"
+    ]
+  },
   '26.10.2.8': {
     title: 'Карточка 26.10.2.8 от 17.10.2026 · новое обучение, профиль, документы',
     added: [
@@ -8325,8 +8339,8 @@ function generateSummary(){
   lines.push('');
 
   lines.push('=== ЗАМЕТКИ ===');
-  lines.push('Видео: ' + (val('n_video')||'—'));
-  lines.push('Во время процессуальных действий: ' + (val('n_proceedings')||'—'));
+  lines.push('Описательная часть: ' + (val('n_video')||'—'));
+  if(val('n_proceedings')) lines.push('Ранее записанное: ' + val('n_proceedings'));
   lines.push('');
 
   lines.push('=== ИТОГ ===');
@@ -8729,8 +8743,8 @@ function buildOgpSummary(){
   }
 
   const notes = [];
-  if(val('n_video')) notes.push('Видео: ' + val('n_video'));
-  if(val('n_proceedings')) notes.push('Во время процессуальных действий: ' + val('n_proceedings'));
+  if(val('n_video')) notes.push('Что произошло: ' + val('n_video'));
+  if(val('n_proceedings')) notes.push(val('n_proceedings'));
   if(val('n_outcome')) notes.push('Дополнительно: ' + val('n_outcome'));
   if(notes.length){
     L.push('--- ЗАМЕТКИ АДВОКАТА (в описательную часть) ---');
@@ -9038,12 +9052,10 @@ function buildOgpBBCode(){
   }
 
   const notes = [];
-  if(val('n_video')) notes.push('По видеозаписи: ' + val('n_video'));
-  if(val('n_proceedings')) notes.push('В ходе процессуальных действий: ' + val('n_proceedings'));
+  if(val('n_video')) notes.push(val('n_video'));
+  if(val('n_proceedings')) notes.push(val('n_proceedings'));
   if(val('n_outcome')) notes.push('Дополнительно: ' + val('n_outcome'));
-  const aiTxt = val('f_ogp_ai_text');
-  if(aiTxt){ body.push(''); aiTxt.split(/\n+/).forEach(x=>{ if(x.trim()) body.push(x.trim()); }); }
-  else if(notes.length){ body.push(''); notes.forEach(x=> body.push(x)); }
+  if(notes.length){ body.push(''); notes.forEach(x=> String(x).split(/\n+/).forEach(y=>{ if(y.trim()) body.push(y.trim()); })); }
 
   const L = [];
   L.push('[RIGHT][FONT=georgia][FONT=georgia]В ОФИС ГЕНЕРАЛЬНОГО ПРОКУРОРА');
@@ -9196,8 +9208,7 @@ function ogpDateRender(){
   });
 })();
 function ogpModalSync(){
-  [['ogp_s_video', 'n_video'], ['ogp_s_proc', 'n_proceedings']].forEach(([a, b])=>{ const x = document.getElementById(a), y = document.getElementById(b); if(x && y && document.activeElement !== x) x.value = y.value; });
-  const aiw = document.getElementById('ogp_ai_wrap'); if(aiw) aiw.hidden = !((document.getElementById('f_ogp_ai_text') || {}).value || '').trim();
+  [['ogp_s_video', 'n_video']].forEach(([a, b])=>{ const x = document.getElementById(a), y = document.getElementById(b); if(x && y && document.activeElement !== x) x.value = y.value; });
   ogpRowsRead();
   ogpMirrorPull();
   const who = (document.getElementById('f_ogp_who').value) || 'client';
@@ -9322,7 +9333,7 @@ function ogpMirrorPush(m){
 (function wireOgpMirror(){
   const ov = document.getElementById('ogp-overlay'); if(!ov) return;
   // capture: сначала пишем в карточку, потом общий обработчик окна пересобирает текст
-  const STORY = { ogp_s_video:'n_video', ogp_s_proc:'n_proceedings' };
+  const STORY = { ogp_s_video:'n_video' };
   const h = e=>{
     const id = e.target && e.target.id || '';
     if(STORY[id]){ const c = document.getElementById(STORY[id]); if(c && c.value !== e.target.value){ c.value = e.target.value; c.dispatchEvent(new Event('input', { bubbles: true })); } return; }
@@ -16229,7 +16240,7 @@ window.LexTour = (function(){
     { el:()=> field('f_video_state'), t:'Видеофиксация', x:'Есть ли запись у сотрудника и в каком она состоянии (нет звука, обрезана, не предоставлена). Сотрудник хранит запись 72 часа — ст. 3.9 ПК.' },
     { el:()=> { const m = $('mit_1'); return m ? m.closest('details') : null; }, prep:()=>{ const m = $('mit_1'); if(m) openDetails(m); }, t:'Смягчающие и отягчающие', x:'Отмечайте только то, что прямо известно по делу, — не по впечатлению от клиента. Смягчающие (ст. 4.3 УАК) и отягчающие (ст. 4.4 УАК) попадут в заключительное слово и в расчёт наказания.' },
     { el:()=> $('ogp_material'), prep:()=>{ const d = $('ogp_material'); if(d) d.open = true; }, t:'Материал для ОГП', x:'Нарушения, которые не освобождают клиента, но идут в жалобу на сотрудника. «Чем подтверждены»: есть видео — в обращении это доказательство; со слов клиента — так и будет написано.' },
-    { el:()=> field('n_video'), t:'Свободные заметки', x:'Что видно на видео (по таймкодам) и что происходило во время процессуальных действий. Эти же заметки сами попадают в описательную часть обращения в ОГП — их можно писать и прямо в окне обращения.' },
+    { el:()=> field('n_video'), t:'Описательная часть', x:'Своими словами, по порядку: что видно на видео (с таймкодами), что говорили и делали сотрудник и задержанный. Это одно общее поле с обращением в ОГП: пишете здесь — текст уже в бланке, и наоборот. Там же ИИ поможет переписать его по форме ОГП.' },
     { el:()=> $('fw_role_seg'), t:'Итог: адвокат или прокурор', x:'Кто вы в деле. Адвокату карточка соберёт заключительное слово защиты, прокурору — позицию обвинения и наказание по каждой статье. Затем «Собрать заключительное слово» — пока чего-то не хватает, над кнопкой будет список.' },
     { el:()=> field('f_outcome'), t:'Решение', x:'Ставится автоматически по всему, что отмечено выше: освобождение по конкретному пункту ст. 1.8 ПК или «оснований нет» с мерой наказания. Можно поменять вручную.' },
     { el:()=> field('n_outcome'), t:'Обоснование и фактический исход', x:'Своими словами — почему такое решение. Ниже «Фактический исход» — чем дело кончилось на самом деле (отпущен, штраф, срок). Это ваша статистика и материал для прецедентов.' },
@@ -16248,7 +16259,7 @@ window.LexTour = (function(){
     { el:()=> $('lex_subs'), prep:()=> openProfile('subs'), t:'Зачем подписка', x:'Подписка открывает документы (обращение в ОГП, договор) и расширенные лимиты ИИ. После оплаты — «Проверить статус».' },
     { el:()=> $('trial_box') || $('sub_trial'), prep:()=> openProfile('lims'), t:'Лимиты и триал', x:'Сколько запросов ИИ осталось сегодня. Триал на 7 дней — попробовать всё без подписки.' },
     { el:()=> $('pv_tab_docs'), prep:()=> openProfile(), t:'Вкладка «Документы»', x:'Нажмите — документы по текущему делу. В будущем вкладка открывается по подписке или на триале.' },
-    { el:()=> $('pv_docs_tiles'), prep:()=> openProfile('docs'), t:'Как работают документы', x:'Сводка — текст по делу для чата. Обращение в ОГП — готовый бланк для форума; внутри можно описать ситуацию своими словами и попросить ИИ составить описательную часть. Договор — PDF для частного адвоката. Нажмите любой, чтобы посмотреть; из сводки «←» вернёт сюда.' },
+    { el:()=> $('pv_docs_tiles'), prep:()=> openProfile('docs'), t:'Как работают документы', x:'Сводка — текст по делу для чата. Обращение в ОГП — готовый бланк для форума; внутри — то же поле «Описательная часть», что в карточке, и кнопка ИИ, которая перепишет его по форме ОГП. Договор — PDF для частного адвоката. Нажмите любой, чтобы посмотреть; из сводки «←» вернёт сюда.' },
   ];
 
   /* ---------- слой: рамка + плашка ---------- */
@@ -22381,7 +22392,17 @@ function wire(){
   if(cfg.polite) $('cPolite').checked = true;
   if(cfg.cam) $('cCam').checked = true;
   noHint();
+  // черновик договора: введённое остаётся до «＋ Новый договор» (17.10.2026)
+  const DRAFT_KEY = 'lex_contract_draft', DRAFT_IDS = ['cNo', 'clientName', 'clientPassport', 'clientPhone', 'clientEmail', 'orgName', 'repName', 'repPassport', 'repPosition', 'repPhone', 'repEmail', 'orgStaff', 'pubCopy', 'pubProof'];
+  const draftSave = ()=>{ const d = { ct: CT }; DRAFT_IDS.forEach(id=>{ const e = $(id); if(e) d[id] = e.value; }); LS.put(DRAFT_KEY, d); };
+  (function draftLoad(){
+    const d = LS.get(DRAFT_KEY, null); if(!d) return;
+    DRAFT_IDS.forEach(id=>{ const e = $(id); if(e && typeof d[id] === 'string' && d[id]) e.value = d[id]; });
+    if(d.ct){ const b = $('clientType').querySelector('[data-ct="' + d.ct + '"]'); if(b){ CT = d.ct; $('clientType').querySelectorAll('[data-ct]').forEach(x=> x.classList.toggle('on', x === b)); } }
+    noHint();
+  })();
   const form = document.querySelector('.form');
+  form.addEventListener('input', ()=> draftSave());
   form.addEventListener('input', e=>{
     if(e.target.id === 'pubOut'){ pubDirty = true; return; }
     if(['lawyerFirm', 'days', 'hours'].indexOf(e.target.id) !== -1) saveCfg();
@@ -22390,14 +22411,14 @@ function wire(){
   form.addEventListener('change', e=>{ if(['sigOn', 'cSilence', 'cLaw', 'cPolite', 'cCam'].indexOf(e.target.id) !== -1) saveCfg(); render(); });
   $('clientType').addEventListener('click', e=>{
     const b = e.target.closest('[data-ct]'); if(!b) return;
-    CT = b.dataset.ct; $('clientType').querySelectorAll('[data-ct]').forEach(x=> x.classList.toggle('on', x === b)); render();
+    CT = b.dataset.ct; $('clientType').querySelectorAll('[data-ct]').forEach(x=> x.classList.toggle('on', x === b)); render(); draftSave();
   });
   $('saveBtn').onclick = ()=> saveCurrent(false);
   $('myBtn').onclick = ()=>{ renderMy(); $('myBox').hidden = false; };
   $('myClose').onclick = ()=>{ $('myBox').hidden = true; };
   $('myBox').addEventListener('click', e=>{ if(e.target === $('myBox')) $('myBox').hidden = true; });
   $('newBtn').onclick = ()=> $('myNew').onclick();
-  $('myNew').onclick = ()=>{ CUR = null; setMode('contract'); $('clearClient').onclick(); $('cNo').value = ''; noHint(); $('myBox').hidden = true; render(); toast('Новый договор'); };
+  $('myNew').onclick = ()=>{ CUR = null; setMode('contract'); $('clearClient').onclick(); $('cNo').value = ''; noHint(); $('myBox').hidden = true; render(); LS.put(DRAFT_KEY, null); toast('Новый договор'); };
   $('addBack').onclick = ()=>{ setMode('contract'); };
   $('addUpload').onclick = ()=>{
     if(gate().length){ $('addMsg').textContent = 'Заполните обязательные поля.'; return; }
@@ -22445,7 +22466,7 @@ function wire(){
     copy($('pubOut').value).then(ok=>{ toast(ok ? 'Скопировано — вставьте ответом в теме' : 'Скопируйте текст вручную'); });
     window.open(THREAD + 'latest', '_blank', 'noopener');
   };
-  $('clearClient').onclick = ()=>{ ['clientName', 'clientPassport', 'clientPhone', 'clientEmail', 'orgName', 'repName', 'repPassport', 'repPosition', 'repPhone', 'repEmail', 'orgStaff', 'pubCopy', 'pubProof'].forEach(id=> $(id).value = ''); pubDirty = false; render(); };
+  $('clearClient').onclick = ()=>{ ['clientName', 'clientPassport', 'clientPhone', 'clientEmail', 'orgName', 'repName', 'repPassport', 'repPosition', 'repPhone', 'repEmail', 'orgStaff', 'pubCopy', 'pubProof'].forEach(id=> $(id).value = ''); pubDirty = false; render(); draftSave(); };
   if(inLex){ send('ready'); setTimeout(()=> send('request-context'), 300); }
   else { $('status').textContent = 'Откройте из Lex для автозаполнения'; }
   render();
@@ -22955,7 +22976,7 @@ wire();
     prof.sigImg = (window.LexSig && LexSig.forPdf) ? LexSig.forPdf() : '';
     cFrame.contentWindow.postMessage(Object.assign({ channel: 'lex-contract-host', type, theme: cTheme(), profile: prof }, extra || {}), '*');
   }
-  function cClose(){ if(cOverlay){ cOverlay.classList.remove('open'); cOverlay.setAttribute('aria-hidden', 'true'); } }
+  function cClose(){ if(cOverlay){ cOverlay.classList.remove('open'); cOverlay.setAttribute('aria-hidden', 'true'); } if(window.LexDocs && LexDocs.back) LexDocs.back(); }
   function cBuild(){
     if(cOverlay) return true;
     const src = $('lex_contract_src'); if(!src) return false;
@@ -23035,6 +23056,20 @@ wire();
     const pane = $('pv_docs_tiles'), tiles = ov.querySelector('.doc-tiles');
     if(pane && tiles) pane.appendChild(tiles);
     const openDocsTab = ()=>{ const pb = $('profile_open_btn'); if(pb) pb.click(); if(window.lexProfileTab) window.lexProfileTab('docs'); };
+    // закрыли документ, открытый из вкладки «Документы» (крестик, Esc, клик мимо) — назад к выбору документов.
+    // Введённое не теряется: ОГП хранится в деле, договор — черновиком до «Новый договор».
+    let fromDocs = false;
+    const back = ()=> setTimeout(()=>{
+      if(!fromDocs) return;
+      if(document.querySelector('.law-modal-overlay.open, .lex-contract-overlay.open')) return;
+      fromDocs = false; openDocsTab();
+    }, 60);
+    window.LexDocs.back = back;
+    ['summary-overlay', 'ogp-overlay'].forEach(id=>{
+      const o = $(id); if(!o || !('MutationObserver' in window)) return;
+      let was = o.classList.contains('open');
+      new MutationObserver(()=>{ const now = o.classList.contains('open'); if(was && !now) back(); was = now; }).observe(o, { attributes: true, attributeFilter: ['class'] });
+    });
     btn.addEventListener('click', openDocsTab);
     $('docs-close').addEventListener('click', close);
     const pick = e=>{
@@ -23042,6 +23077,7 @@ wire();
       const t = e.target.closest && e.target.closest('[data-doc]'); if(!t || t.disabled) return;
       if(!docsAllowed()) return;
       const d = t.dataset.doc; close(); const po = $('profile-overlay'); if(po) po.classList.remove('open');
+      fromDocs = true;
       if(d === 'summary'){ so.classList.add('open'); const out = $('summary_out'); if(out && !out.value.trim() && typeof actionSummary === 'function'){ try { actionSummary(); } catch(err){} } }
       if(d === 'ogp' && typeof openOgpModal === 'function') openOgpModal();
       if(d === 'contract') window.LexContractModule.open();
@@ -23052,7 +23088,7 @@ wire();
     if(so){
       const sclose = ()=> so.classList.remove('open');
       $('summary-close').addEventListener('click', sclose);
-      $('summary-back').addEventListener('click', ()=>{ sclose(); openDocsTab(); });
+      $('summary-back').addEventListener('click', ()=>{ sclose(); });
       so.addEventListener('click', e=>{ if(e.target === so) sclose(); });
     }
     // расхождение решений -> кнопка ОГП подсвечена; то же -- на кнопке «Документы» и плитке ОГП
@@ -23370,7 +23406,7 @@ wire();
     if(!prompt){ st.textContent = 'Напишите вопрос.'; return; }
     const why = limitBlocked(); if(why){ st.textContent = why; return; }
     const s = session(); if(!s){ st.textContent = ERR.not_authenticated; return; }
-    send.dataset.busy = '1'; send.disabled = true; st.dataset.keep = '1'; st.className = 'support-form-status'; st.textContent = 'Думаю…'; out.textContent = '';
+    send.dataset.busy = '1'; send.disabled = true; st.dataset.keep = '1'; st.className = 'support-form-status ai-wait'; st.textContent = 'ИИ-помощник думает…'; out.textContent = '';
     const body = { type:'question', prompt: prompt };
     if($('ai_ctx').checked){ const c = caseContext(); if(c) body.context = c; }
     fetch(BOT + '/ai/help', { method:'POST', headers: { Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -23385,27 +23421,28 @@ wire();
   }
 
   /* ---------- ИИ в обращении в ОГП: описательная часть ---------- */
-  // POST /ai/help { type:'ogp_desc', prompt:<что произошло своими словами>, context:<сводка по делу> }
-  // -> { ok, answer } — текст описательной части (раздел II) без BBCode. Лимиты — те же, что у «Помощь ИИ».
+  // POST /ai/help { type:'ogp_desc', prompt:<описательная часть своими словами>, context:<сводка по делу> }
+  // -> { ok, answer } — переписанная описательная часть (раздел II) без BBCode. Пишется в то же поле
+  // (общее с карточкой: n_video), прежний текст — под кнопкой «↩ Вернуть мой текст». Лимиты — как у «Помощь ИИ».
+  let ogpUndo = null;
   function ogpAi(){
-    const st = $('ogp_ai_status'), btn = $('ogp_ai_btn'), out = $('f_ogp_ai_text'), wrap = $('ogp_ai_wrap');
+    const st = $('ogp_ai_status'), btn = $('ogp_ai_btn'), out = $('ogp_s_video'), undo = $('ogp_ai_undo');
     const say = (t, k)=>{ if(st){ st.className = 'support-form-status' + (k ? ' ' + k : ''); st.textContent = t; } };
     if(!online()){ say('Помощь ИИ работает на сайте lex-checklist.pages.dev при подключении к интернету.', 'err'); return; }
     if(!signedIn()){ say('Войдите через Discord — кнопка «👤 Профиль» в плашке часового лимита.', 'err'); return; }
-    const story = [['Что видно на видео', ($('ogp_s_video') || {}).value], ['Во время процессуальных действий', ($('ogp_s_proc') || {}).value]]
-      .filter(x=> x[1] && x[1].trim()).map(x=> x[0] + ': ' + x[1].trim()).join('\n');
-    if(story.length < 20){ say('Сначала опишите, что произошло, — хотя бы пару предложений в полях выше. Можно надиктовать в ChatGPT и вставить.', 'err'); return; }
+    const story = ((out && out.value) || '').trim();
+    if(story.length < 20){ say('Сначала опишите, что произошло, — хотя бы пару предложений в поле выше. Можно надиктовать в ChatGPT и вставить.', 'err'); return; }
     const why = limitBlocked(); if(why){ say(why, 'err'); return; }
     const s = session(); if(!s){ say(ERR.not_authenticated, 'err'); return; }
-    btn.disabled = true; say('Составляю описательную часть…');
+    btn.disabled = true; say('ИИ-помощник составляет описательную часть…', 'ai-wait');
     const ctx = [caseContext(), 'Заявитель: ' + (($('f_ogp_applicant') || {}).value || '—') + '; подозреваемый: ' + (($('f_ogp_suspect') || {}).value || 'неизвестно')].join('\n').slice(0, 7000);
     fetch(BOT + '/ai/help', { method:'POST', headers: { Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify({ type:'ogp_desc', prompt: story.slice(0, 4000), context: ctx }) })
       .then(r => r.json().catch(() => null))
       .then(d => {
         if(d && d.ok && typeof d.answer === 'string' && d.answer.trim()){
-          out.value = d.answer.trim(); wrap.hidden = false;
+          ogpUndo = story; out.value = d.answer.trim(); if(undo) undo.hidden = false;
           out.dispatchEvent(new Event('input', { bubbles: true }));
-          say('Готово — текст вставлен в описательную часть. Проверьте его перед подачей.', 'ok');
+          say('Готово — описательная часть переписана (в карточке тоже). Проверьте текст перед подачей.', 'ok');
         }
         else if(d && d.error === 'limit_reached') say(d.message ? String(d.message) : 'Лимит исчерпан. Обновление — завтра', 'err');
         else if(d && (d.error === 'unknown_type' || d.error === 'bad_request' || d.error === 'not_implemented')) say('Функция подключается — скоро заработает.', 'err');
@@ -23443,7 +23480,7 @@ wire();
     });
     const ob = $('ai_open_btn'); if(ob) ob.addEventListener('click', aiOpen);
     const oa = $('ogp_ai_btn'); if(oa) oa.addEventListener('click', ogpAi);
-    const oc = $('ogp_ai_clear'); if(oc) oc.addEventListener('click', () => { const t = $('f_ogp_ai_text'); if(!t) return; t.value = ''; $('ogp_ai_wrap').hidden = true; t.dispatchEvent(new Event('input', { bubbles: true })); });
+    const ou = $('ogp_ai_undo'); if(ou) ou.addEventListener('click', () => { const t = $('ogp_s_video'); if(!t || ogpUndo == null) return; t.value = ogpUndo; ogpUndo = null; ou.hidden = true; t.dispatchEvent(new Event('input', { bubbles: true })); const st = $('ogp_ai_status'); if(st) st.textContent = 'Ваш текст возвращён.'; });
     const cl = $('ai-close'); if(cl) cl.addEventListener('click', aiClose);
     const ov = $('ai-overlay'); if(ov) ov.addEventListener('click', e => { if(e.target === ov) aiClose(); });
     const sd = $('ai_send'); if(sd) sd.addEventListener('click', aiSend);
