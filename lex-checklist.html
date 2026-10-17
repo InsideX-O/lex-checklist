@@ -8311,6 +8311,16 @@ function generateSummary(){
   lines.push('Зона: ' + selText('f_zone') + (placeText ? ' — ' + placeText : ''));
   lines.push('Основание требования/задержания (⚑): ' + (chipGetBasisLabelText()||'—'));
   lines.push('Статьи обвинения: ' + (chipGetLabelText('f_charge_articles')||'—'));
+  try {
+    const compL = CHIP_FIELDS.f_charge_articles.chips.map(c=>{
+      const nm = c.article + ' ' + lawShortCode(c.law) + (c.basis ? ' ⚑' : '');
+      const st = chipCompState(c);
+      if(st === 'ok') return nm + ' — 🟢 состав есть (4 из 4, проверено адвокатом)';
+      if(st === 'bad') return nm + ' — 🔴 состава нет: не хватает ' + chipCompMissingLabels(c).join(', ');
+      return nm + ' — 🟡 состав не проверен';
+    });
+    if(compL.length) lines.push('Светофор состава: ' + compL.join('; '));
+  } catch(e){}
   if(typeof warrantChips === 'function' && warrantChips().length) lines.push('Из ордера / розыска (особый порядок ст. 3.7 ПК, защита не заявляется): ' + warrantChips().map(c=> c.article + ' ' + lawShortCode(c.law)).join(', '));
   const basisBtns = activeBasisBtnLabels();
   if(basisBtns.length) lines.push('Быстрые основания задержания: ' + basisBtns.join('; '));
@@ -23539,7 +23549,9 @@ wire();
   const KIND = { officer:['Нарушение сотрудника', 'ai-i-off'], card:['⚠ Ошибка карточки (по мнению ИИ)', 'ai-i-card'], note:['Замечание', 'ai-i-note'] };
   function renderIssues(box, issues, source){
     box.textContent = '';
-    const list = (Array.isArray(issues) ? issues : []).filter(x => x && (x.text || x.norm));
+    // ИИ иногда выводит пункт и тут же сам признаёт, что исправлять нечего — такие не показываем
+    const NOISE = /(вывод карточки[^.]{0,80}(верен|правил)|карточка (права|верно|правильно)|это не ошибка|не является ошибкой|ошибки (нет|здесь нет)|исправлять (ничего )?не (нужно|требуется)|замечаний нет)/i;
+    const list = (Array.isArray(issues) ? issues : []).filter(x => x && (x.text || x.norm) && !NOISE.test(String(x.text || '')));
     box.hidden = !list.length; if(!list.length) return;
     list.forEach(it => {
       const k = KIND[it.kind] || KIND.note;
@@ -23616,6 +23628,8 @@ wire();
       if(o.ok === true && !(o.issues && o.issues.length)){ say('✓ ИИ: ошибок в карточке и слове не найдено.', 'ok'); return; }
       renderIssues($('fw_ai_issues'), o.issues, 'case');
       fwFixed = String(o.final_word || '').trim();
+      if(fwFixed && fwFixed.replace(/\s+/g, ' ') === fw.replace(/\s+/g, ' ')) fwFixed = '';
+      if($('fw_ai_issues').hidden && !fwFixed){ say('✓ ИИ: ошибок в карточке и слове не найдено.', 'ok'); return; }
       $('fw_ai_apply_row').hidden = !fwFixed; $('fw_ai_undo').hidden = true;
       say('ИИ нашёл, что поправить' + (fwFixed ? ' — исправленное слово можно применить кнопкой ниже.' : '.'), 'warn');
     }).finally(() => { btn.disabled = false; });
