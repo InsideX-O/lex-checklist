@@ -1789,6 +1789,12 @@
   #ai_open_btn.is-blocked{ opacity:.55; }
   #ai-overlay{ z-index:230; }
   .lim-row[hidden]{ display:none; }
+  .vc-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin:6px 0 0; }
+  .vc-btn{ font-size:13px; padding:5px 10px; border-radius:8px; cursor:pointer; }
+  .vc-btn.on{ border-color:rgba(var(--bad-rgb),.7); color:var(--bad-soft); animation:vcPulse 1.4s ease-in-out infinite; }
+  @keyframes vcPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(var(--bad-rgb),.45); } 50%{ box-shadow:0 0 0 6px rgba(var(--bad-rgb),0); } }
+  .vc-st{ font-size:12.5px; color:var(--muted); line-height:1.35; flex:1 1 220px; min-width:0; }
+  .vc-st.warn{ color:var(--warn); } .vc-st.err{ color:var(--bad-soft); } .vc-st.ok{ color:var(--ok, #4caf50); }
 </style>
 <style>
   /* ===== Обращение в ОГП: списки со ссылками, подсказки «Нужно…» ===== */
@@ -3375,7 +3381,7 @@
         <div class="sub-card s-boosty">
           <div class="sub-h">🟦 Lex Sub — Boosty</div><div class="sub-p">300 ₽ / месяц</div>
           <div class="sub-w">Увеличивает лимит ИИ-помощника. Суммируется с другими подписками.</div>
-          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/fkn_inside/purchase/3279522" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
+          <div class="btnrow"><a class="sub-btn primary" href="https://boosty.to/fkn_inside/purchase/3279519?ssource=DIRECT&share=subscription_link" target="_blank" rel="noopener noreferrer">Оформить подписку</a><button type="button" class="sub-check">Проверить статус</button></div>
         </div>
         <div class="sub-card s-patreon">
           <div class="sub-h">🟪 Lex Sub — Patreon</div><div class="sub-p">от 75 CZK / месяц · 3 уровня на выбор</div>
@@ -23493,9 +23499,15 @@ wire();
       box.appendChild(el('div', 'ai-line', online() ? (signedIn() ? 'Лимиты пока недоступны.' : 'Войдите через Discord — здесь появятся ваши лимиты ИИ.') : 'Лимиты ИИ доступны при подключении к интернету.'));
       return;
     }
+    const voiceLine = () => {
+      if(typeof d.voice_cap_sec !== 'number') return;
+      const m = s => Math.floor(Math.max(0, s) / 60) + ':' + String(Math.floor(Math.max(0, s) % 60)).padStart(2, '0');
+      box.appendChild(el('div', 'ai-line', '🎤 Точное распознавание голоса: осталось ' + m(d.voice_left_sec != null ? d.voice_left_sec : d.voice_cap_sec - (d.voice_used_sec || 0)) + ' из ' + m(d.voice_cap_sec) + ' мин сегодня. Дальше — бесплатное распознавание браузера.'));
+    };
     if(d.mode === 'free'){
       box.appendChild(el('div', 'ai-line', 'Запросов ИИ на сегодня: ' + (d.requests_used_today || 0) + ' из ' + (d.requests_cap || 0) + '.'));
       box.appendChild(el('div', 'ai-line muted', 'Обновляется ежедневно.'));
+      voiceLine();
       return;
     }
     if(d.mode === 'premium'){
@@ -23509,6 +23521,7 @@ wire();
     box.appendChild(el('div', 'ai-line', d.mode === 'trial' ? 'Период: осталось ' + (d.days_left || 0) + ' дн. (из 7).' : 'Период: осталось ' + (d.days_left || 0) + ' дн.'));
     box.appendChild(el('div', 'ai-line', 'Общий лимит использован на ' + pp + '%.'));
     if(d.mode === 'sub') box.appendChild(bar(pp));
+    voiceLine();
   }
   function limitBlocked(){
     const d = LIM; if(!d) return '';
