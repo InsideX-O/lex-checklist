@@ -1724,6 +1724,12 @@
 </style>
 <style>
   .ai-line{ font-size:13px; margin:3px 0; } .ai-line.muted{ color:var(--muted); }
+  .ai-line.ok{ color:var(--ok); font-weight:600; }
+  #trial-overlay .trial-p{ margin:0 0 8px; font-size:13px; line-height:1.5; }
+  #trial-overlay .trial-msg{ min-height:18px; margin:8px 0 2px; font-size:12.5px; }
+  #trial-overlay .trial-msg.ok{ color:var(--ok); } #trial-overlay .trial-msg.warn{ color:var(--warn); } #trial-overlay .trial-msg.bad{ color:var(--bad); }
+  #trial-overlay .btnrow{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  #trial-overlay .sub-btn[hidden]{ display:none; }
   .ai-bar{ height:7px; border-radius:99px; background:var(--panel); border:1px solid var(--border); overflow:hidden; margin:3px 0 6px; }
   .ai-bar i{ display:block; height:100%; background:var(--accent); border-radius:99px; }
   .sub-state{ font-size:12px; color:var(--muted); margin:2px 0 4px; } .sub-state.on{ color:var(--ok); font-weight:600; }
@@ -3307,7 +3313,9 @@
           <div class="lim-row" hidden><span>Вопросов ИИ в день</span><b id="lim_ai">1</b></div>
           <div class="lim-row" hidden><span>Триал</span><b id="lim_trial">не активирован</b></div>
           <div id="lim_ai_box"></div>
-          <div class="btnrow"><button type="button" id="sub_trial" title="Откроет приглашение на Discord-сервер: роль Lex на 7 дней выдаётся автоматически (после запуска бота)">Триал 7 дней — вступить на сервер</button></div>
+          <div class="sub-h" style="margin-top:10px;">ТРИАЛ</div>
+          <div id="trial_box"></div>
+          <div class="btnrow"><button type="button" id="sub_trial">Получить триал на 7 дней</button></div>
         </div>
         <div class="support-form-status" id="sub_status"></div>
       </div>
@@ -3701,7 +3709,7 @@
    здесь — меняется поведение и флагов, и заключительного слова, и материала
    для ОГП: источник один на всё.
    ========================================================================== */
-const APP_VERSION = '26.10.2.2';
+const APP_VERSION = '26.10.2.3';
 const APP_DATE = '2026-10-17';
 // Сборка внутри версии: правки по тестам 2.0 идут без смены номера, но окно
 // «Что нового» показывает их тем, кто уже видел 2.0 (раздел patch ниже).
@@ -3718,6 +3726,13 @@ function lawSameHtml(box, html){ return box.innerHTML === html || lawUnlinkHtml(
 // новую встроенную базу. При каждом релизе сюда дописываются 1-5 строк для
 // пользователя (подробно -- в CHANGELOG.md).
 const APP_NEWS = {
+  '26.10.2.3': {
+    title: 'Карточка 26.10.2.3 от 17.10.2026 · триал Lex',
+    added: [
+      "Триал Lex на 7 дней: 👤 Профиль → «Подписки Lex» → «Получить триал на 7 дней». Условие — согласие на анонимную статистику (вход по дням и длительность дел в минутах). Если вас нет на сервере Discord — кнопка входа на сервер",
+      "После триала — цикл 28 дней на новый: в профиле видно, сколько дел засчитано (дело от 10 минут), сколько дней пропущено (до 7) и сколько осталось до конца цикла. Выполнили — триал снова доступен; при платной подписке триал и цикл на паузе"
+    ]
+  },
   '26.10.2.2': {
     title: 'Карточка 26.10.2.2 от 17.10.2026 · срок лицензии из реестра',
     added: [
@@ -22763,7 +22778,7 @@ wire();
      ===================================================================== */
   const REGISTRY = 'https://redwood-tables.duckdns.org/shared/AdvocatesSA1';
   // триал = вступление на Discord-сервер X-HUB (ссылка-приглашение; позже -- отдельная ссылка, по которой бот сразу выдаёт роль Lex)
-  const TRIAL_URL = 'https://discord.com/invite/Ykczusb';
+  const TRIAL_URL = 'https://discord.gg/urbhMUnb4'; // сервер для триала (выдача — LexTrial, piece_trial.js)
   let toastT = null;
   function pvStatus(text, kind){ const s = $('pv_status'); if(!s) return; s.className = 'support-form-status' + (kind ? ' ' + kind : ''); s.textContent = text || ''; }
   function subStatus(text){ const s = $('sub_status'); if(!s) return; s.className = 'support-form-status'; s.textContent = text; clearTimeout(toastT); toastT = setTimeout(()=>{ s.textContent = ''; }, 12000); }
@@ -22836,7 +22851,6 @@ wire();
     $('lim_tier').textContent = forever ? 'Premium — бессрочно' : window.LexTier.label(tier);
     $('lim_ai').textContent = tier === 'premium' ? 'без ограничений' : '1';
     $('lim_trial').textContent = forever ? 'не нужен' : 'не активирован';
-    $('sub_trial').disabled = false;
     const sync = $('pv_sync');
     if(sync){ sync.disabled = location.protocol !== 'https:'; sync.title = sync.disabled ? 'Облако работает на сайте lex-checklist.pages.dev' : (signedIn ? 'Подтянуть актуальный профиль из облака' : 'Войти через Discord'); }
     const ed = $('pv_edit'), nw = $('pv_new');
@@ -22877,10 +22891,7 @@ wire();
         syncProfiles(u, true).then(()=>{ renderProfileView(); pvStatus('Профиль обновлён из облака.', 'ok'); });
       });
     });
-    $('sub_trial').addEventListener('click', ()=>{
-      try { window.open(TRIAL_URL, '_blank', 'noopener,noreferrer'); } catch(e){}
-      subStatus('Открыл приглашение на сервер. Роль Lex на 7 дней будет выдаваться автоматически, когда заработает бот; сейчас чек-лист и так бесплатный (тестовый режим).');
-    });
+    // кнопка «Триал» — piece_trial.js (LexTrial), 17.10.2026
     window.addEventListener('lex-auth-change', ()=>{ const ov = $('profile-overlay'); if(ov && ov.classList.contains('open')) renderProfileView(); });
     renderProfileView();
   }
@@ -23088,6 +23099,195 @@ wire();
     if(online()) setTimeout(() => { loadLimits(); loadSubs(); }, 2500);
   }
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire, { once:true }); else wire();
+})();
+</script>
+<script>
+/* =====================================================================
+   Триал Lex (17.10.2026, ТЗ 12.10.2026; бэкенд — lex-bot + Supabase).
+   7 дней триала → цикл 28 дней на новый (28 засчитанных дел, пропусков ≤ 7).
+   POST /trial/claim  { consent_stats:true }           — выдать триал
+   POST /trial/day    { day, visited, qualified_cases, case_minutes } — отметка дня
+   RPC  get_trial_status                                — статус для профиля
+   Только textContent; без сумм и названий провайдеров.
+   ===================================================================== */
+window.LexTrial = (function(){
+  'use strict';
+  const SB_URL = 'https://acokvcbfxrzfrgppvvzq.supabase.co', SB_ANON = 'sb_publishable_hlPdJC0PpBVte2Uas1zYQg_YVVeTx7B';
+  const SB_KEY = 'sb-acokvcbfxrzfrgppvvzq-auth-token';
+  const BOT = 'https://lex-bot.insidex.workers.dev';
+  const TRIAL_URL = 'https://discord.gg/urbhMUnb4';
+  const DAY_SENT = 'lex_trial_day_sent';
+  const $ = id=> document.getElementById(id);
+  const el = (t, c, x)=>{ const e = document.createElement(t); if(c) e.className = c; if(x != null) e.textContent = x; return e; };
+  function session(){
+    let s = null; try { s = JSON.parse(localStorage.getItem(SB_KEY) || 'null'); } catch(e){}
+    if(s && s.currentSession) s = s.currentSession;
+    return s && s.access_token ? s : null;
+  }
+  const online = ()=> location.protocol === 'https:' && !!(window.LexAuth && LexAuth.available && LexAuth.available());
+  const ready = ()=> online() && !!session();
+  function toast(t, tone){ try { if(typeof lexToast === 'function') lexToast(String(t).replace(/[&<>"']/g, c=> ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]), tone || 'info', 5000); } catch(e){} }
+  function bot(path, body){
+    const s = session(); if(!s) return Promise.resolve({ ok:false, error:'not_authenticated' });
+    return fetch(BOT + path, { method:'POST', headers: { Authorization: 'Bearer ' + s.access_token, 'Content-Type': 'application/json' }, body: JSON.stringify(body || {}) })
+      .then(r=> r.json().catch(()=> ({ ok:false, error:'bad_response' })), ()=> ({ ok:false, error:'network' }));
+  }
+  function rpcStatus(){
+    const s = session(); if(!s) return Promise.resolve(null);
+    return fetch(SB_URL + '/rest/v1/rpc/get_trial_status', { method:'POST', headers: { Authorization: 'Bearer ' + s.access_token, apikey: SB_ANON, 'Content-Type': 'application/json' }, body: '{}' })
+      .then(r=> r.ok ? r.json() : null, ()=> null).catch(()=> null);
+  }
+
+  /* ---------- статус в профиле ---------- */
+  let ST = null, busy = false;
+  function load(){
+    if(!ready()){ ST = null; render(); return Promise.resolve(null); }
+    return rpcStatus().then(d=>{ ST = (d && d.ok !== false) ? d : null; render(); return ST; });
+  }
+  function bar(pct){ const w = el('div', 'ai-bar'), i = el('i'); i.style.width = Math.max(0, Math.min(100, pct || 0)) + '%'; w.appendChild(i); return w; }
+  function render(){
+    const box = $('trial_box'), b = $('sub_trial'); if(!box) return;
+    box.textContent = '';
+    if(b){ b.disabled = false; b.textContent = 'Получить триал на 7 дней'; }
+    if(!online()){ box.appendChild(el('div', 'ai-line muted', 'Триал доступен на сайте после входа через Discord.')); return; }
+    if(!session()){ box.appendChild(el('div', 'ai-line muted', 'Войдите через Discord — здесь появится триал.')); return; }
+    const d = ST;
+    if(!d){ box.appendChild(el('div', 'ai-line muted', 'Статус триала пока недоступен.')); return; }
+    const t = d.today || {};
+    if(d.paused){
+      box.appendChild(el('div', 'ai-line', 'Триал и цикл на паузе — действует подписка.'));
+      if(b){ b.disabled = true; b.title = 'При платной подписке триал не нужен'; }
+      return;
+    }
+    if(d.state === 'active'){
+      const left = (d.trial && d.trial.days_left) | 0;
+      box.appendChild(el('div', 'ai-line', 'Триал: осталось ' + left + ' дн. из 7.'));
+      box.appendChild(bar(left * 100 / 7));
+      if(b){ b.disabled = true; b.textContent = 'Триал активен'; }
+    } else if(d.state === 'cycle'){
+      const c = d.cycle || {}, days = c.days || 28, maxSk = c.skipped_max || 7;
+      box.appendChild(el('div', 'ai-line', 'Цикл на новый триал: засчитано дел ' + (c.credited | 0) + ' из ' + days + '.'));
+      box.appendChild(bar((c.credited | 0) * 100 / days));
+      box.appendChild(el('div', 'ai-line', 'День ' + (c.day | 0) + ' из ' + days + ' · пропущено ' + (c.skipped | 0) + ' из ' + maxSk + ' · до конца ' + (c.days_to_end | 0) + ' дн.'));
+      if(c.last_result === 'failed') box.appendChild(el('div', 'ai-line muted', 'Прошлый цикл не выполнен — идёт новый.'));
+      if(b){ b.disabled = true; b.textContent = 'Триал — после цикла'; }
+    } else if(d.state === 'available'){
+      box.appendChild(el('div', 'ai-line ok', 'Цикл выполнен! Триал снова доступен.'));
+    } else {
+      box.appendChild(el('div', 'ai-line', 'Триал не активирован.'));
+    }
+    if(d.state === 'active' || d.state === 'cycle'){
+      box.appendChild(el('div', 'ai-line muted', 'Сегодня: ' + (t.visited ? 'вход отмечен' : 'входа ещё нет') + ' · засчитано дел ' + (t.qualified_cases | 0) + ' (от 10 минут).'));
+    }
+  }
+
+  /* ---------- окно согласия и выдача ---------- */
+  let OV = null;
+  function modal(){
+    if(OV) return OV;
+    OV = el('div', 'law-modal-overlay'); OV.id = 'trial-overlay';
+    const m = el('div', 'law-modal'); m.style.width = 'min(520px, 100%)';
+    const h = el('div', 'law-modal-head');
+    const ti = el('div', 'law-modal-titles'); const h3 = el('h3', '', 'Триал Lex — 7 дней'); h3.style.margin = '0'; ti.appendChild(h3);
+    const x = el('button', 'law-modal-close', '✕'); x.type = 'button'; x.setAttribute('aria-label', 'Закрыть'); x.addEventListener('click', close);
+    h.append(ti, x);
+    const body = el('div', 'law-modal-body'); body.style.whiteSpace = 'normal';
+    [
+      'Триал открывает расширенный доступ на 7 дней. После него начинается цикл 28 дней: засчитайте 28 дел (дело от 10 минут), пропусков — не больше 7, и триал снова станет доступен.',
+      'Условие — согласие на анонимную статистику: вход в Lex по дням и длительность дел в минутах. Тексты дел, имена и документы не отправляются.'
+    ].forEach(p=> body.appendChild(el('p', 'trial-p', p)));
+    const lab = el('label', 'chk'); const cb = el('input'); cb.type = 'checkbox'; cb.id = 'trial_consent';
+    const sp = el('span', 'lbl', 'Я согласен на отправку анонимной статистики'); lab.append(cb, sp); body.appendChild(lab);
+    const msg = el('div', 'trial-msg'); msg.id = 'trial_msg'; body.appendChild(msg);
+    const row = el('div', 'btnrow');
+    const go = el('button', 'primary', 'Получить триал'); go.type = 'button'; go.id = 'trial_go'; go.disabled = true;
+    const link = el('a', 'sub-btn primary', 'Войти на сервер Discord ↗'); link.id = 'trial_join'; link.href = TRIAL_URL; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.hidden = true;
+    const cancel = el('button', '', 'Отмена'); cancel.type = 'button'; cancel.addEventListener('click', close);
+    row.append(go, link, cancel); body.appendChild(row);
+    cb.addEventListener('change', ()=>{ go.disabled = !cb.checked || busy; });
+    go.addEventListener('click', claim);
+    m.append(h, body); OV.appendChild(m);
+    OV.addEventListener('click', e=>{ if(e.target === OV) close(); });
+    document.body.appendChild(OV);
+    return OV;
+  }
+  function setMsg(t, kind){ const m = $('trial_msg'); if(!m) return; m.className = 'trial-msg' + (kind ? ' ' + kind : ''); m.textContent = t || ''; }
+  function open(){
+    if(!online()){ toast('Триал доступен на сайте lex-checklist.pages.dev', 'warn'); return; }
+    if(!session()){ toast('Войдите через Discord', 'warn'); return; }
+    const ov = modal(); setMsg('');
+    const cb = $('trial_consent'), c = window.LexStats && LexStats.consent ? LexStats.consent() : null;
+    if(cb) cb.checked = !!(c && c.on);
+    $('trial_go').disabled = !(cb && cb.checked);
+    $('trial_join').hidden = true;
+    ov.classList.add('open');
+  }
+  function close(){ if(OV) OV.classList.remove('open'); }
+  const ERR = {
+    has_subscription: 'Триал недоступен: у вас действует платная подписка.',
+    consent_required: 'Нужно согласие на анонимную статистику.',
+    not_authenticated: 'Войдите через Discord.',
+    network: 'Нет связи с сервером. Попробуйте позже.'
+  };
+  function claim(){
+    const cb = $('trial_consent'); if(!cb || !cb.checked){ setMsg(ERR.consent_required, 'warn'); return; }
+    if(busy) return; busy = true;
+    const go = $('trial_go'); go.disabled = true; setMsg('Запрашиваю…');
+    // согласие на статистику — условие триала: включаем его и в карточке
+    try { if(window.LexStats && LexStats.setConsent && !(LexStats.consent() || {}).on) LexStats.setConsent(true); } catch(e){}
+    bot('/trial/claim', { consent_stats: true }).then(r=>{
+      if(r && r.ok){
+        if(r.state === 'active'){
+          setMsg(r.granted ? 'Триал выдан: 7 дней.' : 'Триал уже идёт: осталось ' + (r.days_left | 0) + ' дн.', 'ok');
+          if(r.granted) toast('Триал Lex выдан на 7 дней', 'ok');
+        } else if(r.state === 'cycle'){
+          const c = r.cycle || {};
+          setMsg('Сейчас идёт цикл на новый триал: день ' + (c.day | 0) + ', засчитано ' + (c.credited | 0) + ' из 28, пропущено ' + (c.skipped | 0) + ' из 7.', 'warn');
+        } else setMsg('Готово.', 'ok');
+        sendDay(true); load();
+      } else {
+        const e = (r && r.error) || 'error';
+        if(e === 'not_in_server'){
+          setMsg('Сначала войдите на сервер Discord, потом нажмите «Получить триал» ещё раз.', 'warn');
+          const a = $('trial_join'); if(a){ if(r.url && /^https:\/\/discord\.(gg|com)\//.test(r.url)) a.href = r.url; a.hidden = false; }
+        } else setMsg(ERR[e] || ('Не получилось (' + e + ').'), 'bad');
+      }
+    }).finally(()=>{ busy = false; const c2 = $('trial_consent'); go.disabled = !(c2 && c2.checked); });
+  }
+
+  /* ---------- отметка дня /trial/day ---------- */
+  function sentMap(){ try { return JSON.parse(localStorage.getItem(DAY_SENT) || '{}') || {}; } catch(e){ return {}; } }
+  function sendDay(force){
+    if(!ready() || !window.LexStats || !LexStats.trialDay) return;
+    const c = LexStats.consent ? LexStats.consent() : null; if(!c || !c.on) return;
+    const T = LexStats.trialDay();
+    const minQ = LexStats.QUAL_MIN || 10;
+    const mins = (T.mins || []).map(m=> Math.max(0, Math.min(360, m | 0))).filter(m=> m >= minQ).slice(0, 200);
+    const body = { day: T.day, visited: true, qualified_cases: mins.length, case_minutes: mins };
+    const sig = T.day + '|' + mins.join(',');
+    const S = sentMap();
+    if(!force && S[T.day] === sig) return;
+    bot('/trial/day', body).then(r=>{
+      if(r && r.ok){
+        const M = sentMap(); M[T.day] = sig; Object.keys(M).sort().slice(0, -10).forEach(k=> delete M[k]);
+        try { localStorage.setItem(DAY_SENT, JSON.stringify(M)); } catch(e){}
+        const ov = $('profile-overlay'); if(ov && ov.classList.contains('open')) load();
+      }
+    });
+  }
+
+  function wire(){
+    const b = $('sub_trial');
+    if(b){ b.title = 'Триал 7 дней — по согласию на анонимную статистику'; b.addEventListener('click', open); }
+    const pb = $('profile_open_btn'); if(pb) pb.addEventListener('click', ()=> load());
+    window.addEventListener('lex-auth-change', ()=> setTimeout(()=>{ load(); sendDay(); }, 800));
+    window.addEventListener('focus', ()=> sendDay());
+    setInterval(()=> sendDay(), 60000);   // засчитанное дело попадает в отправку в течение минуты
+    render();
+    setTimeout(()=>{ sendDay(); load(); }, 3000);
+  }
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', wire, { once:true }); else wire();
+  return { load, open, sendDay, status: ()=> ST };
 })();
 </script>
 <script>

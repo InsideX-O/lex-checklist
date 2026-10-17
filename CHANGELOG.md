@@ -7,6 +7,16 @@
 
 ## [Не выпущено: app]
 
+## [app-26.10.2.3] — 2026-10-17
+
+#### Добавлено
+- Триал (ТЗ 12.10.2026; бэкенд DeepSeek: lex-bot + Supabase, проверен InsideX 17.10). Модуль `piece_trial.js` (`LexTrial`):
+  - кнопка `#sub_trial` «Получить триал на 7 дней» → окно `#trial-overlay` с обязательной галочкой «Я согласен на отправку анонимной статистики» (ставит и согласие статистики карточки `LexStats.setConsent(true)`) → `POST lex-bot /trial/claim {consent_stats:true}` с токеном Supabase;
+  - ответы: `active` (выдан / уже идёт), `cycle` (прогресс), `not_in_server` → кнопка «Войти на сервер Discord ↗» (`https://discord.gg/urbhMUnb4`), `has_subscription`, `consent_required`;
+  - статус в «Подписки Lex» → блок `#trial_box` по `rpc/get_trial_status`: active — «осталось N дн. из 7» + полоса; cycle — «засчитано дел X из 28», «день D из 28 · пропущено P из 7 · до конца N дн.», «прошлый цикл не выполнен»; available — «Цикл выполнен! Триал снова доступен»; none — «Триал не активирован»; paused — «на паузе — действует подписка». Кнопка заблокирована при active / cycle / paused;
+  - `POST /trial/day {day (UTC), visited, qualified_cases, case_minutes (дела ≥ 10 мин)}` из `LexStats.trialDay()` — при входе, раз в минуту и при фокусе окна, только если изменилось (`lex_trial_day_sent`) и включено согласие статистики.
+- Только `textContent`; сумм и названий провайдеров нет. Старое действие кнопки (открыть приглашение на сервер) убрано из `lex-cloud-ui.js`, `TRIAL_URL` → `https://discord.gg/urbhMUnb4`.
+
 ## [app-26.10.2.2] — 2026-10-17
 
 #### Добавлено
