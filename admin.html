@@ -71,6 +71,16 @@
   .modal .row2{ display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
   .empty{ padding:20px; text-align:center; color:var(--muted); }
   [hidden]{ display:none !important; }
+  .tabs{ display:flex; gap:4px; border-bottom:1px solid var(--border); margin:-4px 0 12px; }
+  .tab{ background:transparent; border:0; border-bottom:2px solid transparent; color:var(--muted); padding:8px 14px; font-weight:700; cursor:pointer; }
+  .tab.on{ color:var(--accent); border-bottom-color:var(--accent); }
+  .uname{ font-weight:700; } .ava{ width:26px; height:26px; border-radius:50%; vertical-align:middle; margin-right:8px; flex:none; }
+  .ucell{ display:flex; align-items:center; min-width:0; }
+  .pf{ border:1px solid var(--border); border-radius:8px; padding:7px 9px; margin:6px 0; font-size:12.5px; background:var(--panel2); }
+  .pf b{ color:var(--text); }
+  .tiles{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:6px; }
+  .tile{ border:1px solid var(--border); border-radius:8px; padding:6px 8px; text-align:center; background:var(--panel2); }
+  .tile b{ display:block; font-size:17px; color:var(--accent); } .tile span{ font-size:11px; color:var(--muted); }
   @media (max-width:1000px){ .main{ grid-template-columns:minmax(0,1fr); } .side{ position:static; max-height:none; } }
   @media (max-width:640px){ .hide-sm{ display:none; } th, td{ padding:7px 6px; font-size:12.5px; } td .mono{ font-size:11.5px; word-break:break-all; } .top .who{ display:none; } .top b{ font-size:14px; } }
 </style>
@@ -90,6 +100,8 @@
 </div>
 
 <div class="wrap" id="app" hidden>
+  <div class="tabs" id="tabs"><button class="tab on" data-tab="users">Пользователи</button><button class="tab" data-tab="log">Журнал</button></div>
+  <section id="tab_users">
   <div class="bar">
     <input id="q" type="search" placeholder="Поиск: Discord-ник, Discord ID, почта" autocomplete="off">
     <div class="seg" id="flt">
@@ -118,6 +130,10 @@
         <div class="muted" id="u_name"></div>
         <h3>Статус</h3>
         <div class="kv" id="u_kv"></div>
+        <h3>Статистика</h3>
+        <div id="u_stats"></div>
+        <h3>Профили Lex</h3>
+        <div id="u_profiles"></div>
         <h3>Действия</h3>
         <div class="acts" id="u_acts"></div>
         <div class="msg" id="u_msg"></div>
@@ -126,6 +142,16 @@
       </div>
     </div>
   </div>
+  </section>
+  <section id="tab_log" hidden>
+    <div class="bar"><input id="lq" type="search" placeholder="Поиск по журналу: Discord ID, действие, причина" autocomplete="off"><button class="btn" id="l_reload">Обновить</button></div>
+    <div class="card"><div class="tw"><table>
+      <thead><tr><th>Когда</th><th>Действие</th><th>Кому</th><th>Причина</th><th class="hide-sm">Админ</th><th class="hide-sm">Итог</th></tr></thead>
+      <tbody id="lrows"></tbody>
+    </table></div>
+    <div class="empty" id="l_msg" hidden></div>
+    <div class="pager"><span class="muted" id="lpg_info"></span><button class="btn" id="lpg_prev">←</button><button class="btn" id="lpg_next">→</button></div></div>
+  </section>
 </div>
 
 <div class="ov" id="ov">
@@ -182,9 +208,29 @@
       if(r && r._http === 403){ gate('Нет доступа', 'Эта страница только для администраторов Lex.', false); $('b_logout').hidden = false; return; }
       if(!r || !r.ok){ $('list_msg').textContent = errText(r && r.error); return; }
       $('gate').hidden = true; $('app').hidden = false; $('b_reload').hidden = false; $('b_logout').hidden = false;
-      S.items = Array.isArray(r.items) ? r.items : []; S.total = (typeof r.total === 'number') ? r.total : null;
+      const raw = Array.isArray(r.items) ? r.items : [];
+      // запасной фильтр и поиск на странице — если сервер вернул всех, отбираем здесь
+      S.items = raw.filter(it=> matchFilter(it, S.filter) && matchQ(it, S.q));
+      S.total = (typeof r.total === 'number' && S.items.length === raw.length) ? r.total : null;
       renderRows();
     });
+  }
+  function subActive(it){ const s = it.subs || {}; return ['boosty', 'patreon', 'boost'].some(k=> s[k] && s[k].active); }
+  function matchFilter(it, f){
+    const st = (it.trial || {}).state || 'none', prem = !!(it.premium && it.premium.active);
+    switch(f){
+      case 'trial_active': return st === 'active';
+      case 'cycle': return st === 'cycle';
+      case 'available': return st === 'available';
+      case 'sub': return subActive(it);
+      case 'premium': return prem;
+      case 'free': return !prem && !subActive(it) && st !== 'active';
+      default: return true;
+    }
+  }
+  function matchQ(it, q){
+    q = String(q || '').trim().toLowerCase(); if(!q) return true;
+    return [it.discord_id, it.discord_name, it.discord_username, it.discord_global_name, it.email].some(v=> v && String(v).toLowerCase().indexOf(q) !== -1);
   }
   function trialText(t){
     t = t || {}; const st = t.state || 'none';
@@ -211,8 +257,14 @@
     const tb = $('rows'); tb.textContent = '';
     S.items.forEach(it=>{
       const tr = el('tr', 'row' + (S.sel === it.discord_id ? ' sel' : ''));
-      const u = el('td'); u.appendChild(el('div', 'mono', it.discord_id || '—'));
-      const nm = [it.discord_name, it.email].filter(Boolean).join(' · '); if(nm) u.appendChild(el('div', 'muted', nm));
+      const u = el('td'), uc = el('div', 'ucell');
+      if(it.avatar && /^https:\/\/cdn\.discordapp\.com\//.test(it.avatar)){ const im = el('img', 'ava'); im.src = it.avatar; im.alt = ''; im.referrerPolicy = 'no-referrer'; uc.appendChild(im); }
+      const ub = el('div'); ub.style.minWidth = '0';
+      const nick = it.discord_name || it.discord_username || it.discord_global_name;
+      if(nick) ub.appendChild(el('div', 'uname', nick));
+      ub.appendChild(el('div', nick ? 'mono muted' : 'mono', it.discord_id || '—'));
+      if(it.email) ub.appendChild(el('div', 'muted', it.email));
+      uc.appendChild(ub); u.appendChild(uc);
       const [cls, txt] = trialText(it.trial);
       const t = el('td', cls, txt);
       const s = el('td'); s.appendChild(subsNode(it.subs));
@@ -234,19 +286,42 @@
     $('side_empty').hidden = true; $('side_body').hidden = false; if(!keepMsg && window.innerWidth <= 1000) $('side').scrollIntoView({ behavior:'smooth', block:'start' }); if(!keepMsg) $('u_msg').textContent = ''; $('u_id').textContent = id; $('u_kv').textContent = 'Загрузка…';
     return api('/admin/user?' + new URLSearchParams({ discord_id: id })).then(r=>{
       if(!r || !r.ok){ $('u_kv').textContent = errText(r && r.error); return; }
-      renderUser(id, r.status || {}, Array.isArray(r.logs) ? r.logs : []);
+      renderUser(id, r.status || {}, Array.isArray(r.logs) ? r.logs : [], { profiles: r.profiles, stats: r.stats });
     });
   }
   function kv(box, k, v, cls){ box.appendChild(el('span', '', k)); box.appendChild(typeof v === 'string' ? el('div', cls || '', v) : v); }
-  function renderUser(id, st, logs){
+  function renderUser(id, st, logs, extra){
+    extra = extra || {};
     $('u_id').textContent = id;
-    $('u_name').textContent = [st.discord_name, st.email].filter(Boolean).join(' · ');
+    $('u_name').textContent = [st.discord_name || st.discord_username, st.discord_global_name && st.discord_global_name !== st.discord_name ? '(' + st.discord_global_name + ')' : '', st.email].filter(Boolean).join(' · ');
     const box = $('u_kv'); box.textContent = '';
     const [cls, txt] = trialText(st.trial); kv(box, 'Триал', txt, cls);
     kv(box, 'Подписки', subsNode(st.subs));
     kv(box, 'Премиум', premText(st.premium), (st.premium && st.premium.active) ? 'crown' : 'muted');
     if(st.last_seen) kv(box, 'Последний вход', fmtT(st.last_seen));
     if(st.created_at) kv(box, 'Создан', fmtT(st.created_at));
+    // статистика и профили Lex
+    const SX = $('u_stats'); SX.textContent = '';
+    const stt = extra.stats || st.stats;
+    if(stt && typeof stt === 'object'){
+      const tiles = el('div', 'tiles');
+      [['cases_total', 'дел всего'], ['cases_30d', 'дел за 30 дн.'], ['released', 'освобождено'], ['ogp', 'обращений ОГП'], ['contracts', 'договоров'], ['days_active_30d', 'активных дней']].forEach(([k, l])=>{
+        if(stt[k] == null) return; const t = el('div', 'tile'); t.appendChild(el('b', '', String(stt[k]))); t.appendChild(el('span', '', l)); tiles.appendChild(t);
+      });
+      SX.appendChild(tiles.childNodes.length ? tiles : el('div', 'muted', 'Нет данных.'));
+      if(stt.last_case_at) SX.appendChild(el('div', 'muted', 'Последнее дело: ' + fmtT(stt.last_case_at)));
+    } else SX.appendChild(el('div', 'muted', 'Сервер пока не отдаёт статистику.'));
+    const PF = $('u_profiles'); PF.textContent = '';
+    const profs = extra.profiles || st.profiles;
+    if(Array.isArray(profs) && profs.length){
+      profs.forEach(pr=>{
+        const d = el('div', 'pf'); d.appendChild(el('b', '', pr.name || '(без имени)'));
+        const bits = [pr.role, pr.rp_id ? 'ID ' + pr.rp_id : '', pr.license ? 'лицензия ' + pr.license : '', pr.server].filter(Boolean).join(' · ');
+        if(bits) d.appendChild(el('div', 'muted', bits));
+        if(pr.updated_at || pr.created_at) d.appendChild(el('div', 'muted', 'изменён ' + fmtT(pr.updated_at || pr.created_at)));
+        PF.appendChild(d);
+      });
+    } else PF.appendChild(el('div', 'muted', Array.isArray(profs) ? 'Профилей нет.' : 'Сервер пока не отдаёт профили.'));
     // действия
     const A = $('u_acts'); A.textContent = '';
     const grp = items=>{ const g = el('div', 'grp'); items.forEach(([label, action, kind, cl])=>{ const b = el('button', 'btn' + (cl ? ' ' + cl : ''), label); b.type = 'button'; b.addEventListener('click', ()=> openActionModal(action, id, kind)); g.appendChild(b); }); A.appendChild(g); };
@@ -264,6 +339,36 @@
       if(x.admin_discord_id){ d.appendChild(el('br')); d.appendChild(el('span', 'muted mono', 'админ ' + x.admin_discord_id)); }
       L.appendChild(d);
     });
+  }
+
+  /* ---------- общий журнал ---------- */
+  const LS = { page:1, q:'' };
+  function loadLog(){
+    $('l_msg').hidden = false; $('l_msg').textContent = 'Загрузка…'; $('lrows').textContent = '';
+    return api('/admin/log?' + new URLSearchParams({ page: String(LS.page), per_page: String(PER), q: LS.q })).then(r=>{
+      if(r && r._http === 404){ $('l_msg').textContent = 'Общий журнал на сервере ещё не включён (маршрут /admin/log).'; return; }
+      if(!r || !r.ok){ $('l_msg').textContent = errText(r && r.error); return; }
+      const items = Array.isArray(r.items) ? r.items : (Array.isArray(r.logs) ? r.logs : []);
+      const q = LS.q.toLowerCase();
+      const rows = q ? items.filter(x=> [x.target_discord_id, x.admin_discord_id, x.action, x.reason, (ACT[x.action] || {}).t].some(v=> v && String(v).toLowerCase().indexOf(q) !== -1)) : items;
+      const tb = $('lrows');
+      rows.forEach(x=>{
+        const tr = el('tr', x.target_discord_id ? 'row' : '');
+        tr.append(el('td', 'muted', fmtT(x.at) || '—'), el('td', x.action === 'denied' ? 'st-none' : '', (ACT[x.action] || {}).t || x.action || '—'),
+          el('td', 'mono', [x.target_name, x.target_discord_id].filter(Boolean).join(' · ') || '—'), el('td', '', x.reason || '—'),
+          el('td', 'mono muted hide-sm', x.admin_discord_id || '—'), el('td', 'muted hide-sm', x.result || '—'));
+        if(x.target_discord_id) tr.addEventListener('click', ()=>{ showTab('users'); loadUserStatus(x.target_discord_id); });
+        tb.appendChild(tr);
+      });
+      $('l_msg').hidden = rows.length > 0; if(!rows.length) $('l_msg').textContent = 'Записей нет.';
+      $('lpg_info').textContent = 'Стр. ' + LS.page + (typeof r.total === 'number' ? ' · всего ' + r.total : '');
+      $('lpg_prev').disabled = LS.page <= 1; $('lpg_next').disabled = items.length < PER;
+    });
+  }
+  function showTab(t){
+    document.querySelectorAll('#tabs .tab').forEach(b=> b.classList.toggle('on', b.dataset.tab === t));
+    $('tab_users').hidden = t !== 'users'; $('tab_log').hidden = t !== 'log';
+    if(t === 'log') loadLog();
   }
 
   /* ---------- действия ---------- */
@@ -348,7 +453,7 @@
     sb.auth.signInWithOAuth({ provider:'discord', options:{ redirectTo: location.origin + location.pathname, scopes:'identify email' } });
   });
   $('b_logout').addEventListener('click', logout);
-  $('b_reload').addEventListener('click', ()=>{ loadUsers(); if(S.sel) loadUserStatus(S.sel); });
+  $('b_reload').addEventListener('click', ()=>{ loadUsers(); if(S.sel) loadUserStatus(S.sel); if(!$('tab_log').hidden) loadLog(); });
   let qt = null;
   $('q').addEventListener('input', ()=>{ clearTimeout(qt); qt = setTimeout(()=>{ S.q = $('q').value.trim(); S.page = 1; loadUsers(); }, 350); });
   $('flt').addEventListener('click', e=>{
@@ -358,6 +463,12 @@
   });
   $('pg_prev').addEventListener('click', ()=>{ if(S.page > 1){ S.page--; loadUsers(); } });
   $('pg_next').addEventListener('click', ()=>{ S.page++; loadUsers(); });
+  $('tabs').addEventListener('click', e=>{ const b = e.target.closest('.tab'); if(b) showTab(b.dataset.tab); });
+  let lqt = null;
+  $('lq').addEventListener('input', ()=>{ clearTimeout(lqt); lqt = setTimeout(()=>{ LS.q = $('lq').value.trim(); LS.page = 1; loadLog(); }, 350); });
+  $('l_reload').addEventListener('click', loadLog);
+  $('lpg_prev').addEventListener('click', ()=>{ if(LS.page > 1){ LS.page--; loadLog(); } });
+  $('lpg_next').addEventListener('click', ()=>{ LS.page++; loadLog(); });
   $('m_cancel').addEventListener('click', closeModal);
   $('m_ok').addEventListener('click', submitAction);
   $('m_reason').addEventListener('input', validate);
