@@ -15841,10 +15841,16 @@ function updBuildPack(){
   function showVersionHistory(){
     const body = document.getElementById('wn_body'); if(!body) return;
     document.getElementById('wn_title').textContent = 'История версий карточки';
-    const vs = Object.keys(APP_NEWS).sort((a, b)=> updCmpVersion(b, a));
+    // Версии до 17.10.2026 (X.Y) — в формате ГГ.ММ.П.N по дате выпуска; старый номер — в скобках
+    const LEGACY = { '1.0':['26.09.2.0','24.09.2026'], '1.1':['26.09.2.1','24.09.2026'], '1.2':['26.09.2.2','24.09.2026'], '1.3':['26.09.2.3','25.09.2026'], '2.0':['26.09.2.4','30.09.2026'], '2.1':['26.10.1.0','05.10.2026'], '2.2':['26.10.1.1','06.10.2026'], '2.3':['26.10.1.2','08.10.2026'], '2.4':['26.10.1.3','12.10.2026'] };
+    const vs = Object.keys(APP_NEWS).sort((a, b)=> updCmpVersion(LEGACY[b] ? LEGACY[b][0] : b, LEGACY[a] ? LEGACY[a][0] : a));
     body.innerHTML = vs.map((v, i)=>{
       const it = APP_NEWS[v];
-      const t = (it && it.title) || ('Карточка ' + v);
+      let t = (it && it.title) || ('Карточка ' + v);
+      if(LEGACY[v]){
+        const rest = t.replace(/^Карточка [\d.]+/, '').replace(/^ — все изменения/, ' · все изменения');
+        t = 'Карточка ' + LEGACY[v][0] + ' от ' + LEGACY[v][1] + rest + ' (было ' + v + ')';
+      }
       const secs = appNewsSections(v, it);
       return '<details class="wn-ver"' + (i === 0 ? ' open' : '') + '><summary><b>' + lawEscapeHtml(t) + (v === APP_VERSION ? ' — текущая' : '') + '</b></summary>'
         + secs.map(sec=> '<div class="wn-sec"><b>' + lawEscapeHtml(sec.h.replace(/^Карточка \S+ — /, '')) + '</b><ul>' + sec.items.map(x=> '<li>' + lawEscapeHtml(x) + '</li>').join('') + '</ul></div>').join('')
