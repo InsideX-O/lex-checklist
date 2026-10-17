@@ -1786,7 +1786,7 @@
   #ogp_out{ background:var(--bg); border:1px solid var(--border); border-radius:7px; color:var(--text); }
 
 /* превью «как на форуме» (17.10.2026) — тёмный пост XenForo */
-.forum-post{ margin:6px 0 4px; border:1px solid #2c3036; border-radius:6px; background:#1f2226; color:#dcdcdc; font:15px/1.55 "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding:14px 16px; max-height:min(70vh, 720px); overflow:auto; overscroll-behavior:contain; word-break:break-word; }
+.forum-post{ margin:6px 0 4px; border:1px solid #2c3036; border-radius:6px; background:#1f2226; color:#dcdcdc; font:15px/1.55 "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding:14px 16px; overflow-wrap:anywhere; word-break:break-word; }
 .forum-post a{ color:#47a7eb; text-decoration:none; } .forum-post a:hover{ text-decoration:underline; }
 .forum-post .fp-head{ font:12px/1.45 var(--mono); color:var(--warn); border-bottom:1px dashed #3a3f46; padding-bottom:8px; margin-bottom:10px; }
 .forum-post .fp-plain{ white-space:pre-wrap; font:13px/1.5 var(--mono); }
@@ -3152,9 +3152,6 @@
       <div class="card-group-label">4. Текст</div>
       <div class="basis-btns" id="ogp_kind_seg"><button type="button" class="basis-btn active" data-kind="bb">Бланк для форума (BBCode)</button><button type="button" class="basis-btn" data-kind="txt">Материал текстом</button></div>
       <div class="empty-hint" id="ogp_edit_note" style="margin:4px 0;">Текст собирается сам по полям выше и по карточке дела. Можно править прямо в поле; «Пересобрать» вернёт текст по полям.</div>
-      <div class="basis-btns" id="ogp_view_seg"><button type="button" class="basis-btn active" data-view="preview">Как на форуме</button><button type="button" class="basis-btn" data-view="code">Код (править)</button></div>
-      <div class="forum-post" id="ogp_preview" aria-label="Как обращение будет выглядеть на форуме"></div>
-      <textarea id="ogp_out" style="min-height:260px; font-family:var(--mono); font-size:12px; display:none;"></textarea>
       <div class="ogp-sigfmt" id="ogp_sigfmt_wrap"><span>Подпись картинкой <small>(временно — проверка, что форум показывает)</small>:</span><div class="basis-btns" id="ogp_sigfmt_seg"><button type="button" class="basis-btn active" data-fmt="png">PNG</button><button type="button" class="basis-btn" data-fmt="svg">SVG</button><button type="button" class="basis-btn" data-fmt="off">текстом</button></div><input type="hidden" id="f_ogp_sig_fmt" value="png" data-derived="1"><div class="empty-hint" id="ogp_sigfmt_note" style="margin:2px 0 0;"></div></div>
       <div class="ogp-miss" id="ogp_miss"></div>
       <div class="ogp-soft" id="ogp_soft"></div>
@@ -3165,6 +3162,10 @@
         <button type="button" id="ogp_rebuild">Пересобрать</button>
       </div>
       <details id="ogp_saved"><summary id="ogp_saved_sum">Сохранённые обращения</summary><div id="ogp_saved_list"></div></details>
+      <div class="card-group-label" style="margin-top:10px;">Как будет выглядеть</div>
+      <div class="basis-btns" id="ogp_view_seg"><button type="button" class="basis-btn active" data-view="preview">Как на форуме</button><button type="button" class="basis-btn" data-view="code">Код (править)</button></div>
+      <div class="forum-post" id="ogp_preview" aria-label="Как обращение будет выглядеть на форуме"></div>
+      <textarea id="ogp_out" style="min-height:260px; font-family:var(--mono); font-size:12px; display:none;"></textarea>
     </div>
   </div>
 </div>
@@ -3682,6 +3683,11 @@ const APP_NEWS = {
           "Обращение в ОГП: превью «Как на форуме» — бланк отрисован как пост форума; код — по кнопке «Код (править)». Временно — выбор, как вставлять подпись (PNG / SVG / текстом), чтобы проверить, что показывает форум",
           "«Мои места»: место, вписанное вручную, запоминается и идёт группой «Мои места» в своей зоне; «✕ убрать из «Моих мест»» под полем. «Новое дело» и «Настройки по умолчанию» список не стирают",
           "«Мои договоры» и сохранённые обращения в ОГП — в облаке (после входа через Discord): видны на любом устройстве, удалённые удаляются и там; в профиле — сколько документов в облаке"
+        ],
+        fixed: [
+          "Обращение в ОГП: описательная часть больше не обязательна — без отмеченных нарушений и времени задержания бланк копируется и отправляется; вместо запрета — напоминание, что для детального разбора нужна описательная часть по делу",
+          "Обращение в ОГП: превью «Как на форуме» и код — в самом низу окна, под кнопками; превью без своей прокрутки — на телефоне окно листается до конца",
+          "Договор: в реквизитах исполнителя — ссылка «проверить лицензию» на реестр лицензий адвокатов; в PDF она тоже нажимается"
         ]
       }
     },
@@ -8764,9 +8770,6 @@ function ogpMissing(){
   const st = document.getElementById('f_struct');
   if(!val('f_ogp_suspect') && !val('f_badge_num')) add('f_ogp_suspect', 'Подозреваемый: имя и фамилия (или опознавательный знак в карточке дела)');
   if(!st || !st.value) add('card', 'Структура сотрудника — выберите в карточке дела');
-  let nv = 0; try { nv = ogpViolationItems().length; } catch(e){}
-  if(!nv) add('card', 'Описательная часть: в карточке дела не отмечены нарушения сотрудника');
-  if(!val('f_start')) add('card', 'Описательная часть: в карточке дела нет времени задержания');
   if(!ogpUrlOk(val('f_ogp_passport') || (me ? prof.passport : ''))) add('f_ogp_passport', 'Копия паспорта заявителя: ссылка http(s)://…');
   const evRows = L.ev.filter(r=> r.c.trim() || r.u.trim());
   const evBad = [];
@@ -8795,6 +8798,12 @@ function ogpSoft(){
   }
   if(L.ev.some(r=> ogpUrlOk(r.u) && !r.t.trim())) S.push('Видео длиннее 3 минут — укажите тайм-коды ключевых моментов в поле «тайм-коды».');
   if(typeof partnerOn === 'function' && partnerOn() && !val('f_ogp_partner_desc')) S.push('Напарник добавлен — опишите, что он делал, иначе он только упомянут в фабуле.');
+  // описательная часть не обязательна (решение InsideX 17.10): только напоминание
+  let nv = 0; try { nv = ogpViolationItems().length; } catch(e){}
+  const dn = [];
+  if(!nv) dn.push('в карточке дела не отмечены нарушения сотрудника');
+  if(!val('f_start')) dn.push('нет времени задержания');
+  if(dn.length) S.push('Описательная часть: ' + dn.join('; ') + '. Обращение можно подать и так — для детального разбора (и будущей кнопки ИИ) нужна описательная часть по делу.');
   try { S.push(ogpDeadlineText()); } catch(e){}
   return S;
 }
@@ -8840,9 +8849,6 @@ function buildOgpBBCode(){
       });
       body.push((n + 1) + '. ' + it.claim + (fresh.length ? ' — ' + fresh.join('; ') + '.' : ''));
     });
-  } else {
-    body.push('');
-    body.push('[описать нарушения — в карточке дела они не отмечены]');
   }
   const qualBB = ogpOfficerQualification();
   if(qualBB.length){
@@ -21176,7 +21182,7 @@ body.pdfmode .pages .page{zoom:1}
 
 .lblrow{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .lblrow .btn{text-transform:none;letter-spacing:0;padding:3px 9px;font-size:12px}
-.pubbtns .btn{flex:1 1 0;white-space:nowrap}
+.pubbtns .btn{flex:1 1 0;white-space:nowrap;justify-self:start}
 .pubdesc{margin:8px 0 4px;padding-left:18px;font-size:11.5px;color:var(--muted)}
 .pubdesc b{color:var(--text)}
 
@@ -21195,6 +21201,8 @@ body.pdfmode .pages .page{zoom:1}
 .docopt>span{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);font-weight:700}
 .docopt .seg{flex:1;margin:0;min-width:240px}
 .noverify{display:flex;gap:6px;margin-top:8px}.noverify input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 9px;outline:none}.noverify input:focus{border-color:var(--accent)}
+
+.req .lic-reg{color:#1f4e8c;text-decoration:underline;font-size:8.6pt;white-space:nowrap;justify-self:start}
 </style></head><body>
 <header class="top">
   <div class="brand"><span class="ic" id="brandIc" style="color:var(--accent)"></span><b>Договор на оказание юридических услуг</b></div>
@@ -21367,7 +21375,8 @@ body.pdfmode .pages .page{zoom:1}
         <span>Паспорт №</span><b data-v="lawyerId"></b>
         <span>Телефон</span><b data-v="lawyerPhone"></b>
         <span>Почта</span><b data-v="lawyerEmail"></b>
-        <span>Лицензия</span><b data-v="lawyerLicense"></b></div></div>
+        <span>Лицензия</span><b data-v="lawyerLicense"></b>
+        <span>Реестр</span><a class="lic-reg" href="https://redwood-tables.duckdns.org/shared/AdvocatesSA1" target="_blank" rel="noopener noreferrer" title="https://redwood-tables.duckdns.org/shared/AdvocatesSA1">проверить лицензию ↗</a></div></div>
     </div>
     <div class="signs" data-keep="prev">
       <div><div class="sig" data-v="signerName"></div><div class="sigline">Подпись Заказчика</div></div>
@@ -21862,6 +21871,9 @@ function makePdf(){
     return pages.reduce((p, el, i)=> p.then(()=> window.html2canvas(el, { scale: 3, backgroundColor: getComputedStyle(el).backgroundColor, windowWidth: 1400, logging: false }).then(cv=>{
       if(i) pdf.addPage();
       pdf.addImage(cv.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297);
+      // ссылки остаются кликабельными в PDF (реестр лицензий и др.): область поверх картинки
+      const pr = el.getBoundingClientRect(), kx = 210 / pr.width, ky = 297 / pr.height;
+      el.querySelectorAll('a[href^="http"]').forEach(a=>{ const r = a.getBoundingClientRect(); if(r.width && r.height) pdf.link((r.left - pr.left) * kx, (r.top - pr.top) * ky, r.width * kx, r.height * ky, { url: a.href }); });
     })), Promise.resolve()).then(()=> pdf.output('blob'));
   }).finally(()=>{ document.body.classList.remove('pdfmode'); paginate(); });
 }
