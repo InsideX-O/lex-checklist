@@ -71,6 +71,10 @@
   .modal .row2{ display:flex; gap:8px; justify-content:flex-end; margin-top:6px; }
   .empty{ padding:20px; text-align:center; color:var(--muted); }
   [hidden]{ display:none !important; }
+  .sel{ background:var(--panel); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:7px 9px; }
+  .ava.ph{ display:inline-grid; place-items:center; background:var(--panel2); border:1px solid var(--border); color:var(--accent); font-weight:700; font-size:12px; }
+  .uhead{ display:flex; align-items:center; gap:10px; } .uhead .ava{ width:44px; height:44px; font-size:18px; margin:0; }
+  .ptab th, .ptab td{ font-size:12px; padding:5px 6px; }
   .tabs{ display:flex; gap:4px; border-bottom:1px solid var(--border); margin:-4px 0 12px; }
   .tab{ background:transparent; border:0; border-bottom:2px solid transparent; color:var(--muted); padding:8px 14px; font-weight:700; cursor:pointer; }
   .tab.on{ color:var(--accent); border-bottom-color:var(--accent); }
@@ -112,7 +116,12 @@
       <button class="btn" data-f="sub">Подписка</button>
       <button class="btn" data-f="premium">Премиум</button>
       <button class="btn" data-f="free">Free</button>
+      <button class="btn" data-f="overrides">Ручные правки</button>
     </div>
+    <select id="sort" class="sel" title="Сортировка">
+      <option value="last_seen">Последний вход</option><option value="created">Дата регистрации</option><option value="name">Ник</option>
+      <option value="trial_ends">Конец триала</option><option value="premium_ends">Конец премиума</option>
+    </select>
   </div>
   <div class="main">
     <div class="card">
@@ -126,8 +135,7 @@
     <div class="card side" id="side">
       <div class="empty" id="side_empty">Выберите пользователя в списке.</div>
       <div id="side_body" hidden>
-        <h2 id="u_id"></h2>
-        <div class="muted" id="u_name"></div>
+        <div class="uhead"><span id="u_ava"></span><div style="min-width:0"><h2 id="u_nick"></h2><div class="mono muted" id="u_id"></div><div class="muted" id="u_name"></div></div></div>
         <h3>Статус</h3>
         <div class="kv" id="u_kv"></div>
         <h3>Статистика</h3>
@@ -146,7 +154,7 @@
   <section id="tab_log" hidden>
     <div class="bar"><input id="lq" type="search" placeholder="Поиск по журналу: Discord ID, действие, причина" autocomplete="off"><button class="btn" id="l_reload">Обновить</button></div>
     <div class="card"><div class="tw"><table>
-      <thead><tr><th>Когда</th><th>Действие</th><th>Кому</th><th>Причина</th><th class="hide-sm">Админ</th><th class="hide-sm">Итог</th></tr></thead>
+      <thead><tr><th>Дата</th><th class="hide-sm">Админ</th><th>Кому</th><th>Действие</th><th>Причина</th><th class="hide-sm">Итог</th></tr></thead>
       <tbody id="lrows"></tbody>
     </table></div>
     <div class="empty" id="l_msg" hidden></div>
@@ -180,7 +188,7 @@
   const daysLeft = iso=>{ const t = Date.parse(iso || ''); return isNaN(t) ? null : Math.max(0, Math.ceil((t - Date.now()) / 864e5)); };
 
   let sb = null, session = null;
-  const S = { q:'', filter:'all', page:1, items:[], sel:null, total:null };
+  const S = { q:'', filter:'all', sort:'last_seen', page:1, items:[], sel:null, total:null };
 
   function gate(h, p, login){ $('gate').hidden = false; $('app').hidden = true; $('gate_h').textContent = h; $('gate_p').textContent = p || ''; $('b_login').hidden = !login; }
 
@@ -202,7 +210,7 @@
 
   /* ---------- список ---------- */
   function loadUsers(){
-    const qs = new URLSearchParams({ q: S.q, filter: S.filter, page: String(S.page), per_page: String(PER) });
+    const qs = new URLSearchParams({ q: S.q, filter: S.filter, sort: S.sort, page: String(S.page), per_page: String(PER) });
     $('list_msg').hidden = false; $('list_msg').textContent = 'Загрузка…';
     return api('/admin/users?' + qs).then(r=>{
       if(r && r._http === 403){ gate('Нет доступа', 'Эта страница только для администраторов Lex.', false); $('b_logout').hidden = false; return; }
@@ -225,6 +233,7 @@
       case 'sub': return subActive(it);
       case 'premium': return prem;
       case 'free': return !prem && !subActive(it) && st !== 'active';
+      case 'overrides': return ['boosty', 'patreon', 'boost'].some(k=> it.subs && it.subs[k] && (it.subs[k].source === 'grant' || it.subs[k].source === 'block'));
       default: return true;
     }
   }
@@ -252,18 +261,24 @@
     if(!w.childNodes.length) w.appendChild(el('span', 'muted', '—'));
     return w;
   }
+  function avaNode(it, cls){
+    const nick = it.discord_global_name || it.discord_name || '';
+    if(it.avatar && /^https:\/\/cdn\.discordapp\.com\//.test(it.avatar)){ const im = el('img', 'ava' + (cls ? ' ' + cls : '')); im.src = it.avatar; im.alt = ''; im.referrerPolicy = 'no-referrer'; im.onerror = ()=>{ im.replaceWith(avaNode({ discord_name: nick }, cls)); }; return im; }
+    return el('span', 'ava ph' + (cls ? ' ' + cls : ''), (nick || '?').trim().charAt(0).toUpperCase() || '?');
+  }
+  function nickOf(it){ return it.discord_global_name || it.discord_name || ''; }
   function premText(p){ p = p || {}; return p.active ? '👑 ' + (p.ends_at ? 'до ' + fmt(p.ends_at) : 'бессрочно') : '—'; }
   function renderRows(){
     const tb = $('rows'); tb.textContent = '';
     S.items.forEach(it=>{
       const tr = el('tr', 'row' + (S.sel === it.discord_id ? ' sel' : ''));
       const u = el('td'), uc = el('div', 'ucell');
-      if(it.avatar && /^https:\/\/cdn\.discordapp\.com\//.test(it.avatar)){ const im = el('img', 'ava'); im.src = it.avatar; im.alt = ''; im.referrerPolicy = 'no-referrer'; uc.appendChild(im); }
+      uc.appendChild(avaNode(it));
       const ub = el('div'); ub.style.minWidth = '0';
-      const nick = it.discord_name || it.discord_username || it.discord_global_name;
-      if(nick) ub.appendChild(el('div', 'uname', nick));
+      const nick = nickOf(it);
+      if(nick) ub.appendChild(el('div', 'uname', nick + (it.discord_name && it.discord_global_name && it.discord_name !== it.discord_global_name ? ' · @' + it.discord_name : '')));
       ub.appendChild(el('div', nick ? 'mono muted' : 'mono', it.discord_id || '—'));
-      if(it.email) ub.appendChild(el('div', 'muted', it.email));
+      ub.appendChild(el('div', 'muted', it.email || '—'));
       uc.appendChild(ub); u.appendChild(uc);
       const [cls, txt] = trialText(it.trial);
       const t = el('td', cls, txt);
@@ -293,7 +308,9 @@
   function renderUser(id, st, logs, extra){
     extra = extra || {};
     $('u_id').textContent = id;
-    $('u_name').textContent = [st.discord_name || st.discord_username, st.discord_global_name && st.discord_global_name !== st.discord_name ? '(' + st.discord_global_name + ')' : '', st.email].filter(Boolean).join(' · ');
+    $('u_nick').textContent = nickOf(st) || 'Без ника';
+    $('u_name').textContent = [st.discord_name ? '@' + st.discord_name : '', st.email || 'почта —'].filter(Boolean).join(' · ');
+    const av = $('u_ava'); av.textContent = ''; av.appendChild(avaNode(st));
     const box = $('u_kv'); box.textContent = '';
     const [cls, txt] = trialText(st.trial); kv(box, 'Триал', txt, cls);
     kv(box, 'Подписки', subsNode(st.subs));
@@ -305,7 +322,7 @@
     const stt = extra.stats || st.stats;
     if(stt && typeof stt === 'object'){
       const tiles = el('div', 'tiles');
-      [['cases_total', 'дел всего'], ['cases_30d', 'дел за 30 дн.'], ['released', 'освобождено'], ['ogp', 'обращений ОГП'], ['contracts', 'договоров'], ['days_active_30d', 'активных дней']].forEach(([k, l])=>{
+      [['cases_total', 'всего дел'], ['cases_30d', 'за 30 дней'], ['released', 'освобождено'], ['ogp', 'ОГП'], ['contracts', 'договоры'], ['days_active_30d', 'дней активности']].forEach(([k, l])=>{
         if(stt[k] == null) return; const t = el('div', 'tile'); t.appendChild(el('b', '', String(stt[k]))); t.appendChild(el('span', '', l)); tiles.appendChild(t);
       });
       SX.appendChild(tiles.childNodes.length ? tiles : el('div', 'muted', 'Нет данных.'));
@@ -314,13 +331,15 @@
     const PF = $('u_profiles'); PF.textContent = '';
     const profs = extra.profiles || st.profiles;
     if(Array.isArray(profs) && profs.length){
+      const tw = el('div', 'tw'), t = el('table', 'ptab'), hd = el('tr');
+      ['Имя', 'ID-карта', 'Роль', 'Лицензия', 'Изменён'].forEach(h=> hd.appendChild(el('th', '', h)));
+      t.appendChild(hd);
       profs.forEach(pr=>{
-        const d = el('div', 'pf'); d.appendChild(el('b', '', pr.name || '(без имени)'));
-        const bits = [pr.role, pr.rp_id ? 'ID ' + pr.rp_id : '', pr.license ? 'лицензия ' + pr.license : '', pr.server].filter(Boolean).join(' · ');
-        if(bits) d.appendChild(el('div', 'muted', bits));
-        if(pr.updated_at || pr.created_at) d.appendChild(el('div', 'muted', 'изменён ' + fmtT(pr.updated_at || pr.created_at)));
-        PF.appendChild(d);
+        const r = el('tr');
+        r.append(el('td', 'uname', pr.name || '—'), el('td', 'mono', pr.rp_id || '—'), el('td', '', pr.role || '—'), el('td', 'mono', pr.license || '—'), el('td', 'muted', fmt(pr.updated_at || pr.created_at) || '—'));
+        t.appendChild(r);
       });
+      tw.appendChild(t); PF.appendChild(tw);
     } else PF.appendChild(el('div', 'muted', Array.isArray(profs) ? 'Профилей нет.' : 'Сервер пока не отдаёт профили.'));
     // действия
     const A = $('u_acts'); A.textContent = '';
@@ -354,9 +373,9 @@
       const tb = $('lrows');
       rows.forEach(x=>{
         const tr = el('tr', x.target_discord_id ? 'row' : '');
-        tr.append(el('td', 'muted', fmtT(x.at) || '—'), el('td', x.action === 'denied' ? 'st-none' : '', (ACT[x.action] || {}).t || x.action || '—'),
-          el('td', 'mono', [x.target_name, x.target_discord_id].filter(Boolean).join(' · ') || '—'), el('td', '', x.reason || '—'),
-          el('td', 'mono muted hide-sm', x.admin_discord_id || '—'), el('td', 'muted hide-sm', x.result || '—'));
+        const who = el('td'); if(x.target_name) who.appendChild(el('div', 'uname', x.target_name)); who.appendChild(el('div', 'mono muted', x.target_discord_id || '—'));
+        tr.append(el('td', 'muted', fmtT(x.at) || '—'), el('td', 'mono muted hide-sm', x.admin_name || x.admin_discord_id || '—'), who,
+          el('td', x.action === 'denied' ? 'st-none' : '', (ACT[x.action] || {}).t || x.action || '—'), el('td', '', x.reason || '—'), el('td', 'muted hide-sm', x.result || '—'));
         if(x.target_discord_id) tr.addEventListener('click', ()=>{ showTab('users'); loadUserStatus(x.target_discord_id); });
         tb.appendChild(tr);
       });
@@ -461,6 +480,7 @@
     document.querySelectorAll('#flt button').forEach(x=> x.classList.toggle('on', x === b));
     S.filter = b.dataset.f; S.page = 1; loadUsers();
   });
+  $('sort').addEventListener('change', ()=>{ S.sort = $('sort').value; S.page = 1; loadUsers(); });
   $('pg_prev').addEventListener('click', ()=>{ if(S.page > 1){ S.page--; loadUsers(); } });
   $('pg_next').addEventListener('click', ()=>{ S.page++; loadUsers(); });
   $('tabs').addEventListener('click', e=>{ const b = e.target.closest('.tab'); if(b) showTab(b.dataset.tab); });
